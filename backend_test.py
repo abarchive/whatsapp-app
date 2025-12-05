@@ -217,6 +217,19 @@ class WhatsAppAPITester:
             self.log_test("Send Message (API)", False, "No API key available")
             return
         
+        # Check WhatsApp status first
+        try:
+            headers = {'Authorization': f'Bearer {self.token}'}
+            status_resp = requests.get(f"{self.api_url}/whatsapp/status", headers=headers)
+            if status_resp.status_code == 200:
+                status_data = status_resp.json()
+                if not status_data.get('connected', False):
+                    self.log_test("Send Message (API)", False, "WhatsApp not connected")
+                    return
+        except Exception as e:
+            self.log_test("Send Message (API)", False, f"Status check failed: {str(e)}")
+            return
+        
         try:
             headers = {'api-key': self.api_key}
             response = requests.get(f"{self.api_url}/send", 
