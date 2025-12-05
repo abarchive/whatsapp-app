@@ -35,7 +35,7 @@ class WhatsAppAPITester:
 
     def test_user_registration(self):
         """Test user registration endpoint"""
-        test_email = f"test_{int(time.time())}@example.com"
+        test_email = "backend_test@example.com"
         test_password = "TestPass123!"
         
         try:
