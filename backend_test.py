@@ -205,7 +205,7 @@ class WhatsAppAPITester:
             return
         
         try:
-            headers = {'api_key': self.api_key}
+            headers = {'api-key': self.api_key}
             response = requests.get(f"{self.api_url}/send", 
                 params={
                     "number": "9876543210",
