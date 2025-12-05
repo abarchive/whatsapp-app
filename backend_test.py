@@ -346,7 +346,7 @@ class WhatsAppAPITester:
         # Test API key management
         self.test_regenerate_api_key()
         
-        # Test disconnect
+        # Test disconnect (last to avoid affecting other tests)
         self.test_whatsapp_disconnect()
         
         # Print summary
