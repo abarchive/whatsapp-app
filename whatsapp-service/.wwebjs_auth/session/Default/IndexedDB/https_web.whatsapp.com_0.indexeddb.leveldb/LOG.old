@@ -1,15 +1,12 @@
-2026/01/08-13:50:30.175 12cc Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/01/08-13:50:30.175 12cc Recovering log #201
-2026/01/08-13:50:30.184 12cc Reusing old log /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000201.log 
-2026/01/08-13:50:31.709 12cf Level-0 table #207: started
-2026/01/08-13:50:31.715 12cf Level-0 table #207: 225618 bytes OK
-2026/01/08-13:50:31.717 12cf Delete type=0 #201
-2026/01/08-13:50:31.718 12cc Manual compaction at level-0 from '\x00H\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00I\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/01/08-13:50:31.775 12cd Compacting 1@1 + 2@2 files
-2026/01/08-13:50:31.870 12cd Generated table #208@1: 37439 keys, 2203977 bytes
-2026/01/08-13:50:31.950 12cd Generated table #209@1: 25193 keys, 728226 bytes
-2026/01/08-13:50:31.951 12cd Compacted 1@1 + 2@2 files => 2932203 bytes
-2026/01/08-13:50:31.954 12cd compacted to: files[ 0 0 2 0 0 0 0 ]
-2026/01/08-13:50:31.954 12cd Delete type=2 #203
-2026/01/08-13:50:31.954 12cd Delete type=2 #204
-2026/01/08-13:50:31.954 12cd Delete type=2 #207
+2026/01/08-13:52:47.657 134e Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/08-13:52:47.657 134e Recovering log #206
+2026/01/08-13:52:47.665 134e Reusing old log /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000206.log 
+2026/01/08-13:52:49.207 1351 Level-0 table #212: started
+2026/01/08-13:52:49.214 1351 Level-0 table #212: 182707 bytes OK
+2026/01/08-13:52:49.215 1351 Delete type=0 #206
+2026/01/08-13:52:49.216 134e Manual compaction at level-0 from '\x00I\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00J\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/01/08-13:52:49.274 134f Compacting 1@1 + 2@2 files
+2026/01/08-13:52:49.370 134f Generated table #213@1: 39377 keys, 2207837 bytes
+2026/01/08-13:52:49.385 134f Generated table #214@1: 25498 keys, 796338 bytes
+2026/01/08-13:52:49.385 134f Compacted 1@1 + 2@2 files => 3004175 bytes
+2026/01/08-13:52:49.450 134f compacted to: files[ 0 0 2 0 0 0 0 ]
