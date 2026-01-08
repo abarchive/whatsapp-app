@@ -32,6 +32,11 @@ export default function Dashboard({ user }) {
   const checkStatus = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found, user needs to login');
+        return;
+      }
+      
       const response = await axios.get(`${API}/whatsapp/status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -53,7 +58,14 @@ export default function Dashboard({ user }) {
             setIsInitializing(false);
           }
         } catch (error) {
-          console.error('Error fetching QR code:', error);
+          if (error.response?.status === 401) {
+            console.log('QR fetch: Token expired, redirecting to login');
+            handleTokenExpiry();
+          } else if (error.response?.status === 404) {
+            console.log('QR code not available yet');
+          } else {
+            console.error('Error fetching QR code:', error);
+          }
         }
       }
       
@@ -70,8 +82,27 @@ export default function Dashboard({ user }) {
       }
       
     } catch (error) {
-      console.error('Error checking status:', error);
+      if (error.response?.status === 401) {
+        console.log('Status check: Token expired, redirecting to login');
+        handleTokenExpiry();
+      } else {
+        console.error('Error checking status:', error);
+      }
     }
+  };
+
+  const handleTokenExpiry = () => {
+    // Clear polling
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+    }
+    
+    // Clear local storage
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    
+    // Redirect to login
+    window.location.href = '/login';
   };
 
   const handleInitialize = async () => {
