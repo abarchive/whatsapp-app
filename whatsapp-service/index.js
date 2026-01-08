@@ -201,6 +201,7 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 8002;
 server.listen(PORT, () => {
   console.log(`[WhatsApp Service] Server running on port ${PORT}`);
-  console.log('[WhatsApp Service] Note: Using simulated WhatsApp for ARM64 compatibility');
-  console.log('[WhatsApp Service] For production on x86, this will use real whatsapp-web.js');
+  console.log('[WhatsApp Service] Using real WhatsApp Web integration');
+  console.log('[WhatsApp Service] Ready to connect via QR code');
+});
 });
