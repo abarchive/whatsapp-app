@@ -227,7 +227,12 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get('/send', response_model=MessageResponse)
-async def send_message_api(number: str = Query(...), msg: str = Query(...), user: dict = Depends(verify_api_key)):
+async def send_message_api(api_key: str = Query(...), number: str = Query(...), msg: str = Query(...)):
+    # Verify API key from query parameter
+    user = await db.users.find_one({'api_key': api_key}, {'_id': 0, 'password_hash': 0})
+    if not user:
+        raise HTTPException(status_code=401, detail='Invalid API key')
+    
     formatted_number = number
     if not formatted_number.startswith('+'):
         formatted_number = '+91' + formatted_number
