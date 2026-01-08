@@ -24,8 +24,28 @@ let connectionStatus = 'disconnected';
 // Initialize WhatsApp client with real whatsapp-web.js
 async function initializeWhatsApp() {
   try {
+    // If client already exists and is initializing, don't create a new one
+    if (whatsappClient) {
+      console.log('[WhatsApp Service] Client already exists, destroying old instance...');
+      try {
+        await whatsappClient.destroy();
+      } catch (e) {
+        console.log('[WhatsApp Service] Error destroying old client:', e.message);
+      }
+      whatsappClient = null;
+    }
+
     console.log('[WhatsApp Service] Initializing WhatsApp Web client...');
     connectionStatus = 'initializing';
+    qrCodeData = null;
+    isConnected = false;
+    
+    // Notify all sockets about initialization
+    io.emit('status', {
+      status: 'initializing',
+      connected: false,
+      qrAvailable: false
+    });
     
     whatsappClient = new Client({
       authStrategy: new LocalAuth({
@@ -41,7 +61,8 @@ async function initializeWhatsApp() {
           '--no-first-run',
           '--no-zygote',
           '--disable-gpu'
-        ]
+        ],
+        headless: true
       }
     });
 
@@ -51,6 +72,11 @@ async function initializeWhatsApp() {
       qrCodeData = qr;
       connectionStatus = 'qr_ready';
       io.emit('qr', { qr });
+      io.emit('status', {
+        status: 'qr_ready',
+        connected: false,
+        qrAvailable: true
+      });
     });
 
     // Ready event
@@ -60,19 +86,35 @@ async function initializeWhatsApp() {
       connectionStatus = 'connected';
       qrCodeData = null;
       io.emit('ready', { message: 'WhatsApp connected successfully!' });
+      io.emit('status', {
+        status: 'connected',
+        connected: true,
+        qrAvailable: false
+      });
     });
 
     // Authenticated event
     whatsappClient.on('authenticated', () => {
       console.log('[WhatsApp Service] WhatsApp authenticated');
       connectionStatus = 'authenticated';
+      io.emit('status', {
+        status: 'authenticated',
+        connected: false,
+        qrAvailable: false
+      });
     });
 
     // Authentication failure event
     whatsappClient.on('auth_failure', (msg) => {
       console.error('[WhatsApp Service] Authentication failure:', msg);
       connectionStatus = 'auth_failure';
+      qrCodeData = null;
       io.emit('error', { message: 'Authentication failed' });
+      io.emit('status', {
+        status: 'disconnected',
+        connected: false,
+        qrAvailable: false
+      });
     });
 
     // Disconnected event
@@ -82,6 +124,11 @@ async function initializeWhatsApp() {
       connectionStatus = 'disconnected';
       qrCodeData = null;
       io.emit('disconnected', { reason });
+      io.emit('status', {
+        status: 'disconnected',
+        connected: false,
+        qrAvailable: false
+      });
     });
 
     // Initialize the client
@@ -90,7 +137,14 @@ async function initializeWhatsApp() {
   } catch (error) {
     console.error('[WhatsApp Service] Error initializing WhatsApp:', error);
     connectionStatus = 'error';
+    qrCodeData = null;
+    isConnected = false;
     io.emit('error', { message: error.message });
+    io.emit('status', {
+      status: 'disconnected',
+      connected: false,
+      qrAvailable: false
+    });
   }
 }
 
