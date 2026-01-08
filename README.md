@@ -40,9 +40,10 @@ Get your API key from the "API Keys" page in the dashboard.
 
 ## Important Notes
 
-- **Current Mode**: Simulated WhatsApp (ARM64 compatibility)
-- **Production**: Deploy on x86 architecture for real WhatsApp Web
-- **Rate Limit**: 30 messages/hour per user
+- **Real WhatsApp Integration**: Uses actual WhatsApp Web via whatsapp-web.js
+- **QR Code Scanning**: Scan with your WhatsApp mobile app to connect
+- **Message Sending**: Send real WhatsApp messages to any number
+- **Rate Limit**: 30 messages/hour per user (configurable)
 
 ## Project Structure
 
