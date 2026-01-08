@@ -127,19 +127,38 @@ app.post('/send', async (req, res) => {
     return res.status(400).json({ error: 'Number and message are required' });
   }
 
-  if (!isConnected) {
+  if (!isConnected || !whatsappClient) {
     return res.status(400).json({ error: 'WhatsApp not connected' });
   }
 
   try {
-    const result = await whatsappClient.sendMessage(number, message);
+    // Format number to WhatsApp format (remove + and @ if present)
+    let formattedNumber = number.replace(/[^\d]/g, '');
+    
+    // Add country code if not present (default to India +91)
+    if (!formattedNumber.startsWith('91') && formattedNumber.length === 10) {
+      formattedNumber = '91' + formattedNumber;
+    }
+    
+    // WhatsApp ID format: number@c.us
+    const chatId = formattedNumber + '@c.us';
+    
+    console.log(`[WhatsApp Service] Sending message to ${chatId}: ${message}`);
+    
+    // Send message using whatsapp-web.js
+    const result = await whatsappClient.sendMessage(chatId, message);
+    
     res.json({
       success: true,
       to: number,
       message: 'Message sent successfully',
-      data: result
+      data: {
+        id: result.id.id,
+        timestamp: result.timestamp
+      }
     });
   } catch (error) {
+    console.error('[WhatsApp Service] Error sending message:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
@@ -147,7 +166,11 @@ app.post('/send', async (req, res) => {
 app.post('/disconnect', async (req, res) => {
   try {
     if (whatsappClient) {
-      await whatsappClient.disconnect();
+      await whatsappClient.destroy();
+      whatsappClient = null;
+      isConnected = false;
+      connectionStatus = 'disconnected';
+      qrCodeData = null;
     }
     res.json({ success: true, message: 'Disconnected successfully' });
   } catch (error) {
