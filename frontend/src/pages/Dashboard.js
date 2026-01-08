@@ -168,14 +168,31 @@ export default function Dashboard({ user }) {
           <h3>WhatsApp Connection Status</h3>
         </div>
         
-        <div style={{ marginBottom: '24px' }}>
-          <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : (status === 'qr_ready' || status === 'initializing') ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
-            {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
-            {status === 'disconnected' && '🔴 Disconnected'}
-            {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
-            {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
-          </span>
-        </div>
+        {!initialCheckDone ? (
+          <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+            <div style={{ display: 'inline-block' }}>
+              <div style={{ 
+                width: '30px', 
+                height: '30px', 
+                border: '3px solid #f3f4f6',
+                borderTop: '3px solid #667eea',
+                borderRadius: '50%',
+                animation: 'spin 1s linear infinite'
+              }}></div>
+            </div>
+            <p style={{ marginTop: '12px' }}>Checking connection status...</p>
+          </div>
+        ) : (
+          <>
+            <div style={{ marginBottom: '24px' }}>
+              <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : (status === 'qr_ready' || status === 'initializing') ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
+                {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
+                {status === 'disconnected' && '🔴 Disconnected'}
+                {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
+                {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
+                {status === 'checking' && '🟡 Checking...'}
+              </span>
+            </div>
 
         {status === 'disconnected' && !isInitializing && (
           <div>
