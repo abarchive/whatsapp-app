@@ -1,2 +1,3 @@
-2026/01/08-13:10:37.779 b41 Creating DB /app/whatsapp-service/.wwebjs_auth/session/Default/Sync Data/LevelDB since it was missing.
-2026/01/08-13:10:37.804 b41 Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/Sync Data/LevelDB/MANIFEST-000001
+2026/01/08-13:28:05.844 ecc Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/Sync Data/LevelDB/MANIFEST-000001
+2026/01/08-13:28:05.849 ecc Recovering log #3
+2026/01/08-13:28:05.850 ecc Reusing old log /app/whatsapp-service/.wwebjs_auth/session/Default/Sync Data/LevelDB/000003.log 

@@ -7,31 +7,61 @@ import io from 'socket.io-client';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const WHATSAPP_SERVICE_URL = 'http://localhost:8002';
 
 export default function Dashboard({ user }) {
   const [status, setStatus] = useState('disconnected');
   const [qrCode, setQrCode] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     checkStatus();
-    const socket = io('http://localhost:8002');
     
-    socket.on('qr', (data) => {
+    // Connect to WhatsApp service socket
+    const newSocket = io(WHATSAPP_SERVICE_URL);
+    setSocket(newSocket);
+    
+    newSocket.on('connect', () => {
+      console.log('Connected to WhatsApp service');
+    });
+
+    newSocket.on('qr', (data) => {
+      console.log('QR code received');
       setQrCode(data.qr);
       setStatus('qr_ready');
     });
 
-    socket.on('ready', () => {
+    newSocket.on('ready', () => {
+      console.log('WhatsApp connected!');
       setStatus('connected');
       setQrCode(null);
     });
 
-    socket.on('status', (data) => {
-      setStatus(data.status);
+    newSocket.on('authenticated', () => {
+      console.log('WhatsApp authenticated');
+      setStatus('authenticated');
     });
 
-    return () => socket.disconnect();
+    newSocket.on('disconnected', () => {
+      console.log('WhatsApp disconnected');
+      setStatus('disconnected');
+      setQrCode(null);
+    });
+
+    newSocket.on('status', (data) => {
+      console.log('Status update:', data);
+      setStatus(data.status);
+      if (data.qrAvailable && data.qr) {
+        setQrCode(data.qr);
+      }
+    });
+
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
   }, []);
 
   const checkStatus = async () => {
@@ -43,10 +73,14 @@ export default function Dashboard({ user }) {
       setStatus(response.data.status);
       
       if (response.data.status === 'qr_ready') {
-        const qrResponse = await axios.get(`${API}/whatsapp/qr`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setQrCode(qrResponse.data.qr);
+        try {
+          const qrResponse = await axios.get(`${API}/whatsapp/qr`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          setQrCode(qrResponse.data.qr);
+        } catch (error) {
+          console.error('Error fetching QR code:', error);
+        }
       }
     } catch (error) {
       console.error('Error checking status:', error);
@@ -55,6 +89,8 @@ export default function Dashboard({ user }) {
 
   const handleInitialize = async () => {
     setLoading(true);
+    setStatus('initializing');
+    setQrCode(null);
     try {
       const token = localStorage.getItem('token');
       await axios.post(`${API}/whatsapp/initialize`, {}, {
@@ -62,12 +98,17 @@ export default function Dashboard({ user }) {
       });
     } catch (error) {
       console.error('Error initializing:', error);
+      setStatus('disconnected');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDisconnect = async () => {
+    if (!window.confirm('Are you sure you want to disconnect WhatsApp?')) {
+      return;
+    }
+    
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
