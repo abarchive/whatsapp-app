@@ -53,7 +53,12 @@ export default function MessageLogs({ user }) {
 
       <div className="card">
         <div className="card-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3>Message History</h3>
+          <div>
+            <h3>Message History</h3>
+            <p style={{ fontSize: '13px', color: '#64748b', marginTop: '4px' }}>
+              🔄 Auto-refreshing every 3 seconds
+            </p>
+          </div>
           <div>
             <select
               value={filter}
