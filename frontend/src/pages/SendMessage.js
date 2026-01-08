@@ -116,10 +116,11 @@ export default function SendMessage({ user }) {
         <div className="alert alert-info">
           <p style={{ marginBottom: '12px', fontWeight: '600' }}>You can also send messages via API:</p>
           <pre style={{ background: 'white', padding: '16px', borderRadius: '8px', overflow: 'auto', fontSize: '13px' }}>
-{`GET ${BACKEND_URL}/api/send?number=9876543210&msg=Hello+World
-Header: api_key: YOUR_API_KEY`}
+{`GET ${BACKEND_URL}/api/send?api_key=YOUR_API_KEY&number=9876543210&msg=Hello+World`}
           </pre>
-          <p style={{ marginTop: '12px', fontSize: '14px' }}>Get your API key from the API Keys page</p>
+          <p style={{ marginTop: '12px', fontSize: '14px' }}>
+            💡 Copy the URL directly from the <strong>API Keys</strong> page - you can test it in your browser!
+          </p>
         </div>
       </div>
     </Layout>
