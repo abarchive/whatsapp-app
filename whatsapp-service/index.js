@@ -204,4 +204,3 @@ server.listen(PORT, () => {
   console.log('[WhatsApp Service] Using real WhatsApp Web integration');
   console.log('[WhatsApp Service] Ready to connect via QR code');
 });
-});
