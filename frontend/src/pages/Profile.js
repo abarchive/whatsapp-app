@@ -20,12 +20,23 @@ export default function Profile({ user, setUser }) {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+      
       const response = await axios.get(`${API}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setProfile(response.data);
     } catch (error) {
-      console.error('Error fetching profile:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        console.error('Error fetching profile:', error);
+      }
     } finally {
       setLoading(false);
     }
