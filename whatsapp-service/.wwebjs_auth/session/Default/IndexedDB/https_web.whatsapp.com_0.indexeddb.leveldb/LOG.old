@@ -1,12 +1,15 @@
-2026/01/08-13:28:06.783 ecc Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
-2026/01/08-13:28:06.783 ecc Recovering log #181
-2026/01/08-13:28:06.785 ecc Reusing old log /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000181.log 
-2026/01/08-13:28:08.426 ecd Level-0 table #187: started
-2026/01/08-13:28:08.430 ecd Level-0 table #187: 57596 bytes OK
-2026/01/08-13:28:08.432 ecd Delete type=0 #181
-2026/01/08-13:28:08.432 ecd Manual compaction at level-0 from '\x00D\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00E\x00\x00\x00' @ 0 : 0; will stop at (end)
-2026/01/08-13:28:08.459 ecf Compacting 1@1 + 2@2 files
-2026/01/08-13:28:08.490 ecf Generated table #188@1: 34304 keys, 2196951 bytes
-2026/01/08-13:28:08.557 ecf Generated table #189@1: 18719 keys, 409111 bytes
-2026/01/08-13:28:08.557 ecf Compacted 1@1 + 2@2 files => 2606062 bytes
-2026/01/08-13:28:08.559 ecf compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/01/08-13:50:30.175 12cc Reusing MANIFEST /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/01/08-13:50:30.175 12cc Recovering log #201
+2026/01/08-13:50:30.184 12cc Reusing old log /app/whatsapp-service/.wwebjs_auth/session/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000201.log 
+2026/01/08-13:50:31.709 12cf Level-0 table #207: started
+2026/01/08-13:50:31.715 12cf Level-0 table #207: 225618 bytes OK
+2026/01/08-13:50:31.717 12cf Delete type=0 #201
+2026/01/08-13:50:31.718 12cc Manual compaction at level-0 from '\x00H\x00\x00\x00' @ 72057594037927935 : 1 .. '\x00I\x00\x00\x00' @ 0 : 0; will stop at (end)
+2026/01/08-13:50:31.775 12cd Compacting 1@1 + 2@2 files
+2026/01/08-13:50:31.870 12cd Generated table #208@1: 37439 keys, 2203977 bytes
+2026/01/08-13:50:31.950 12cd Generated table #209@1: 25193 keys, 728226 bytes
+2026/01/08-13:50:31.951 12cd Compacted 1@1 + 2@2 files => 2932203 bytes
+2026/01/08-13:50:31.954 12cd compacted to: files[ 0 0 2 0 0 0 0 ]
+2026/01/08-13:50:31.954 12cd Delete type=2 #203
+2026/01/08-13:50:31.954 12cd Delete type=2 #204
+2026/01/08-13:50:31.954 12cd Delete type=2 #207

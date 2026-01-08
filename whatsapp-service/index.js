@@ -220,12 +220,27 @@ app.post('/send', async (req, res) => {
 app.post('/disconnect', async (req, res) => {
   try {
     if (whatsappClient) {
-      console.log('[WhatsApp Service] Disconnecting WhatsApp client...');
+      console.log('[WhatsApp Service] Disconnecting and clearing session...');
       await whatsappClient.destroy();
       whatsappClient = null;
       isConnected = false;
       connectionStatus = 'disconnected';
       qrCodeData = null;
+      
+      // Delete saved session data to allow new account connection
+      const fs = require('fs');
+      const path = require('path');
+      const sessionPath = path.join(__dirname, '.wwebjs_auth');
+      
+      try {
+        if (fs.existsSync(sessionPath)) {
+          console.log('[WhatsApp Service] Deleting saved session data...');
+          fs.rmSync(sessionPath, { recursive: true, force: true });
+          console.log('[WhatsApp Service] Session data deleted successfully');
+        }
+      } catch (err) {
+        console.error('[WhatsApp Service] Error deleting session:', err);
+      }
       
       // Notify all connected sockets about disconnection
       io.emit('disconnected', { message: 'WhatsApp disconnected' });
@@ -235,7 +250,7 @@ app.post('/disconnect', async (req, res) => {
         qrAvailable: false
       });
     }
-    res.json({ success: true, message: 'Disconnected successfully' });
+    res.json({ success: true, message: 'Disconnected and session cleared successfully' });
   } catch (error) {
     console.error('[WhatsApp Service] Error disconnecting:', error);
     res.status(500).json({ success: false, error: error.message });
