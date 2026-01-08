@@ -76,6 +76,7 @@ export default function Dashboard({ user }) {
 
   const handleInitialize = async () => {
     setLoading(true);
+    setIsInitializing(true);
     setStatus('initializing');
     setQrCode(null);
     try {
@@ -83,9 +84,12 @@ export default function Dashboard({ user }) {
       await axios.post(`${API}/whatsapp/initialize`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      console.log('WhatsApp initialization requested');
+      // Polling will automatically pick up the QR code when ready
     } catch (error) {
       console.error('Error initializing:', error);
       setStatus('disconnected');
+      setIsInitializing(false);
     } finally {
       setLoading(false);
     }
@@ -104,11 +108,13 @@ export default function Dashboard({ user }) {
       });
       setStatus('disconnected');
       setQrCode(null);
+      setIsInitializing(false);
       
-      // Wait a moment then show initialize button
+      // Give backend time to disconnect
       setTimeout(() => {
         setLoading(false);
-      }, 1000);
+        checkStatus();
+      }, 1500);
     } catch (error) {
       console.error('Error disconnecting:', error);
       setLoading(false);
