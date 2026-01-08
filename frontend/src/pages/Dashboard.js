@@ -134,15 +134,15 @@ export default function Dashboard({ user }) {
         </div>
         
         <div style={{ marginBottom: '24px' }}>
-          <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : status === 'qr_ready' ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
+          <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : (status === 'qr_ready' || status === 'initializing') ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
             {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
             {status === 'disconnected' && '🔴 Disconnected'}
-            {status === 'qr_ready' && '🟡 Waiting for QR Scan'}
-            {status === 'initializing' && '🟡 Initializing...'}
+            {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
+            {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
           </span>
         </div>
 
-        {status === 'disconnected' && (
+        {status === 'disconnected' && !isInitializing && (
           <div>
             <p style={{ marginBottom: '16px', color: '#64748b' }}>
               Initialize WhatsApp connection to start sending messages. You can connect any WhatsApp account.
@@ -158,10 +158,22 @@ export default function Dashboard({ user }) {
           </div>
         )}
 
-        {status === 'initializing' && (
+        {(status === 'initializing' || (isInitializing && !qrCode)) && (
           <div>
             <div className="alert alert-info">
-              🔄 Initializing WhatsApp connection... Please wait for QR code.
+              🔄 Initializing WhatsApp connection... QR code will appear in 5-10 seconds.
+            </div>
+            <div style={{ textAlign: 'center', padding: '40px' }}>
+              <div style={{ display: 'inline-block' }}>
+                <div style={{ 
+                  width: '40px', 
+                  height: '40px', 
+                  border: '4px solid #f3f4f6',
+                  borderTop: '4px solid #667eea',
+                  borderRadius: '50%',
+                  animation: 'spin 1s linear infinite'
+                }}></div>
+              </div>
             </div>
           </div>
         )}
