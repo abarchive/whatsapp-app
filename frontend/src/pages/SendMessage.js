@@ -20,6 +20,11 @@ export default function SendMessage({ user }) {
 
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+      
       const response = await axios.post(
         `${API}/messages/send`,
         { number, message },
@@ -29,7 +34,13 @@ export default function SendMessage({ user }) {
       setNumber('');
       setMessage('');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to send message');
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        setError(err.response?.data?.detail || 'Failed to send message');
+      }
     } finally {
       setLoading(false);
     }
