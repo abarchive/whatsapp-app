@@ -129,7 +129,7 @@ export default function Profile({ user, setUser }) {
             • Secure API key authentication
           </p>
           <p style={{ marginTop: '16px', fontSize: '13px', color: '#94a3b8' }}>
-            Note: This app uses simulated WhatsApp for ARM64 compatibility. For production deployment on x86 architecture, it will use real WhatsApp Web integration.
+            Powered by WhatsApp Web API - Connect your WhatsApp account via QR code to start sending messages.
           </p>
         </div>
       </div>
