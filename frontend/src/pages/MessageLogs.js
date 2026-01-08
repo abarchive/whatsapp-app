@@ -24,6 +24,11 @@ export default function MessageLogs({ user }) {
   const fetchLogs = async () => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+      
       const url = filter === 'all' 
         ? `${API}/messages/logs` 
         : `${API}/messages/logs?status=${filter}`;
@@ -33,7 +38,13 @@ export default function MessageLogs({ user }) {
       });
       setLogs(response.data);
     } catch (error) {
-      console.error('Error fetching logs:', error);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        console.error('Error fetching logs:', error);
+      }
     } finally {
       setLoading(false);
     }
