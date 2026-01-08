@@ -12,10 +12,16 @@ export default function MessageLogs({ user }) {
 
   useEffect(() => {
     fetchLogs();
+    
+    // Auto-refresh every 3 seconds
+    const interval = setInterval(() => {
+      fetchLogs();
+    }, 3000);
+
+    return () => clearInterval(interval);
   }, [filter]);
 
   const fetchLogs = async () => {
-    setLoading(true);
     try {
       const token = localStorage.getItem('token');
       const url = filter === 'all' 
