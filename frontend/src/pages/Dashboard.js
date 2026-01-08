@@ -105,7 +105,7 @@ export default function Dashboard({ user }) {
   };
 
   const handleDisconnect = async () => {
-    if (!window.confirm('Are you sure you want to disconnect WhatsApp?')) {
+    if (!window.confirm('Are you sure you want to disconnect WhatsApp? Session will be cleared and you can connect a different account.')) {
       return;
     }
     
@@ -117,9 +117,13 @@ export default function Dashboard({ user }) {
       });
       setStatus('disconnected');
       setQrCode(null);
+      
+      // Wait a moment then show initialize button
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
     } catch (error) {
       console.error('Error disconnecting:', error);
-    } finally {
       setLoading(false);
     }
   };
@@ -137,17 +141,18 @@ export default function Dashboard({ user }) {
         </div>
         
         <div style={{ marginBottom: '24px' }}>
-          <span className={`status-badge ${status}`} data-testid="connection-status">
-            {status === 'connected' && '🟢 Connected'}
+          <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : status === 'qr_ready' ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
+            {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
             {status === 'disconnected' && '🔴 Disconnected'}
             {status === 'qr_ready' && '🟡 Waiting for QR Scan'}
+            {status === 'initializing' && '🟡 Initializing...'}
           </span>
         </div>
 
         {status === 'disconnected' && (
           <div>
             <p style={{ marginBottom: '16px', color: '#64748b' }}>
-              Initialize WhatsApp connection to start sending messages
+              Initialize WhatsApp connection to start sending messages. You can connect any WhatsApp account.
             </p>
             <button
               className="btn btn-primary"
@@ -155,8 +160,16 @@ export default function Dashboard({ user }) {
               disabled={loading}
               data-testid="initialize-button"
             >
-              {loading ? 'Initializing...' : 'Initialize WhatsApp'}
+              {loading ? 'Initializing...' : 'Initialize WhatsApp & Generate QR Code'}
             </button>
+          </div>
+        )}
+
+        {status === 'initializing' && (
+          <div>
+            <div className="alert alert-info">
+              🔄 Initializing WhatsApp connection... Please wait for QR code.
+            </div>
           </div>
         )}
 
