@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const QRCode = require('qrcode-terminal');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 
 const app = express();
 const server = http.createServer(app);
@@ -21,65 +21,76 @@ let qrCodeData = null;
 let isConnected = false;
 let connectionStatus = 'disconnected';
 
-// Simulated WhatsApp client for development (replace with real whatsapp-web.js in production on x86)
-class SimulatedWhatsAppClient {
-  constructor() {
-    this.ready = false;
-    this.qr = null;
-  }
-
-  async initialize() {
-    console.log('[WhatsApp Service] Initializing simulated WhatsApp client...');
-    connectionStatus = 'qr_ready';
-    
-    // Generate a demo QR code
-    this.qr = 'https://wa.me/qr/DEMO' + Math.random().toString(36).substring(7);
-    qrCodeData = this.qr;
-    
-    io.emit('qr', { qr: this.qr });
-    console.log('[WhatsApp Service] QR Code generated (simulated)');
-    
-    // Auto-connect after 5 seconds (simulating user scanning QR)
-    setTimeout(() => {
-      this.ready = true;
-      isConnected = true;
-      connectionStatus = 'connected';
-      io.emit('ready', { message: 'WhatsApp connected successfully!' });
-      console.log('[WhatsApp Service] Client connected (simulated)');
-    }, 5000);
-  }
-
-  async sendMessage(number, message) {
-    if (!this.ready) {
-      throw new Error('WhatsApp client not ready');
-    }
-    
-    // Simulate sending message
-    console.log(`[WhatsApp Service] Sending message to ${number}: ${message}`);
-    return {
-      success: true,
-      id: 'msg_' + Date.now(),
-      timestamp: new Date().toISOString()
-    };
-  }
-
-  async disconnect() {
-    this.ready = false;
-    isConnected = false;
-    connectionStatus = 'disconnected';
-    qrCodeData = null;
-    console.log('[WhatsApp Service] Client disconnected');
-  }
-}
-
-// Initialize WhatsApp client
+// Initialize WhatsApp client with real whatsapp-web.js
 async function initializeWhatsApp() {
   try {
-    whatsappClient = new SimulatedWhatsAppClient();
+    console.log('[WhatsApp Service] Initializing WhatsApp Web client...');
+    connectionStatus = 'initializing';
+    
+    whatsappClient = new Client({
+      authStrategy: new LocalAuth({
+        dataPath: '/app/whatsapp-service/.wwebjs_auth'
+      }),
+      puppeteer: {
+        executablePath: '/usr/bin/chromium',
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-accelerated-2d-canvas',
+          '--no-first-run',
+          '--no-zygote',
+          '--disable-gpu'
+        ]
+      }
+    });
+
+    // QR Code event
+    whatsappClient.on('qr', (qr) => {
+      console.log('[WhatsApp Service] QR Code received');
+      qrCodeData = qr;
+      connectionStatus = 'qr_ready';
+      io.emit('qr', { qr });
+    });
+
+    // Ready event
+    whatsappClient.on('ready', () => {
+      console.log('[WhatsApp Service] WhatsApp client is ready!');
+      isConnected = true;
+      connectionStatus = 'connected';
+      qrCodeData = null;
+      io.emit('ready', { message: 'WhatsApp connected successfully!' });
+    });
+
+    // Authenticated event
+    whatsappClient.on('authenticated', () => {
+      console.log('[WhatsApp Service] WhatsApp authenticated');
+      connectionStatus = 'authenticated';
+    });
+
+    // Authentication failure event
+    whatsappClient.on('auth_failure', (msg) => {
+      console.error('[WhatsApp Service] Authentication failure:', msg);
+      connectionStatus = 'auth_failure';
+      io.emit('error', { message: 'Authentication failed' });
+    });
+
+    // Disconnected event
+    whatsappClient.on('disconnected', (reason) => {
+      console.log('[WhatsApp Service] WhatsApp disconnected:', reason);
+      isConnected = false;
+      connectionStatus = 'disconnected';
+      qrCodeData = null;
+      io.emit('disconnected', { reason });
+    });
+
+    // Initialize the client
     await whatsappClient.initialize();
+    
   } catch (error) {
     console.error('[WhatsApp Service] Error initializing WhatsApp:', error);
     connectionStatus = 'error';
+    io.emit('error', { message: error.message });
   }
 }
 
