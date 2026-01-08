@@ -1,65 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
 import Layout from '../components/Layout';
-import io from 'socket.io-client';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const WHATSAPP_SERVICE_URL = 'http://localhost:8002';
 
 export default function Dashboard({ user }) {
   const [status, setStatus] = useState('disconnected');
   const [qrCode, setQrCode] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [socket, setSocket] = useState(null);
+  const pollingInterval = useRef(null);
+  const [isInitializing, setIsInitializing] = useState(false);
 
   useEffect(() => {
     checkStatus();
     
-    // Connect to WhatsApp service socket
-    const newSocket = io(WHATSAPP_SERVICE_URL);
-    setSocket(newSocket);
-    
-    newSocket.on('connect', () => {
-      console.log('Connected to WhatsApp service');
-    });
-
-    newSocket.on('qr', (data) => {
-      console.log('QR code received');
-      setQrCode(data.qr);
-      setStatus('qr_ready');
-    });
-
-    newSocket.on('ready', () => {
-      console.log('WhatsApp connected!');
-      setStatus('connected');
-      setQrCode(null);
-    });
-
-    newSocket.on('authenticated', () => {
-      console.log('WhatsApp authenticated');
-      setStatus('authenticated');
-    });
-
-    newSocket.on('disconnected', () => {
-      console.log('WhatsApp disconnected');
-      setStatus('disconnected');
-      setQrCode(null);
-    });
-
-    newSocket.on('status', (data) => {
-      console.log('Status update:', data);
-      setStatus(data.status);
-      if (data.qrAvailable && data.qr) {
-        setQrCode(data.qr);
-      }
-    });
+    // Start polling for status updates every 2 seconds
+    pollingInterval.current = setInterval(() => {
+      checkStatus();
+    }, 2000);
 
     return () => {
-      if (newSocket) {
-        newSocket.disconnect();
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
       }
     };
   }, []);
@@ -70,18 +35,40 @@ export default function Dashboard({ user }) {
       const response = await axios.get(`${API}/whatsapp/status`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setStatus(response.data.status);
       
-      if (response.data.status === 'qr_ready') {
+      const currentStatus = response.data.status;
+      setStatus(currentStatus);
+      
+      console.log('Status check:', currentStatus, 'QR Available:', response.data.qrAvailable);
+      
+      // If status is qr_ready and we don't have QR code yet, fetch it
+      if (currentStatus === 'qr_ready' && !qrCode) {
         try {
           const qrResponse = await axios.get(`${API}/whatsapp/qr`, {
             headers: { Authorization: `Bearer ${token}` }
           });
-          setQrCode(qrResponse.data.qr);
+          if (qrResponse.data.qr) {
+            console.log('QR code fetched successfully');
+            setQrCode(qrResponse.data.qr);
+            setIsInitializing(false);
+          }
         } catch (error) {
           console.error('Error fetching QR code:', error);
         }
       }
+      
+      // If connected, clear QR code and stop initializing state
+      if (currentStatus === 'connected' || currentStatus === 'authenticated') {
+        setQrCode(null);
+        setIsInitializing(false);
+      }
+      
+      // If disconnected, clear QR code
+      if (currentStatus === 'disconnected') {
+        setQrCode(null);
+        setIsInitializing(false);
+      }
+      
     } catch (error) {
       console.error('Error checking status:', error);
     }
