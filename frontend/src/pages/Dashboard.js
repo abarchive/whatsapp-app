@@ -171,10 +171,20 @@ export default function Dashboard({ user }) {
             <p style={{ textAlign: 'center', color: '#64748b', fontSize: '14px' }}>
               Open WhatsApp → Settings → Linked Devices → Link a Device
             </p>
+            <div style={{ marginTop: '16px', textAlign: 'center' }}>
+              <button
+                className="btn btn-secondary"
+                onClick={handleDisconnect}
+                disabled={loading}
+                style={{ fontSize: '14px' }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         )}
 
-        {status === 'connected' && (
+        {(status === 'connected' || status === 'authenticated') && (
           <div>
             <div className="alert alert-success" data-testid="connected-message">
               ✓ WhatsApp is connected and ready to send messages!
@@ -191,7 +201,7 @@ export default function Dashboard({ user }) {
                 disabled={loading}
                 data-testid="disconnect-button"
               >
-                Disconnect
+                {loading ? 'Disconnecting...' : 'Disconnect & Clear Session'}
               </button>
             </div>
           </div>
