@@ -166,14 +166,24 @@ app.post('/send', async (req, res) => {
 app.post('/disconnect', async (req, res) => {
   try {
     if (whatsappClient) {
+      console.log('[WhatsApp Service] Disconnecting WhatsApp client...');
       await whatsappClient.destroy();
       whatsappClient = null;
       isConnected = false;
       connectionStatus = 'disconnected';
       qrCodeData = null;
+      
+      // Notify all connected sockets about disconnection
+      io.emit('disconnected', { message: 'WhatsApp disconnected' });
+      io.emit('status', {
+        status: 'disconnected',
+        connected: false,
+        qrAvailable: false
+      });
     }
     res.json({ success: true, message: 'Disconnected successfully' });
   } catch (error) {
+    console.error('[WhatsApp Service] Error disconnecting:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
