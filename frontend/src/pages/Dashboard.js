@@ -8,14 +8,18 @@ const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
 export default function Dashboard({ user }) {
-  const [status, setStatus] = useState('disconnected');
+  const [status, setStatus] = useState('checking');
   const [qrCode, setQrCode] = useState(null);
   const [loading, setLoading] = useState(false);
   const pollingInterval = useRef(null);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
 
   useEffect(() => {
-    checkStatus();
+    // Initial check
+    checkStatus().then(() => {
+      setInitialCheckDone(true);
+    });
     
     // Start polling for status updates every 2 seconds
     pollingInterval.current = setInterval(() => {
