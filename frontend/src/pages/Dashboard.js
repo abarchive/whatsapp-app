@@ -276,6 +276,8 @@ export default function Dashboard({ user }) {
             </div>
           </div>
         )}
+          </>
+        )}
       </div>
 
       <div className="card">
