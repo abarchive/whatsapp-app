@@ -333,3 +333,8 @@ body {
   color: #991b1b;
   border-left: 4px solid #ef4444;
 }
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
