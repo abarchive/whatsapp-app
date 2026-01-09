@@ -75,6 +75,12 @@ async function initializeWhatsApp() {
     qrCodeData = null;
     isConnected = false;
     
+    // Find Chromium executable
+    const chromiumPath = findChromiumPath();
+    if (!chromiumPath) {
+      throw new Error('Chromium browser not found! Please install: sudo apt-get install chromium');
+    }
+    
     // Notify all sockets about initialization
     io.emit('status', {
       status: 'initializing',
@@ -87,7 +93,7 @@ async function initializeWhatsApp() {
         dataPath: '/app/whatsapp-service/.wwebjs_auth'
       }),
       puppeteer: {
-        executablePath: '/usr/bin/chromium',
+        executablePath: chromiumPath,
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
