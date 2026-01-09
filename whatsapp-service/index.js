@@ -195,11 +195,44 @@ app.get('/qr', (req, res) => {
 
 app.post('/initialize', async (req, res) => {
   try {
+    // Check if already initializing
+    if (connectionStatus === 'initializing') {
+      return res.json({ 
+        success: true, 
+        message: 'WhatsApp initialization already in progress',
+        status: 'initializing'
+      });
+    }
+    
+    // If client exists and is connected, inform user
+    if (isConnected && whatsappClient) {
+      return res.json({ 
+        success: true, 
+        message: 'WhatsApp already connected',
+        status: 'connected'
+      });
+    }
+    
     await initializeWhatsApp();
     res.json({ success: true, message: 'WhatsApp initialization started' });
   } catch (error) {
+    console.error('[WhatsApp Service] Error in initialize endpoint:', error);
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    whatsapp: {
+      connectionStatus,
+      isConnected,
+      qrAvailable: qrCodeData !== null,
+      clientExists: whatsappClient !== null
+    },
+    uptime: process.uptime(),
+    memory: process.memoryUsage()
+  });
 });
 
 app.post('/send', async (req, res) => {
