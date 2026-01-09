@@ -148,29 +148,54 @@ export default function Dashboard({ user }) {
   };
 
   const handleDisconnect = async () => {
-    if (!window.confirm('Are you sure you want to disconnect WhatsApp? Session will be cleared and you can connect a different account.')) {
+    const confirmed = window.confirm('Are you sure you want to disconnect WhatsApp? Session will be cleared and you can connect a different account.');
+    if (!confirmed) {
       return;
     }
     
     setLoading(true);
+    setStatus('disconnecting');
+    
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API}/whatsapp/disconnect`, {}, {
+      if (!token) {
+        window.location.href = '/login';
+        return;
+      }
+      
+      const response = await axios.post(`${API}/whatsapp/disconnect`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      
+      console.log('Disconnect response:', response.data);
+      
+      // Clear state immediately
       setStatus('disconnected');
       setQrCode(null);
       setIsInitializing(false);
       
-      // Give backend time to disconnect
+      // Give backend time to disconnect and check status
       setTimeout(() => {
-        setLoading(false);
         checkStatus();
-      }, 1500);
+        setLoading(false);
+      }, 2000);
+      
     } catch (error) {
       console.error('Error disconnecting:', error);
-      setLoading(false);
+      if (error.response?.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      } else {
+        alert('Failed to disconnect. Please try again.');
+        setLoading(false);
+      }
     }
+  };
+
+  const handleCancel = async () => {
+    console.log('Cancel clicked - disconnecting...');
+    await handleDisconnect();
   };
 
   return (
