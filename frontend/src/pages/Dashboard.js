@@ -233,6 +233,7 @@ export default function Dashboard({ user }) {
                 {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
                 {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
                 {status === 'checking' && '🟡 Checking...'}
+                {status === 'disconnecting' && '🟡 Disconnecting...'}
               </span>
             </div>
 
