@@ -155,10 +155,24 @@ async def get_me(user: dict = Depends(get_current_user)):
 
 @api_router.post('/whatsapp/initialize')
 async def initialize_whatsapp(user: dict = Depends(get_current_user)):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f'{WHATSAPP_SERVICE_URL}/initialize') as response:
-            data = await response.json()
-            return data
+    try:
+        # First check if WhatsApp service is healthy
+        async with aiohttp.ClientSession() as session:
+            try:
+                async with session.get(f'{WHATSAPP_SERVICE_URL}/health', timeout=aiohttp.ClientTimeout(total=5)) as health_response:
+                    if health_response.status != 200:
+                        raise HTTPException(status_code=503, detail='WhatsApp service is not healthy')
+            except Exception as e:
+                raise HTTPException(status_code=503, detail=f'WhatsApp service is unavailable: {str(e)}')
+            
+            # Now initialize
+            async with session.post(f'{WHATSAPP_SERVICE_URL}/initialize') as response:
+                data = await response.json()
+                return data
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get('/whatsapp/status')
 async def whatsapp_status(user: dict = Depends(get_current_user)):
