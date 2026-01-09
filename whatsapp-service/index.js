@@ -382,5 +382,15 @@ const PORT = process.env.PORT || 8002;
 server.listen(PORT, () => {
   console.log(`[WhatsApp Service] Server running on port ${PORT}`);
   console.log('[WhatsApp Service] Using real WhatsApp Web integration');
+  
+  // Check and log Chromium path on startup
+  const chromiumPath = findChromiumPath();
+  if (chromiumPath) {
+    console.log('[WhatsApp Service] ✓ Chromium found and ready');
+  } else {
+    console.log('[WhatsApp Service] ✗ WARNING: Chromium not found! QR generation will fail.');
+    console.log('[WhatsApp Service] Install with: sudo apt-get install chromium');
+  }
+  
   console.log('[WhatsApp Service] Ready to connect via QR code');
 });
