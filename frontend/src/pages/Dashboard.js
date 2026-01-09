@@ -286,11 +286,12 @@ export default function Dashboard({ user }) {
             <div style={{ marginTop: '16px', textAlign: 'center' }}>
               <button
                 className="btn btn-secondary"
-                onClick={handleDisconnect}
+                onClick={handleCancel}
                 disabled={loading}
                 style={{ fontSize: '14px' }}
+                data-testid="cancel-button"
               >
-                Cancel
+                {loading ? 'Cancelling...' : 'Cancel'}
               </button>
             </div>
           </div>
