@@ -116,15 +116,32 @@ export default function Dashboard({ user }) {
     setQrCode(null);
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API}/whatsapp/initialize`, {}, {
+      const response = await axios.post(`${API}/whatsapp/initialize`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('WhatsApp initialization requested');
+      console.log('WhatsApp initialization requested:', response.data);
+      
+      // If already connected or initializing, update status
+      if (response.data.status === 'connected') {
+        setStatus('connected');
+        setIsInitializing(false);
+      } else if (response.data.status === 'initializing') {
+        // Let polling handle the rest
+      }
+      
       // Polling will automatically pick up the QR code when ready
     } catch (error) {
       console.error('Error initializing:', error);
-      setStatus('disconnected');
-      setIsInitializing(false);
+      
+      // Check if service is unavailable
+      if (error.response?.status === 503) {
+        alert('WhatsApp service is temporarily unavailable. Please try again in a few seconds.');
+        setStatus('disconnected');
+        setIsInitializing(false);
+      } else {
+        setStatus('disconnected');
+        setIsInitializing(false);
+      }
     } finally {
       setLoading(false);
     }
