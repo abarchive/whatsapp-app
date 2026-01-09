@@ -33,6 +33,7 @@ async function initializeWhatsApp() {
         console.log('[WhatsApp Service] Error destroying old client:', e.message);
       }
       whatsappClient = null;
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
     }
 
     console.log('[WhatsApp Service] Initializing WhatsApp Web client...');
@@ -60,14 +61,34 @@ async function initializeWhatsApp() {
           '--disable-accelerated-2d-canvas',
           '--no-first-run',
           '--no-zygote',
-          '--disable-gpu'
+          '--disable-gpu',
+          '--disable-features=VizDisplayCompositor'
         ],
-        headless: true
+        headless: true,
+        timeout: 60000 // 60 second timeout for browser launch
       }
     });
 
+    // Set timeout for initialization
+    const initTimeout = setTimeout(() => {
+      console.error('[WhatsApp Service] Initialization timeout after 90 seconds');
+      if (whatsappClient) {
+        whatsappClient.destroy().catch(err => console.error('Error destroying on timeout:', err));
+        whatsappClient = null;
+      }
+      connectionStatus = 'error';
+      qrCodeData = null;
+      io.emit('error', { message: 'Initialization timeout' });
+      io.emit('status', {
+        status: 'disconnected',
+        connected: false,
+        qrAvailable: false
+      });
+    }, 90000);
+
     // QR Code event
     whatsappClient.on('qr', (qr) => {
+      clearTimeout(initTimeout);
       console.log('[WhatsApp Service] QR Code received');
       qrCodeData = qr;
       connectionStatus = 'qr_ready';
@@ -81,6 +102,7 @@ async function initializeWhatsApp() {
 
     // Ready event
     whatsappClient.on('ready', () => {
+      clearTimeout(initTimeout);
       console.log('[WhatsApp Service] WhatsApp client is ready!');
       isConnected = true;
       connectionStatus = 'connected';
@@ -95,6 +117,7 @@ async function initializeWhatsApp() {
 
     // Authenticated event
     whatsappClient.on('authenticated', () => {
+      clearTimeout(initTimeout);
       console.log('[WhatsApp Service] WhatsApp authenticated');
       connectionStatus = 'authenticated';
       io.emit('status', {
@@ -106,9 +129,11 @@ async function initializeWhatsApp() {
 
     // Authentication failure event
     whatsappClient.on('auth_failure', (msg) => {
+      clearTimeout(initTimeout);
       console.error('[WhatsApp Service] Authentication failure:', msg);
       connectionStatus = 'auth_failure';
       qrCodeData = null;
+      whatsappClient = null;
       io.emit('error', { message: 'Authentication failed' });
       io.emit('status', {
         status: 'disconnected',
@@ -119,10 +144,12 @@ async function initializeWhatsApp() {
 
     // Disconnected event
     whatsappClient.on('disconnected', (reason) => {
+      clearTimeout(initTimeout);
       console.log('[WhatsApp Service] WhatsApp disconnected:', reason);
       isConnected = false;
       connectionStatus = 'disconnected';
       qrCodeData = null;
+      whatsappClient = null;
       io.emit('disconnected', { reason });
       io.emit('status', {
         status: 'disconnected',
@@ -139,6 +166,7 @@ async function initializeWhatsApp() {
     connectionStatus = 'error';
     qrCodeData = null;
     isConnected = false;
+    whatsappClient = null;
     io.emit('error', { message: error.message });
     io.emit('status', {
       status: 'disconnected',
