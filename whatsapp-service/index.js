@@ -3,6 +3,8 @@ const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
 const { Client, LocalAuth } = require('whatsapp-web.js');
+const fs = require('fs');
+const { execSync } = require('child_process');
 
 const app = express();
 const server = http.createServer(app);
@@ -20,6 +22,38 @@ let whatsappClient = null;
 let qrCodeData = null;
 let isConnected = false;
 let connectionStatus = 'disconnected';
+
+// Function to find Chromium executable
+function findChromiumPath() {
+  const possiblePaths = [
+    '/usr/bin/chromium',
+    '/usr/bin/chromium-browser',
+    '/snap/bin/chromium',
+    '/usr/bin/google-chrome',
+    '/usr/bin/google-chrome-stable'
+  ];
+  
+  for (const path of possiblePaths) {
+    if (fs.existsSync(path)) {
+      console.log(`[WhatsApp Service] Found Chromium at: ${path}`);
+      return path;
+    }
+  }
+  
+  // Try to find using 'which' command
+  try {
+    const whichResult = execSync('which chromium || which chromium-browser || which google-chrome', { encoding: 'utf8' }).trim();
+    if (whichResult && fs.existsSync(whichResult)) {
+      console.log(`[WhatsApp Service] Found Chromium using which: ${whichResult}`);
+      return whichResult;
+    }
+  } catch (e) {
+    console.log('[WhatsApp Service] Could not find Chromium using which command');
+  }
+  
+  console.error('[WhatsApp Service] ⚠️  Chromium not found in any standard location!');
+  return null;
+}
 
 // Initialize WhatsApp client with real whatsapp-web.js
 async function initializeWhatsApp() {
