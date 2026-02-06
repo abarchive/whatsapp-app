@@ -1,31 +1,35 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Radio, Wifi, WifiOff, RefreshCw, Power, AlertTriangle } from 'lucide-react';
+import { Radio, Wifi, WifiOff, RefreshCw, Power, Users } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const WHATSAPP_SERVICE_URL = 'http://localhost:8002';
 
 export default function AdminWhatsApp() {
-  const [sessionData, setSessionData] = useState(null);
+  const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [disconnecting, setDisconnecting] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(null);
 
   useEffect(() => {
-    fetchSessionData();
-    const interval = setInterval(fetchSessionData, 5000);
+    fetchSessions();
+    const interval = setInterval(fetchSessions, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchSessionData = async () => {
+  const fetchSessions = async () => {
     try {
       const token = localStorage.getItem('admin_token');
+      
+      // Fetch from whatsapp service directly for admin
       const response = await axios.get(`${API}/admin/whatsapp/sessions`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setSessionData(response.data);
+      
+      setSessions(response.data.sessions || []);
     } catch (error) {
-      console.error('Error fetching WhatsApp session:', error);
+      console.error('Error fetching sessions:', error);
       if (error.response?.status === 401 || error.response?.status === 403) {
         localStorage.removeItem('admin_token');
         window.location.href = '/admin/login';
@@ -35,183 +39,187 @@ export default function AdminWhatsApp() {
     }
   };
 
-  const handleDisconnect = async () => {
-    const confirmed = window.confirm('Are you sure you want to disconnect WhatsApp? All users will lose access to message sending.');
+  const handleDisconnect = async (userId) => {
+    const confirmed = window.confirm('Are you sure you want to disconnect this user\'s WhatsApp?');
     if (!confirmed) return;
 
-    setDisconnecting(true);
+    setDisconnecting(userId);
     try {
       const token = localStorage.getItem('admin_token');
-      await axios.post(`${API}/admin/whatsapp/disconnect`, {}, {
+      await axios.post(`${API}/admin/whatsapp/disconnect/${userId}`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
       setTimeout(() => {
-        fetchSessionData();
-        setDisconnecting(false);
+        fetchSessions();
+        setDisconnecting(null);
       }, 2000);
     } catch (error) {
-      console.error('Error disconnecting WhatsApp:', error);
-      alert('Failed to disconnect WhatsApp');
-      setDisconnecting(false);
+      console.error('Error disconnecting:', error);
+      alert('Failed to disconnect');
+      setDisconnecting(null);
     }
   };
+
+  const formatPhoneNumber = (num) => {
+    if (!num) return 'N/A';
+    if (num.startsWith('91') && num.length >= 12) {
+      return `+${num.slice(0,2)} ${num.slice(2,7)} ${num.slice(7)}`;
+    }
+    return `+${num}`;
+  };
+
+  const connectedSessions = sessions.filter(s => s.connected);
 
   if (loading) {
     return (
       <AdminLayout>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#64748b' }}>
-          <div>Loading WhatsApp status...</div>
+          <div>Loading WhatsApp sessions...</div>
         </div>
       </AdminLayout>
     );
   }
 
-  const session = sessionData?.global_session || {};
-  const isConnected = session.connected || session.status === 'connected' || session.status === 'authenticated';
-
   return (
     <AdminLayout>
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>WhatsApp Session Management</h1>
-        <p style={{ color: '#64748b', fontSize: '15px' }}>Monitor and manage the global WhatsApp connection</p>
+      <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>WhatsApp Sessions</h1>
+          <p style={{ color: '#64748b', fontSize: '15px' }}>Monitor and manage user WhatsApp connections</p>
+        </div>
+        <button
+          onClick={fetchSessions}
+          style={{ padding: '10px 20px', background: '#667eea', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <RefreshCw size={18} />
+          Refresh
+        </button>
       </div>
 
-      {/* Connection Status Card */}
-      <div style={{ background: 'white', borderRadius: '12px', padding: '32px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div style={{
-              width: '64px',
-              height: '64px',
-              background: isConnected ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-              borderRadius: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              {isConnected ? (
-                <Wifi size={32} style={{ color: '#10b981' }} />
-              ) : (
-                <WifiOff size={32} style={{ color: '#ef4444' }} />
-              )}
-            </div>
+      {/* Summary Card */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #10b981' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h2 style={{ color: '#1e293b', fontSize: '22px', fontWeight: '700', margin: 0 }}>
-                Global WhatsApp Session
-              </h2>
-              <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>
-                Single connection shared by all users
-              </p>
+              <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '4px' }}>Active Connections</p>
+              <h3 style={{ color: '#1e293b', fontSize: '32px', fontWeight: '700', margin: 0 }}>{connectedSessions.length}</h3>
             </div>
-          </div>
-
-          <div style={{
-            padding: '8px 20px',
-            background: isConnected ? '#10b981' : '#ef4444',
-            borderRadius: '24px',
-            color: 'white',
-            fontWeight: '600',
-            fontSize: '14px'
-          }}
-          data-testid="whatsapp-status"
-          >
-            {isConnected ? 'Connected' : session.status === 'qr_ready' ? 'Awaiting QR Scan' : 'Disconnected'}
+            <Wifi size={32} style={{ color: '#10b981' }} />
           </div>
         </div>
-
-        {/* Session Details */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
-            <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>Status</p>
-            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0, textTransform: 'capitalize' }}>
-              {session.status || 'Unknown'}
-            </p>
-          </div>
-          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
-            <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>QR Available</p>
-            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>
-              {session.qrAvailable ? 'Yes' : 'No'}
-            </p>
-          </div>
-          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
-            <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>Mode</p>
-            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>
-              Single Session
-            </p>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #667eea' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '4px' }}>Total Sessions</p>
+              <h3 style={{ color: '#1e293b', fontSize: '32px', fontWeight: '700', margin: 0 }}>{sessions.length}</h3>
+            </div>
+            <Users size={32} style={{ color: '#667eea' }} />
           </div>
         </div>
+      </div>
 
-        {/* Actions */}
-        {isConnected && (
-          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <AlertTriangle size={20} style={{ color: '#f59e0b' }} />
-              <span style={{ color: '#f59e0b', fontSize: '14px' }}>
-                Disconnecting will affect all users' ability to send messages
-              </span>
-            </div>
-            <button
-              onClick={handleDisconnect}
-              disabled={disconnecting}
-              style={{
-                padding: '12px 24px',
-                background: '#ef4444',
-                border: 'none',
-                borderRadius: '8px',
-                color: 'white',
-                cursor: disconnecting ? 'not-allowed' : 'pointer',
-                fontWeight: '600',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                opacity: disconnecting ? 0.6 : 1
-              }}
-              data-testid="disconnect-btn"
-            >
-              <Power size={18} />
-              {disconnecting ? 'Disconnecting...' : 'Disconnect WhatsApp'}
-            </button>
+      {/* Sessions List */}
+      <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <div style={{ padding: '20px', borderBottom: '1px solid #e2e8f0' }}>
+          <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>Connected Users</h3>
+        </div>
+        
+        {connectedSessions.length > 0 ? (
+          <div>
+            {connectedSessions.map((session, index) => (
+              <div
+                key={session.userId || index}
+                style={{
+                  padding: '20px',
+                  borderBottom: index < connectedSessions.length - 1 ? '1px solid #e2e8f0' : 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    background: '#dcfce7',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <Wifi size={24} style={{ color: '#10b981' }} />
+                  </div>
+                  <div>
+                    <p style={{ color: '#1e293b', fontWeight: '600', margin: '0 0 4px 0' }}>
+                      {formatPhoneNumber(session.phoneNumber)}
+                    </p>
+                    <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>
+                      User ID: {session.userId?.slice(0, 8)}...
+                    </p>
+                  </div>
+                </div>
+                
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={{
+                    padding: '4px 12px',
+                    background: '#dcfce7',
+                    color: '#166534',
+                    borderRadius: '12px',
+                    fontSize: '12px',
+                    fontWeight: '600'
+                  }}>
+                    Connected
+                  </span>
+                  <button
+                    onClick={() => handleDisconnect(session.userId)}
+                    disabled={disconnecting === session.userId}
+                    style={{
+                      padding: '8px 16px',
+                      background: '#fee2e2',
+                      border: 'none',
+                      borderRadius: '8px',
+                      color: '#ef4444',
+                      cursor: 'pointer',
+                      fontWeight: '600',
+                      fontSize: '13px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      opacity: disconnecting === session.userId ? 0.6 : 1
+                    }}
+                  >
+                    <Power size={14} />
+                    {disconnecting === session.userId ? 'Disconnecting...' : 'Disconnect'}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
-        )}
-
-        {!isConnected && session.status !== 'qr_ready' && (
-          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-            <div style={{ padding: '16px', background: '#fef3c7', borderRadius: '12px', borderLeft: '4px solid #f59e0b' }}>
-              <p style={{ color: '#92400e', fontSize: '14px', margin: 0 }}>
-                WhatsApp is not connected. Users need to initialize and scan the QR code from the main dashboard.
-              </p>
-            </div>
-          </div>
-        )}
-
-        {session.status === 'qr_ready' && (
-          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
-            <div style={{ padding: '16px', background: '#ede9fe', borderRadius: '12px', borderLeft: '4px solid #667eea' }}>
-              <p style={{ color: '#5b21b6', fontSize: '14px', margin: 0 }}>
-                QR code is ready. Waiting for user to scan and authenticate.
-              </p>
-            </div>
+        ) : (
+          <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
+            <WifiOff size={48} style={{ marginBottom: '12px', opacity: 0.3 }} />
+            <p>No active WhatsApp connections</p>
+            <p style={{ fontSize: '13px', marginTop: '8px' }}>Users can connect their WhatsApp from their dashboard</p>
           </div>
         )}
       </div>
 
-      {/* Info Note */}
-      <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+      {/* Info */}
+      <div style={{ background: 'white', borderRadius: '12px', padding: '24px', marginTop: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
         <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Radio size={18} />
-          How it works
+          Per-User WhatsApp Connections
         </h3>
         <ul style={{ color: '#64748b', fontSize: '14px', lineHeight: '1.8', margin: 0, paddingLeft: '20px' }}>
-          <li>This system uses a single WhatsApp Web connection for all users</li>
-          <li>When connected, all registered users can send messages through the API</li>
-          <li>QR code can be generated from the user dashboard</li>
-          <li>Session persists across server restarts (stored in .wwebjs_auth folder)</li>
-          <li>Disconnecting will require re-scanning the QR code to reconnect</li>
+          <li>Each user can connect their own WhatsApp account</li>
+          <li>Users connect by scanning QR code from their dashboard</li>
+          <li>Messages are sent from the user's connected WhatsApp number</li>
+          <li>Disconnecting a user will require them to scan QR again</li>
         </ul>
       </div>
 
-      {/* Auto-refresh indicator */}
+      {/* Auto-refresh */}
       <div style={{ marginTop: '24px', textAlign: 'center' }}>
         <p style={{ color: '#94a3b8', fontSize: '13px' }}>
           <RefreshCw size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
