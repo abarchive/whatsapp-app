@@ -451,27 +451,28 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
 async def get_whatsapp_sessions(admin: dict = Depends(get_admin_user)):
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'{WHATSAPP_SERVICE_URL}/status') as response:
-                status_data = await response.json()
-    except:
-        status_data = {'status': 'error', 'connected': False}
-    
-    return {
-        'global_session': status_data,
-        'note': 'Single WhatsApp connection for all users'
-    }
+            async with session.get(f'{WHATSAPP_SERVICE_URL}/admin/sessions') as response:
+                data = await response.json()
+                return data
+    except Exception as e:
+        return {'sessions': [], 'total': 0, 'error': str(e)}
 
-@api_router.post('/admin/whatsapp/disconnect')
-async def admin_disconnect_whatsapp(admin: dict = Depends(get_admin_user)):
+@api_router.post('/admin/whatsapp/disconnect/{user_id}')
+async def admin_disconnect_user_whatsapp(user_id: str, admin: dict = Depends(get_admin_user)):
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect') as response:
+            async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect', json={'userId': user_id}) as response:
                 result = await response.json()
         
-        await log_activity(admin['id'], admin['email'], 'WHATSAPP_DISCONNECTED', 'Admin disconnected WhatsApp')
+        await log_activity(admin['id'], admin['email'], 'WHATSAPP_DISCONNECTED', f'Admin disconnected WhatsApp for user {user_id}')
         return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@api_router.post('/admin/whatsapp/disconnect')
+async def admin_disconnect_whatsapp(admin: dict = Depends(get_admin_user)):
+    # Backward compatibility - disconnect all
+    return {'message': 'Use /admin/whatsapp/disconnect/{user_id} for per-user disconnect'}
 
 # Admin - Settings
 @api_router.get('/admin/settings')
