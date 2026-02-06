@@ -574,7 +574,8 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
                 f'{WHATSAPP_SERVICE_URL}/send',
                 json={'userId': user['id'], 'number': formatted_number, 'message': msg.message}
             ) as response:
-                if response.status == 200:
+                result = await response.json()
+                if response.status == 200 and result.get('success'):
                     log.status = 'sent'
                     doc = log.model_dump()
                     doc['created_at'] = doc['created_at'].isoformat()
@@ -585,7 +586,10 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
                     doc = log.model_dump()
                     doc['created_at'] = doc['created_at'].isoformat()
                     await db.message_logs.insert_one(doc)
-                    raise HTTPException(status_code=500, detail='Failed to send message')
+                    error_msg = result.get('error', 'Failed to send message')
+                    raise HTTPException(status_code=400, detail=error_msg)
+    except HTTPException:
+        raise
     except Exception as e:
         log.status = 'failed'
         doc = log.model_dump()
