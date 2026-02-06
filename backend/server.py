@@ -539,7 +539,7 @@ async def whatsapp_status(user: dict = Depends(get_current_user)):
 @api_router.get('/whatsapp/qr')
 async def get_qr(user: dict = Depends(get_current_user)):
     async with aiohttp.ClientSession() as session:
-        async with session.get(f'{WHATSAPP_SERVICE_URL}/qr') as response:
+        async with session.get(f'{WHATSAPP_SERVICE_URL}/qr?userId={user["id"]}') as response:
             if response.status == 200:
                 data = await response.json()
                 return data
