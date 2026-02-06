@@ -4,6 +4,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const fs = require('fs');
+const path = require('path');
 const { execSync } = require('child_process');
 
 const app = express();
@@ -18,10 +19,8 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-let whatsappClient = null;
-let qrCodeData = null;
-let isConnected = false;
-let connectionStatus = 'disconnected';
+// Store clients per user
+const userClients = new Map(); // userId -> { client, status, qrCode, phoneNumber }
 
 // Function to find Chromium executable
 function findChromiumPath() {
@@ -33,291 +32,273 @@ function findChromiumPath() {
     '/usr/bin/google-chrome-stable'
   ];
   
-  for (const path of possiblePaths) {
-    if (fs.existsSync(path)) {
-      console.log(`[WhatsApp Service] Found Chromium at: ${path}`);
-      return path;
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return p;
     }
   }
   
-  // Try to find using 'which' command
   try {
     const whichResult = execSync('which chromium || which chromium-browser || which google-chrome', { encoding: 'utf8' }).trim();
     if (whichResult && fs.existsSync(whichResult)) {
-      console.log(`[WhatsApp Service] Found Chromium using which: ${whichResult}`);
       return whichResult;
     }
-  } catch (e) {
-    console.log('[WhatsApp Service] Could not find Chromium using which command');
-  }
+  } catch (e) {}
   
-  console.error('[WhatsApp Service] ⚠️  Chromium not found in any standard location!');
   return null;
 }
 
-// Initialize WhatsApp client with real whatsapp-web.js
-async function initializeWhatsApp() {
-  try {
-    // If client already exists and is initializing, don't create a new one
-    if (whatsappClient) {
-      console.log('[WhatsApp Service] Client already exists, destroying old instance...');
-      try {
-        await whatsappClient.destroy();
-      } catch (e) {
-        console.log('[WhatsApp Service] Error destroying old client:', e.message);
-      }
-      whatsappClient = null;
-      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
-    }
+const chromiumPath = findChromiumPath();
+console.log('[WhatsApp Service] Server running on port 8002');
+console.log('[WhatsApp Service] Per-user WhatsApp connections enabled');
+if (chromiumPath) {
+  console.log(`[WhatsApp Service] Found Chromium at: ${chromiumPath}`);
+} else {
+  console.error('[WhatsApp Service] Chromium not found!');
+}
 
-    console.log('[WhatsApp Service] Initializing WhatsApp Web client...');
-    connectionStatus = 'initializing';
-    qrCodeData = null;
-    isConnected = false;
-    
-    // Find Chromium executable
-    const chromiumPath = findChromiumPath();
-    if (!chromiumPath) {
-      throw new Error('Chromium browser not found! Please install: sudo apt-get install chromium');
-    }
-    
-    // Notify all sockets about initialization
-    io.emit('status', {
-      status: 'initializing',
-      connected: false,
-      qrAvailable: false
-    });
-    
-    whatsappClient = new Client({
-      authStrategy: new LocalAuth({
-        dataPath: '/app/whatsapp-service/.wwebjs_auth'
-      }),
-      puppeteer: {
-        executablePath: chromiumPath,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-accelerated-2d-canvas',
-          '--no-first-run',
-          '--no-zygote',
-          '--disable-gpu',
-          '--disable-features=VizDisplayCompositor'
-        ],
-        headless: true,
-        timeout: 60000 // 60 second timeout for browser launch
-      }
-    });
-
-    // Set timeout for initialization
-    const initTimeout = setTimeout(() => {
-      console.error('[WhatsApp Service] Initialization timeout after 90 seconds');
-      if (whatsappClient) {
-        whatsappClient.destroy().catch(err => console.error('Error destroying on timeout:', err));
-        whatsappClient = null;
-      }
-      connectionStatus = 'error';
-      qrCodeData = null;
-      io.emit('error', { message: 'Initialization timeout' });
-      io.emit('status', {
-        status: 'disconnected',
-        connected: false,
-        qrAvailable: false
-      });
-    }, 90000);
-
-    // QR Code event
-    whatsappClient.on('qr', (qr) => {
-      clearTimeout(initTimeout);
-      console.log('[WhatsApp Service] QR Code received');
-      qrCodeData = qr;
-      connectionStatus = 'qr_ready';
-      io.emit('qr', { qr });
-      io.emit('status', {
-        status: 'qr_ready',
-        connected: false,
-        qrAvailable: true
-      });
-    });
-
-    // Ready event
-    whatsappClient.on('ready', () => {
-      clearTimeout(initTimeout);
-      console.log('[WhatsApp Service] WhatsApp client is ready!');
-      isConnected = true;
-      connectionStatus = 'connected';
-      qrCodeData = null;
-      io.emit('ready', { message: 'WhatsApp connected successfully!' });
-      io.emit('status', {
-        status: 'connected',
-        connected: true,
-        qrAvailable: false
-      });
-    });
-
-    // Authenticated event - also set connected true as ready may not fire
-    whatsappClient.on('authenticated', () => {
-      clearTimeout(initTimeout);
-      console.log('[WhatsApp Service] WhatsApp authenticated');
-      isConnected = true;
-      connectionStatus = 'connected';
-      qrCodeData = null;
-      io.emit('status', {
-        status: 'connected',
-        connected: true,
-        qrAvailable: false
-      });
-    });
-
-    // Authentication failure event
-    whatsappClient.on('auth_failure', (msg) => {
-      clearTimeout(initTimeout);
-      console.error('[WhatsApp Service] Authentication failure:', msg);
-      connectionStatus = 'auth_failure';
-      qrCodeData = null;
-      whatsappClient = null;
-      io.emit('error', { message: 'Authentication failed' });
-      io.emit('status', {
-        status: 'disconnected',
-        connected: false,
-        qrAvailable: false
-      });
-    });
-
-    // Disconnected event
-    whatsappClient.on('disconnected', (reason) => {
-      clearTimeout(initTimeout);
-      console.log('[WhatsApp Service] WhatsApp disconnected:', reason);
-      isConnected = false;
-      connectionStatus = 'disconnected';
-      qrCodeData = null;
-      whatsappClient = null;
-      io.emit('disconnected', { reason });
-      io.emit('status', {
-        status: 'disconnected',
-        connected: false,
-        qrAvailable: false
-      });
-    });
-
-    // Initialize the client
-    await whatsappClient.initialize();
-    
-  } catch (error) {
-    console.error('[WhatsApp Service] Error initializing WhatsApp:', error);
-    connectionStatus = 'error';
-    qrCodeData = null;
-    isConnected = false;
-    whatsappClient = null;
-    io.emit('error', { message: error.message });
-    io.emit('status', {
+// Get or create user session
+function getUserSession(userId) {
+  if (!userClients.has(userId)) {
+    userClients.set(userId, {
+      client: null,
       status: 'disconnected',
-      connected: false,
-      qrAvailable: false
+      qrCode: null,
+      phoneNumber: null,
+      isConnected: false
     });
+  }
+  return userClients.get(userId);
+}
+
+// Initialize WhatsApp for a specific user
+async function initializeUserWhatsApp(userId) {
+  const session = getUserSession(userId);
+  
+  // If already connected, return
+  if (session.isConnected && session.client) {
+    return { success: true, status: 'already_connected', phoneNumber: session.phoneNumber };
+  }
+  
+  // If already initializing, return
+  if (session.status === 'initializing') {
+    return { success: true, status: 'initializing' };
+  }
+  
+  // Destroy old client if exists
+  if (session.client) {
+    try {
+      await session.client.destroy();
+    } catch (e) {
+      console.log(`[User ${userId}] Error destroying old client:`, e.message);
+    }
+    session.client = null;
+  }
+  
+  console.log(`[User ${userId}] Initializing WhatsApp client...`);
+  session.status = 'initializing';
+  session.qrCode = null;
+  session.isConnected = false;
+  session.phoneNumber = null;
+  
+  if (!chromiumPath) {
+    session.status = 'error';
+    throw new Error('Chromium browser not found');
+  }
+  
+  const client = new Client({
+    authStrategy: new LocalAuth({
+      clientId: userId,
+      dataPath: '/app/whatsapp-service/.wwebjs_auth'
+    }),
+    puppeteer: {
+      executablePath: chromiumPath,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--no-first-run',
+        '--no-zygote',
+        '--disable-gpu'
+      ],
+      headless: true,
+      timeout: 60000
+    }
+  });
+  
+  session.client = client;
+  
+  // QR Code event
+  client.on('qr', (qr) => {
+    console.log(`[User ${userId}] QR Code received`);
+    session.qrCode = qr;
+    session.status = 'qr_ready';
+    io.emit(`qr_${userId}`, { qr });
+  });
+  
+  // Ready event
+  client.on('ready', async () => {
+    console.log(`[User ${userId}] WhatsApp client is ready!`);
+    session.isConnected = true;
+    session.status = 'connected';
+    session.qrCode = null;
+    
+    // Get connected phone number
+    try {
+      const info = client.info;
+      if (info && info.wid) {
+        session.phoneNumber = info.wid.user;
+        console.log(`[User ${userId}] Connected phone: ${session.phoneNumber}`);
+      }
+    } catch (e) {
+      console.log(`[User ${userId}] Could not get phone number:`, e.message);
+    }
+    
+    io.emit(`ready_${userId}`, { phoneNumber: session.phoneNumber });
+  });
+  
+  // Authenticated event
+  client.on('authenticated', async () => {
+    console.log(`[User ${userId}] WhatsApp authenticated`);
+    session.status = 'authenticated';
+  });
+  
+  // Auth failure event
+  client.on('auth_failure', (msg) => {
+    console.error(`[User ${userId}] Authentication failure:`, msg);
+    session.status = 'auth_failure';
+    session.qrCode = null;
+    session.client = null;
+    session.isConnected = false;
+  });
+  
+  // Disconnected event
+  client.on('disconnected', (reason) => {
+    console.log(`[User ${userId}] WhatsApp disconnected:`, reason);
+    session.isConnected = false;
+    session.status = 'disconnected';
+    session.qrCode = null;
+    session.phoneNumber = null;
+    session.client = null;
+    io.emit(`disconnected_${userId}`, { reason });
+  });
+  
+  // Initialize
+  try {
+    await client.initialize();
+    return { success: true, status: session.status };
+  } catch (error) {
+    console.error(`[User ${userId}] Initialization error:`, error.message);
+    session.status = 'error';
+    session.client = null;
+    throw error;
   }
 }
 
 // API Routes
+
+// Get status for a user
 app.get('/status', (req, res) => {
+  const userId = req.query.userId;
+  
+  if (!userId) {
+    // Return global status for backward compatibility
+    return res.json({
+      status: 'disconnected',
+      connected: false,
+      qrAvailable: false,
+      message: 'Per-user connections enabled. Provide userId parameter.'
+    });
+  }
+  
+  const session = getUserSession(userId);
   res.json({
-    status: connectionStatus,
-    connected: isConnected,
-    qrAvailable: qrCodeData !== null
+    status: session.status,
+    connected: session.isConnected,
+    qrAvailable: session.qrCode !== null,
+    phoneNumber: session.phoneNumber
   });
 });
 
+// Get QR code for a user
 app.get('/qr', (req, res) => {
-  if (qrCodeData) {
-    res.json({ qr: qrCodeData, status: connectionStatus });
+  const userId = req.query.userId;
+  
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
+  
+  const session = getUserSession(userId);
+  if (session.qrCode) {
+    res.json({ qr: session.qrCode, status: session.status });
   } else {
     res.status(404).json({ error: 'QR code not available' });
   }
 });
 
+// Initialize WhatsApp for a user
 app.post('/initialize', async (req, res) => {
+  const { userId } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
+  
   try {
-    // Check if already initializing
-    if (connectionStatus === 'initializing') {
-      return res.json({ 
-        success: true, 
-        message: 'WhatsApp initialization already in progress',
-        status: 'initializing'
-      });
-    }
-    
-    // If client exists and is connected, inform user
-    if (isConnected && whatsappClient) {
-      return res.json({ 
-        success: true, 
-        message: 'WhatsApp already connected',
-        status: 'connected'
-      });
-    }
-    
-    await initializeWhatsApp();
-    res.json({ success: true, message: 'WhatsApp initialization started' });
+    const result = await initializeUserWhatsApp(userId);
+    res.json({ success: true, ...result });
   } catch (error) {
-    console.error('[WhatsApp Service] Error in initialize endpoint:', error);
+    console.error(`[User ${userId}] Initialize error:`, error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    whatsapp: {
-      connectionStatus,
-      isConnected,
-      qrAvailable: qrCodeData !== null,
-      clientExists: whatsappClient !== null
-    },
-    uptime: process.uptime(),
-    memory: process.memoryUsage()
-  });
-});
-
+// Send message for a user
 app.post('/send', async (req, res) => {
-  const { number, message } = req.body;
+  const { userId, number, message } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
   
   if (!number || !message) {
-    return res.status(400).json({ error: 'Number and message are required' });
+    return res.status(400).json({ error: 'number and message are required' });
   }
-
-  if (!isConnected || !whatsappClient) {
-    return res.status(400).json({ error: 'WhatsApp not connected' });
+  
+  const session = getUserSession(userId);
+  
+  if (!session.isConnected || !session.client) {
+    return res.status(400).json({ error: 'WhatsApp not connected. Please scan QR code first.' });
   }
-
+  
   try {
-    // Format number to WhatsApp format (remove + and @ if present)
     let formattedNumber = number.replace(/[^\d]/g, '');
     
-    // Add country code if not present (default to India +91)
     if (!formattedNumber.startsWith('91') && formattedNumber.length === 10) {
       formattedNumber = '91' + formattedNumber;
     }
     
-    // WhatsApp ID format: number@c.us
     const chatId = formattedNumber + '@c.us';
     
-    console.log(`[WhatsApp Service] Sending message to ${chatId}: ${message}`);
+    console.log(`[User ${userId}] Sending message to ${chatId}`);
     
-    // First check if number is registered on WhatsApp
+    // Check if number is registered
     try {
-      const isRegistered = await whatsappClient.isRegisteredUser(chatId);
+      const isRegistered = await session.client.isRegisteredUser(chatId);
       if (!isRegistered) {
-        console.log(`[WhatsApp Service] Number ${formattedNumber} is not registered on WhatsApp`);
-        return res.status(400).json({ 
-          success: false, 
-          error: `Number ${number} is not registered on WhatsApp` 
+        return res.status(400).json({
+          success: false,
+          error: `Number ${number} is not registered on WhatsApp`
         });
       }
     } catch (checkError) {
-      console.log('[WhatsApp Service] Could not verify number registration, attempting to send anyway');
+      console.log(`[User ${userId}] Could not verify number, attempting send anyway`);
     }
     
-    // Send message using whatsapp-web.js
-    const result = await whatsappClient.sendMessage(chatId, message);
+    const result = await session.client.sendMessage(chatId, message);
+    
+    console.log(`[User ${userId}] Message sent successfully`);
     
     res.json({
       success: true,
@@ -329,13 +310,12 @@ app.post('/send', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('[WhatsApp Service] Error sending message:', error);
+    console.error(`[User ${userId}] Error sending message:`, error.message);
     
-    // Handle specific WhatsApp errors
     if (error.message && error.message.includes('No LID for user')) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'This number is not registered on WhatsApp or is invalid' 
+      return res.status(400).json({
+        success: false,
+        error: 'This number is not registered on WhatsApp'
       });
     }
     
@@ -343,79 +323,76 @@ app.post('/send', async (req, res) => {
   }
 });
 
+// Disconnect WhatsApp for a user
 app.post('/disconnect', async (req, res) => {
+  const { userId } = req.body;
+  
+  if (!userId) {
+    return res.status(400).json({ error: 'userId is required' });
+  }
+  
+  const session = getUserSession(userId);
+  
   try {
-    if (whatsappClient) {
-      console.log('[WhatsApp Service] Disconnecting and clearing session...');
-      await whatsappClient.destroy();
-      whatsappClient = null;
-      isConnected = false;
-      connectionStatus = 'disconnected';
-      qrCodeData = null;
-      
-      // Delete saved session data to allow new account connection
-      const fs = require('fs');
-      const path = require('path');
-      const sessionPath = path.join(__dirname, '.wwebjs_auth');
-      
-      try {
-        if (fs.existsSync(sessionPath)) {
-          console.log('[WhatsApp Service] Deleting saved session data...');
-          fs.rmSync(sessionPath, { recursive: true, force: true });
-          console.log('[WhatsApp Service] Session data deleted successfully');
-        }
-      } catch (err) {
-        console.error('[WhatsApp Service] Error deleting session:', err);
-      }
-      
-      // Notify all connected sockets about disconnection
-      io.emit('disconnected', { message: 'WhatsApp disconnected' });
-      io.emit('status', {
-        status: 'disconnected',
-        connected: false,
-        qrAvailable: false
-      });
+    if (session.client) {
+      console.log(`[User ${userId}] Disconnecting WhatsApp...`);
+      await session.client.destroy();
+      session.client = null;
     }
-    res.json({ success: true, message: 'Disconnected and session cleared successfully' });
+    
+    session.isConnected = false;
+    session.status = 'disconnected';
+    session.qrCode = null;
+    session.phoneNumber = null;
+    
+    // Delete session data
+    const sessionPath = path.join('/app/whatsapp-service/.wwebjs_auth', `session-${userId}`);
+    if (fs.existsSync(sessionPath)) {
+      fs.rmSync(sessionPath, { recursive: true, force: true });
+      console.log(`[User ${userId}] Session data deleted`);
+    }
+    
+    res.json({ success: true, message: 'Disconnected successfully' });
   } catch (error) {
-    console.error('[WhatsApp Service] Error disconnecting:', error);
+    console.error(`[User ${userId}] Error disconnecting:`, error);
     res.status(500).json({ success: false, error: error.message });
   }
 });
 
-// Socket.IO connection
-io.on('connection', (socket) => {
-  console.log('[WhatsApp Service] Client connected to socket:', socket.id);
-  
-  // Send current status
-  socket.emit('status', {
-    status: connectionStatus,
-    connected: isConnected,
-    qrAvailable: qrCodeData !== null
+// Health check
+app.get('/health', (req, res) => {
+  const activeUsers = [];
+  userClients.forEach((session, odlUserId) => {
+    if (session.isConnected) {
+      activeUsers.push({ odlUserId, phoneNumber: session.phoneNumber });
+    }
   });
-
-  if (qrCodeData) {
-    socket.emit('qr', { qr: qrCodeData });
-  }
-
-  socket.on('disconnect', () => {
-    console.log('[WhatsApp Service] Client disconnected:', socket.id);
+  
+  res.json({
+    status: 'ok',
+    activeConnections: activeUsers.length,
+    users: activeUsers,
+    uptime: process.uptime()
   });
 });
 
+// Admin: Get all sessions
+app.get('/admin/sessions', (req, res) => {
+  const sessions = [];
+  userClients.forEach((session, odlUserId) => {
+    sessions.push({
+      odlUserId,
+      status: session.status,
+      connected: session.isConnected,
+      phoneNumber: session.phoneNumber
+    });
+  });
+  
+  res.json({ sessions, total: sessions.length });
+});
+
+// Start server
 const PORT = process.env.PORT || 8002;
-server.listen(PORT, () => {
-  console.log(`[WhatsApp Service] Server running on port ${PORT}`);
-  console.log('[WhatsApp Service] Using real WhatsApp Web integration');
-  
-  // Check and log Chromium path on startup
-  const chromiumPath = findChromiumPath();
-  if (chromiumPath) {
-    console.log('[WhatsApp Service] ✓ Chromium found and ready');
-  } else {
-    console.log('[WhatsApp Service] ✗ WARNING: Chromium not found! QR generation will fail.');
-    console.log('[WhatsApp Service] Install with: sudo apt-get install chromium');
-  }
-  
-  console.log('[WhatsApp Service] Ready to connect via QR code');
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`[WhatsApp Service] Ready to accept per-user connections`);
 });
