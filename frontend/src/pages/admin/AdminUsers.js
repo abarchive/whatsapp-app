@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Users, Plus, Edit2, Trash2, ToggleLeft, ToggleRight, X, Eye, EyeOff } from 'lucide-react';
+import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -14,6 +14,7 @@ export default function AdminUsers() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [formData, setFormData] = useState({ email: '', password: '', role: 'user', rate_limit: 30, status: 'active' });
   const [showPasswords, setShowPasswords] = useState({});
+  const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -44,9 +45,9 @@ export default function AdminUsers() {
     setSelectedUser(user);
     setFormData({ 
       email: user.email, 
-      role: user.role, 
-      rate_limit: user.rate_limit, 
-      status: user.status === 'suspended' ? 'deactive' : user.status 
+      role: user.role || 'user', 
+      rate_limit: user.rate_limit || 30, 
+      status: user.status === 'suspended' ? 'deactive' : (user.status || 'active')
     });
     setShowModal(true);
   };
@@ -55,18 +56,13 @@ export default function AdminUsers() {
     e.preventDefault();
     try {
       const token = localStorage.getItem('admin_token');
-      const submitData = { ...formData };
-      // Convert deactive to backend format
-      if (submitData.status === 'deactive') {
-        submitData.status = 'deactive';
-      }
       
       if (modalType === 'create') {
-        await axios.post(`${API}/admin/users`, submitData, {
+        await axios.post(`${API}/admin/users`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       } else {
-        await axios.put(`${API}/admin/users/${selectedUser.id}`, submitData, {
+        await axios.put(`${API}/admin/users/${selectedUser.id}`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
       }
@@ -93,7 +89,7 @@ export default function AdminUsers() {
   };
 
   const handleToggleStatus = async (user) => {
-    const currentStatus = user.status === 'suspended' ? 'deactive' : user.status;
+    const currentStatus = user.status === 'suspended' ? 'deactive' : (user.status || 'active');
     const newStatus = currentStatus === 'active' ? 'deactive' : 'active';
     
     try {
@@ -111,8 +107,22 @@ export default function AdminUsers() {
     setShowPasswords(prev => ({ ...prev, [userId]: !prev[userId] }));
   };
 
+  const copyPassword = (password, userId) => {
+    if (password) {
+      navigator.clipboard.writeText(password);
+      setCopiedId(userId);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
   const getDisplayStatus = (status) => {
-    return status === 'suspended' ? 'deactive' : status;
+    if (!status || status === 'suspended') return 'deactive';
+    return status;
+  };
+
+  const getDisplayPassword = (user) => {
+    // Show plain_password if available, otherwise show a placeholder
+    return user.plain_password || 'N/A (created before update)';
   };
 
   if (loading) {
@@ -124,7 +134,7 @@ export default function AdminUsers() {
       <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>Users Management</h1>
-          <p style={{ color: '#64748b', fontSize: '15px' }}>Manage all user accounts</p>
+          <p style={{ color: '#64748b', fontSize: '15px' }}>Manage all user accounts ({users.length} total)</p>
         </div>
         <button
           onClick={handleCreate}
@@ -137,81 +147,117 @@ export default function AdminUsers() {
       </div>
 
       <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Email</th>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Password</th>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Role</th>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Status</th>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Rate Limit</th>
-              <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Created</th>
-              <th style={{ padding: '16px', textAlign: 'right', color: '#64748b', fontSize: '13px', fontWeight: '600', textTransform: 'uppercase' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                <td style={{ padding: '16px', color: '#1e293b', fontWeight: '500' }}>{user.email}</td>
-                <td style={{ padding: '16px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: '#64748b', fontFamily: 'monospace', fontSize: '13px' }}>
-                      {showPasswords[user.id] ? (user.plain_password || '••••••••') : '••••••••'}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
+            <thead>
+              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Email</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Password</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Role</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Status</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Rate Limit</th>
+                <th style={{ padding: '16px', textAlign: 'left', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Created</th>
+                <th style={{ padding: '16px', textAlign: 'right', color: '#64748b', fontSize: '12px', fontWeight: '600', textTransform: 'uppercase' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                  <td style={{ padding: '16px', color: '#1e293b', fontWeight: '500', fontSize: '14px' }}>{user.email}</td>
+                  <td style={{ padding: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <code style={{ 
+                        color: '#64748b', 
+                        fontSize: '13px',
+                        background: '#f1f5f9',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        maxWidth: '150px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {showPasswords[user.id] ? getDisplayPassword(user) : '••••••••'}
+                      </code>
+                      <button
+                        onClick={() => togglePasswordVisibility(user.id)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
+                        title={showPasswords[user.id] ? 'Hide' : 'Show'}
+                      >
+                        {showPasswords[user.id] ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                      {user.plain_password && (
+                        <button
+                          onClick={() => copyPassword(user.plain_password, user.id)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: copiedId === user.id ? '#10b981' : '#94a3b8', padding: '4px' }}
+                          title="Copy"
+                        >
+                          {copiedId === user.id ? <Check size={16} /> : <Copy size={16} />}
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td style={{ padding: '16px' }}>
+                    <span style={{ 
+                      padding: '4px 12px', 
+                      background: (user.role || 'user') === 'admin' ? '#667eea' : '#3b82f6', 
+                      color: 'white', 
+                      borderRadius: '12px', 
+                      fontSize: '12px', 
+                      fontWeight: '600',
+                      textTransform: 'capitalize'
+                    }}>
+                      {user.role || 'user'}
                     </span>
-                    <button
-                      onClick={() => togglePasswordVisibility(user.id)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8', padding: '4px' }}
-                      title={showPasswords[user.id] ? 'Hide password' : 'Show password'}
-                    >
-                      {showPasswords[user.id] ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
-                  </div>
-                </td>
-                <td style={{ padding: '16px' }}>
-                  <span style={{ padding: '4px 12px', background: user.role === 'admin' ? '#667eea' : '#3b82f6', color: 'white', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
-                    {user.role}
-                  </span>
-                </td>
-                <td style={{ padding: '16px' }}>
-                  <span style={{ padding: '4px 12px', background: getDisplayStatus(user.status) === 'active' ? '#10b981' : '#ef4444', color: 'white', borderRadius: '12px', fontSize: '12px', fontWeight: '600' }}>
-                    {getDisplayStatus(user.status)}
-                  </span>
-                </td>
-                <td style={{ padding: '16px', color: '#64748b' }}>{user.rate_limit}/hour</td>
-                <td style={{ padding: '16px', color: '#64748b', fontSize: '14px' }}>
-                  {new Date(user.created_at).toLocaleDateString()}
-                </td>
-                <td style={{ padding: '16px', textAlign: 'right' }}>
-                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                    <button
-                      onClick={() => handleEdit(user)}
-                      style={{ padding: '8px', background: '#f1f5f9', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#64748b' }}
-                      title="Edit"
-                    >
-                      <Edit2 size={16} />
-                    </button>
+                  </td>
+                  <td style={{ padding: '16px' }}>
                     <button
                       onClick={() => handleToggleStatus(user)}
-                      style={{ padding: '8px', background: getDisplayStatus(user.status) === 'active' ? '#fee2e2' : '#dcfce7', border: 'none', borderRadius: '6px', cursor: 'pointer', color: getDisplayStatus(user.status) === 'active' ? '#ef4444' : '#10b981' }}
-                      title={getDisplayStatus(user.status) === 'active' ? 'Deactivate' : 'Activate'}
+                      style={{ 
+                        padding: '4px 12px', 
+                        background: getDisplayStatus(user.status) === 'active' ? '#dcfce7' : '#fee2e2', 
+                        color: getDisplayStatus(user.status) === 'active' ? '#166534' : '#991b1b', 
+                        borderRadius: '12px', 
+                        fontSize: '12px', 
+                        fontWeight: '600',
+                        border: 'none',
+                        cursor: 'pointer',
+                        textTransform: 'capitalize'
+                      }}
+                      title={`Click to ${getDisplayStatus(user.status) === 'active' ? 'deactivate' : 'activate'}`}
                     >
-                      {getDisplayStatus(user.status) === 'active' ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                      {getDisplayStatus(user.status)}
                     </button>
-                    {user.role !== 'admin' && (
+                  </td>
+                  <td style={{ padding: '16px', color: '#64748b', fontSize: '14px' }}>{user.rate_limit || 30}/hour</td>
+                  <td style={{ padding: '16px', color: '#64748b', fontSize: '14px' }}>
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td style={{ padding: '16px', textAlign: 'right' }}>
+                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                       <button
-                        onClick={() => handleDelete(user.id, user.email)}
-                        style={{ padding: '8px', background: '#fee2e2', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#ef4444' }}
-                        title="Delete"
+                        onClick={() => handleEdit(user)}
+                        style={{ padding: '8px', background: '#f1f5f9', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#64748b' }}
+                        title="Edit"
                       >
-                        <Trash2 size={16} />
+                        <Edit2 size={16} />
                       </button>
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      {(user.role || 'user') !== 'admin' && (
+                        <button
+                          onClick={() => handleDelete(user.id, user.email)}
+                          style={{ padding: '8px', background: '#fee2e2', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#ef4444' }}
+                          title="Delete"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Modal */}
@@ -250,6 +296,7 @@ export default function AdminUsers() {
                     required
                     style={{ width: '100%', padding: '12px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#1e293b', boxSizing: 'border-box' }}
                   />
+                  <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: '4px' }}>This password will be visible in the users list</p>
                 </div>
               )}
 
