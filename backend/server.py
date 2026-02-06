@@ -288,11 +288,16 @@ async def delete_user(user_id: str, admin: dict = Depends(get_admin_user)):
     if user_id == admin['id']:
         raise HTTPException(status_code=400, detail='Cannot delete own account')
     
+    # Get target user email for logging
+    target_user = await db.users.find_one({'id': user_id}, {'email': 1})
+    if not target_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    
     result = await db.users.delete_one({'id': user_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail='User not found')
     
-    await log_activity(admin['id'], admin['email'], 'USER_DELETED', f'Deleted user {user_id}')
+    await log_activity(admin['id'], admin['email'], 'USER_DELETED', f'Deleted user {target_user["email"]}')
     return {'success': True, 'message': 'User deleted'}
 
 @api_router.post('/admin/users')
