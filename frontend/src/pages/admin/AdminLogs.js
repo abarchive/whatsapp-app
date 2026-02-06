@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { FileText, RefreshCw, User, Calendar, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { FileText, RefreshCw, User, Calendar, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -40,12 +40,12 @@ export default function AdminLogs() {
 
   const getActionColor = (action) => {
     if (action.includes('LOGIN')) return '#10b981';
-    if (action.includes('REGISTERED')) return '#8b5cf6';
+    if (action.includes('REGISTERED')) return '#667eea';
     if (action.includes('DELETED')) return '#ef4444';
     if (action.includes('UPDATED') || action.includes('CREATED')) return '#f59e0b';
     if (action.includes('WHATSAPP')) return '#3b82f6';
     if (action.includes('API_KEY')) return '#ec4899';
-    return '#94a3b8';
+    return '#64748b';
   };
 
   const getActionIcon = (action) => {
@@ -68,14 +68,14 @@ export default function AdminLogs() {
     <AdminLayout>
       <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>Activity Logs</h1>
-          <p style={{ color: '#94a3b8', fontSize: '15px' }}>View all system activity and user actions</p>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>Activity Logs</h1>
+          <p style={{ color: '#64748b', fontSize: '15px' }}>View all system activity and user actions</p>
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
           <select
             value={filterAction}
             onChange={(e) => setFilterAction(e.target.value)}
-            style={{ padding: '10px 16px', background: '#1e293b', border: '1px solid #334155', borderRadius: '8px', color: '#f1f5f9', cursor: 'pointer' }}
+            style={{ padding: '10px 16px', background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px', color: '#1e293b', cursor: 'pointer' }}
             data-testid="filter-select"
           >
             <option value="all">All Actions</option>
@@ -88,7 +88,7 @@ export default function AdminLogs() {
           </select>
           <button
             onClick={fetchLogs}
-            style={{ padding: '10px 16px', background: '#8b5cf6', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            style={{ padding: '10px 16px', background: '#667eea', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             data-testid="refresh-logs-btn"
           >
             <RefreshCw size={18} />
@@ -98,9 +98,9 @@ export default function AdminLogs() {
       </div>
 
       {/* Logs List */}
-      <div style={{ background: '#1e293b', borderRadius: '16px', overflow: 'hidden' }}>
+      <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
         {loading ? (
-          <div style={{ padding: '60px', textAlign: 'center', color: '#94a3b8' }}>
+          <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
             Loading activity logs...
           </div>
         ) : filteredLogs.length > 0 ? (
@@ -110,7 +110,7 @@ export default function AdminLogs() {
                 key={log.id || index}
                 style={{
                   padding: '16px 24px',
-                  borderBottom: index < filteredLogs.length - 1 ? '1px solid #334155' : 'none',
+                  borderBottom: index < filteredLogs.length - 1 ? '1px solid #e2e8f0' : 'none',
                   display: 'flex',
                   alignItems: 'flex-start',
                   gap: '16px'
@@ -120,7 +120,7 @@ export default function AdminLogs() {
                 <div style={{
                   width: '40px',
                   height: '40px',
-                  background: '#0f172a',
+                  background: '#f8fafc',
                   borderRadius: '10px',
                   display: 'flex',
                   alignItems: 'center',
@@ -136,7 +136,7 @@ export default function AdminLogs() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '4px', flexWrap: 'wrap' }}>
                     <span style={{
                       padding: '3px 10px',
-                      background: getActionColor(log.action) + '20',
+                      background: getActionColor(log.action) + '15',
                       color: getActionColor(log.action),
                       borderRadius: '6px',
                       fontSize: '12px',
@@ -149,10 +149,10 @@ export default function AdminLogs() {
                       {log.user_email}
                     </span>
                   </div>
-                  <p style={{ color: '#94a3b8', fontSize: '14px', margin: '4px 0 0 0', wordBreak: 'break-word' }}>
+                  <p style={{ color: '#1e293b', fontSize: '14px', margin: '4px 0 0 0', wordBreak: 'break-word' }}>
                     {log.details}
                   </p>
-                  <p style={{ color: '#64748b', fontSize: '12px', margin: '8px 0 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <p style={{ color: '#94a3b8', fontSize: '12px', margin: '8px 0 0 0', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <Calendar size={12} />
                     {new Date(log.created_at).toLocaleString()}
                     {log.ip_address && (
@@ -165,7 +165,7 @@ export default function AdminLogs() {
           </div>
         ) : (
           <div style={{ padding: '60px', textAlign: 'center', color: '#64748b' }}>
-            <FileText size={48} style={{ marginBottom: '12px', opacity: 0.5 }} />
+            <FileText size={48} style={{ marginBottom: '12px', opacity: 0.3 }} />
             <p>No activity logs found</p>
           </div>
         )}
@@ -183,10 +183,10 @@ export default function AdminLogs() {
               disabled={page === 0}
               style={{
                 padding: '8px 16px',
-                background: '#334155',
-                border: 'none',
+                background: page === 0 ? '#f1f5f9' : 'white',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
-                color: page === 0 ? '#64748b' : '#f1f5f9',
+                color: page === 0 ? '#94a3b8' : '#1e293b',
                 cursor: page === 0 ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -202,10 +202,10 @@ export default function AdminLogs() {
               disabled={page >= totalPages - 1}
               style={{
                 padding: '8px 16px',
-                background: '#334155',
-                border: 'none',
+                background: page >= totalPages - 1 ? '#f1f5f9' : 'white',
+                border: '1px solid #e2e8f0',
                 borderRadius: '8px',
-                color: page >= totalPages - 1 ? '#64748b' : '#f1f5f9',
+                color: page >= totalPages - 1 ? '#94a3b8' : '#1e293b',
                 cursor: page >= totalPages - 1 ? 'not-allowed' : 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -222,7 +222,7 @@ export default function AdminLogs() {
 
       {/* Summary */}
       <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <p style={{ color: '#64748b', fontSize: '13px' }}>
+        <p style={{ color: '#94a3b8', fontSize: '13px' }}>
           Total logs: {total}
         </p>
       </div>
