@@ -308,6 +308,7 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
     password = user_data.get('password', 'Password@123')
     role = user_data.get('role', 'user')
     rate_limit = user_data.get('rate_limit', 30)
+    status = user_data.get('status', 'active')
     
     if not email:
         raise HTTPException(status_code=400, detail='Email required')
@@ -319,9 +320,10 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
     user = User(
         email=email,
         password_hash=hash_password(password),
-        plain_password=password,  # Store plain password for admin view
+        plain_password=password,  # Store for admin view
         role=role,
-        rate_limit=rate_limit
+        rate_limit=rate_limit,
+        status=status
     )
     
     doc = user.model_dump()
