@@ -68,6 +68,17 @@ function App() {
         <Route path="/api-keys" element={<PrivateRoute><APIKeys user={user} /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile user={user} setUser={setUser} /></PrivateRoute>} />
         <Route path="/" element={<Navigate to="/dashboard" />} />
+        
+        {/* Admin Routes */}
+        <Route path="/admin/login" element={<AdminPublicRoute><AdminLogin /></AdminPublicRoute>} />
+        <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+        <Route path="/admin/analytics" element={<AdminRoute><AdminAnalytics /></AdminRoute>} />
+        <Route path="/admin/system" element={<AdminRoute><AdminSystem /></AdminRoute>} />
+        <Route path="/admin/whatsapp" element={<AdminRoute><AdminWhatsApp /></AdminRoute>} />
+        <Route path="/admin/settings" element={<AdminRoute><AdminSettings /></AdminRoute>} />
+        <Route path="/admin/logs" element={<AdminRoute><AdminLogs /></AdminRoute>} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
       </Routes>
     </BrowserRouter>
   );
