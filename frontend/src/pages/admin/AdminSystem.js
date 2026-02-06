@@ -13,7 +13,7 @@ export default function AdminSystem() {
 
   useEffect(() => {
     fetchStatus();
-    const interval = setInterval(fetchStatus, 30000); // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchStatus, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -71,10 +71,13 @@ export default function AdminSystem() {
     }
   };
 
+  // Filter out code-server from services (it's not needed for app functionality)
+  const filteredServices = systemStatus?.services?.filter(s => s.name !== 'code-server') || [];
+
   if (loading) {
     return (
       <AdminLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#94a3b8' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#64748b' }}>
           <div>Loading system status...</div>
         </div>
       </AdminLayout>
@@ -85,16 +88,16 @@ export default function AdminSystem() {
     <AdminLayout>
       <div style={{ marginBottom: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
-          <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>System Status</h1>
-          <p style={{ color: '#94a3b8', fontSize: '15px' }}>Monitor all services and system health</p>
+          <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>System Status</h1>
+          <p style={{ color: '#64748b', fontSize: '15px' }}>Monitor all services and system health</p>
         </div>
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          style={{ padding: '10px 20px', background: '#8b5cf6', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: refreshing ? 0.6 : 1 }}
+          style={{ padding: '10px 20px', background: '#667eea', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', opacity: refreshing ? 0.6 : 1 }}
           data-testid="refresh-status-btn"
         >
-          <RefreshCw size={18} className={refreshing ? 'spin' : ''} />
+          <RefreshCw size={18} />
           {refreshing ? 'Refreshing...' : 'Refresh'}
         </button>
       </div>
@@ -102,14 +105,14 @@ export default function AdminSystem() {
       {/* Overall Health */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
         {/* WhatsApp Service */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <div style={{ width: '48px', height: '48px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Wifi size={24} style={{ color: '#10b981' }} />
             </div>
             <div>
-              <h3 style={{ color: '#f1f5f9', fontSize: '18px', fontWeight: '600', margin: 0 }}>WhatsApp Service</h3>
-              <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>whatsapp-web.js Integration</p>
+              <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>WhatsApp Service</h3>
+              <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>whatsapp-web.js Integration</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -126,14 +129,14 @@ export default function AdminSystem() {
         </div>
 
         {/* Database */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ width: '48px', height: '48px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Database size={24} style={{ color: '#8b5cf6' }} />
+            <div style={{ width: '48px', height: '48px', background: 'rgba(102, 126, 234, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Database size={24} style={{ color: '#667eea' }} />
             </div>
             <div>
-              <h3 style={{ color: '#f1f5f9', fontSize: '18px', fontWeight: '600', margin: 0 }}>MongoDB Database</h3>
-              <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>Primary Data Store</p>
+              <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>MongoDB Database</h3>
+              <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>Primary Data Store</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -145,14 +148,14 @@ export default function AdminSystem() {
         </div>
 
         {/* API Server */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
             <div style={{ width: '48px', height: '48px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Server size={24} style={{ color: '#f59e0b' }} />
             </div>
             <div>
-              <h3 style={{ color: '#f1f5f9', fontSize: '18px', fontWeight: '600', margin: 0 }}>API Server</h3>
-              <p style={{ color: '#94a3b8', fontSize: '13px', margin: 0 }}>FastAPI Backend</p>
+              <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>API Server</h3>
+              <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>FastAPI Backend</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -163,30 +166,30 @@ export default function AdminSystem() {
       </div>
 
       {/* Supervisor Services */}
-      <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Activity size={20} />
-          Supervisor Managed Services
+          Application Services
         </h3>
         
-        {systemStatus?.services?.length > 0 ? (
+        {filteredServices.length > 0 ? (
           <div style={{ display: 'grid', gap: '12px' }}>
-            {systemStatus.services.map((service, index) => (
+            {filteredServices.map((service, index) => (
               <div
                 key={index}
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#0f172a', borderRadius: '12px' }}
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: '#f8fafc', borderRadius: '12px' }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                   {getStatusIcon(service.status)}
                   <div>
-                    <p style={{ color: '#f1f5f9', fontWeight: '600', margin: 0 }}>{service.name}</p>
+                    <p style={{ color: '#1e293b', fontWeight: '600', margin: 0 }}>{service.name}</p>
                     <p style={{ color: '#64748b', fontSize: '12px', margin: 0 }}>Uptime: {service.uptime}</p>
                   </div>
                 </div>
                 <span
                   style={{
                     padding: '4px 12px',
-                    background: getStatusColor(service.status) + '20',
+                    background: getStatusColor(service.status) + '15',
                     color: getStatusColor(service.status),
                     borderRadius: '12px',
                     fontSize: '12px',
@@ -201,7 +204,7 @@ export default function AdminSystem() {
           </div>
         ) : (
           <div style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
-            <Server size={48} style={{ marginBottom: '12px', opacity: 0.5 }} />
+            <Server size={48} style={{ marginBottom: '12px', opacity: 0.3 }} />
             <p>No service information available</p>
           </div>
         )}
@@ -209,10 +212,10 @@ export default function AdminSystem() {
 
       {/* Last Updated */}
       <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <p style={{ color: '#64748b', fontSize: '13px' }}>
+        <p style={{ color: '#94a3b8', fontSize: '13px' }}>
           Last updated: {systemStatus?.timestamp ? new Date(systemStatus.timestamp).toLocaleString() : 'N/A'}
         </p>
-        <p style={{ color: '#64748b', fontSize: '12px', marginTop: '4px' }}>
+        <p style={{ color: '#94a3b8', fontSize: '12px', marginTop: '4px' }}>
           Auto-refreshing every 30 seconds
         </p>
       </div>
