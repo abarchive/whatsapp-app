@@ -10,18 +10,17 @@ const API = `${BACKEND_URL}/api`;
 export default function Dashboard({ user }) {
   const [status, setStatus] = useState('checking');
   const [qrCode, setQrCode] = useState(null);
+  const [phoneNumber, setPhoneNumber] = useState(null);
   const [loading, setLoading] = useState(false);
   const pollingInterval = useRef(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
 
   useEffect(() => {
-    // Initial check
     checkStatus().then(() => {
       setInitialCheckDone(true);
     });
     
-    // Start polling for status updates every 2 seconds
     pollingInterval.current = setInterval(() => {
       checkStatus();
     }, 2000);
@@ -36,10 +35,7 @@ export default function Dashboard({ user }) {
   const checkStatus = async () => {
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        console.log('No token found, user needs to login');
-        return;
-      }
+      if (!token) return;
       
       const response = await axios.get(`${API}/whatsapp/status`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -48,64 +44,51 @@ export default function Dashboard({ user }) {
       const currentStatus = response.data.status;
       setStatus(currentStatus);
       
-      console.log('Status check:', currentStatus, 'QR Available:', response.data.qrAvailable);
+      // Set phone number if available
+      if (response.data.phoneNumber) {
+        setPhoneNumber(response.data.phoneNumber);
+      }
       
-      // If status is qr_ready and we don't have QR code yet, fetch it
       if (currentStatus === 'qr_ready' && !qrCode) {
         try {
           const qrResponse = await axios.get(`${API}/whatsapp/qr`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           if (qrResponse.data.qr) {
-            console.log('QR code fetched successfully');
             setQrCode(qrResponse.data.qr);
             setIsInitializing(false);
           }
         } catch (error) {
           if (error.response?.status === 401) {
-            console.log('QR fetch: Token expired, redirecting to login');
             handleTokenExpiry();
-          } else if (error.response?.status === 404) {
-            console.log('QR code not available yet');
-          } else {
-            console.error('Error fetching QR code:', error);
           }
         }
       }
       
-      // If connected, clear QR code and stop initializing state
       if (currentStatus === 'connected' || currentStatus === 'authenticated') {
         setQrCode(null);
         setIsInitializing(false);
       }
       
-      // If disconnected, clear QR code
       if (currentStatus === 'disconnected') {
         setQrCode(null);
         setIsInitializing(false);
+        setPhoneNumber(null);
       }
       
     } catch (error) {
       if (error.response?.status === 401) {
-        console.log('Status check: Token expired, redirecting to login');
         handleTokenExpiry();
-      } else {
-        console.error('Error checking status:', error);
       }
     }
   };
 
   const handleTokenExpiry = () => {
-    // Clear polling
     if (pollingInterval.current) {
       clearInterval(pollingInterval.current);
     }
-    
-    // Clear local storage
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    
-    // Redirect to login
     window.location.href = '/login';
   };
 
@@ -114,34 +97,26 @@ export default function Dashboard({ user }) {
     setIsInitializing(true);
     setStatus('initializing');
     setQrCode(null);
+    setPhoneNumber(null);
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(`${API}/whatsapp/initialize`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log('WhatsApp initialization requested:', response.data);
       
-      // If already connected or initializing, update status
-      if (response.data.status === 'connected') {
+      if (response.data.status === 'connected' || response.data.status === 'already_connected') {
         setStatus('connected');
         setIsInitializing(false);
-      } else if (response.data.status === 'initializing') {
-        // Let polling handle the rest
+        if (response.data.phoneNumber) {
+          setPhoneNumber(response.data.phoneNumber);
+        }
       }
-      
-      // Polling will automatically pick up the QR code when ready
     } catch (error) {
-      console.error('Error initializing:', error);
-      
-      // Check if service is unavailable
       if (error.response?.status === 503) {
-        alert('WhatsApp service is temporarily unavailable. Please try again in a few seconds.');
-        setStatus('disconnected');
-        setIsInitializing(false);
-      } else {
-        setStatus('disconnected');
-        setIsInitializing(false);
+        alert('WhatsApp service is temporarily unavailable. Please try again.');
       }
+      setStatus('disconnected');
+      setIsInitializing(false);
     } finally {
       setLoading(false);
     }
@@ -149,9 +124,7 @@ export default function Dashboard({ user }) {
 
   const handleDisconnect = async () => {
     const confirmed = window.confirm('Are you sure you want to disconnect WhatsApp? Session will be cleared and you can connect a different account.');
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
     
     setLoading(true);
     setStatus('disconnecting');
@@ -163,25 +136,21 @@ export default function Dashboard({ user }) {
         return;
       }
       
-      const response = await axios.post(`${API}/whatsapp/disconnect`, {}, {
+      await axios.post(`${API}/whatsapp/disconnect`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      console.log('Disconnect response:', response.data);
-      
-      // Clear state immediately
       setStatus('disconnected');
       setQrCode(null);
+      setPhoneNumber(null);
       setIsInitializing(false);
       
-      // Give backend time to disconnect and check status
       setTimeout(() => {
         checkStatus();
         setLoading(false);
       }, 2000);
       
     } catch (error) {
-      console.error('Error disconnecting:', error);
       if (error.response?.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -193,16 +162,20 @@ export default function Dashboard({ user }) {
     }
   };
 
-  const handleCancel = async () => {
-    console.log('Cancel clicked - disconnecting...');
-    await handleDisconnect();
+  const formatPhoneNumber = (num) => {
+    if (!num) return '';
+    // Format: +91 98765 43210
+    if (num.startsWith('91') && num.length >= 12) {
+      return `+${num.slice(0,2)} ${num.slice(2,7)} ${num.slice(7)}`;
+    }
+    return `+${num}`;
   };
 
   return (
     <Layout user={user}>
       <div className="page-header">
         <h1 data-testid="page-title">Dashboard</h1>
-        <p>Manage your WhatsApp connection and automation</p>
+        <p>Manage your WhatsApp connection</p>
       </div>
 
       <div className="card">
@@ -227,20 +200,39 @@ export default function Dashboard({ user }) {
         ) : (
           <>
             <div style={{ marginBottom: '24px' }}>
-              <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : (status === 'qr_ready' || status === 'initializing') ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
-                {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
-                {status === 'disconnected' && '🔴 Disconnected'}
-                {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
-                {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
-                {status === 'checking' && '🟡 Checking...'}
-                {status === 'disconnecting' && '🟡 Disconnecting...'}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                <span className={`status-badge ${status === 'connected' || status === 'authenticated' ? 'connected' : (status === 'qr_ready' || status === 'initializing') ? 'qr_ready' : 'disconnected'}`} data-testid="connection-status">
+                  {(status === 'connected' || status === 'authenticated') && '🟢 Connected'}
+                  {status === 'disconnected' && '🔴 Disconnected'}
+                  {(status === 'qr_ready' || isInitializing) && '🟡 Waiting for QR Scan'}
+                  {status === 'initializing' && !isInitializing && '🟡 Initializing...'}
+                  {status === 'checking' && '🟡 Checking...'}
+                  {status === 'disconnecting' && '🟡 Disconnecting...'}
+                </span>
+                
+                {/* Show connected phone number */}
+                {(status === 'connected' || status === 'authenticated') && phoneNumber && (
+                  <span style={{ 
+                    padding: '8px 16px', 
+                    background: '#dcfce7', 
+                    color: '#166534', 
+                    borderRadius: '8px', 
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }} data-testid="connected-phone">
+                    📱 {formatPhoneNumber(phoneNumber)}
+                  </span>
+                )}
+              </div>
             </div>
 
         {status === 'disconnected' && !isInitializing && (
           <div>
             <p style={{ marginBottom: '16px', color: '#64748b' }}>
-              Initialize WhatsApp connection to start sending messages. You can connect any WhatsApp account.
+              Connect your WhatsApp account to start sending messages. Each user can connect their own WhatsApp.
             </p>
             <button
               className="btn btn-primary"
@@ -248,7 +240,7 @@ export default function Dashboard({ user }) {
               disabled={loading}
               data-testid="initialize-button"
             >
-              {loading ? 'Initializing...' : 'Initialize WhatsApp & Generate QR Code'}
+              {loading ? 'Initializing...' : 'Connect WhatsApp'}
             </button>
           </div>
         )}
@@ -287,7 +279,7 @@ export default function Dashboard({ user }) {
             <div style={{ marginTop: '16px', textAlign: 'center' }}>
               <button
                 className="btn btn-secondary"
-                onClick={handleCancel}
+                onClick={handleDisconnect}
                 disabled={loading}
                 style={{ fontSize: '14px' }}
                 data-testid="cancel-button"
@@ -302,6 +294,11 @@ export default function Dashboard({ user }) {
           <div>
             <div className="alert alert-success" data-testid="connected-message">
               ✓ WhatsApp is connected and ready to send messages!
+              {phoneNumber && (
+                <div style={{ marginTop: '8px', fontWeight: '600' }}>
+                  Connected Number: {formatPhoneNumber(phoneNumber)}
+                </div>
+              )}
             </div>
             <div style={{ display: 'flex', gap: '12px', marginTop: '20px' }}>
               <Link to="/send-message">
