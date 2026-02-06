@@ -2,13 +2,12 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Users, MessageSquare, CheckCircle, XCircle, TrendingUp, Activity } from 'lucide-react';
-import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-const COLORS = ['#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#ef4444'];
+const COLORS = ['#667eea', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#3b82f6'];
 
 export default function AdminDashboard() {
   const [overview, setOverview] = useState(null);
@@ -18,7 +17,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 10000); // Auto-refresh every 10 seconds
+    const interval = setInterval(fetchData, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -50,7 +49,7 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <AdminLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#94a3b8' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#64748b' }}>
           <div>Loading dashboard...</div>
         </div>
       </AdminLayout>
@@ -59,86 +58,101 @@ export default function AdminDashboard() {
 
   const usersPieData = [
     { name: 'Active', value: overview?.users?.active || 0 },
-    { name: 'Suspended', value: overview?.users?.suspended || 0 }
+    { name: 'Deactive', value: overview?.users?.deactive || overview?.users?.suspended || 0 }
   ];
 
   return (
     <AdminLayout>
       <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>Dashboard</h1>
-        <p style={{ color: '#94a3b8', fontSize: '15px' }}>Overview of your WhatsApp automation system</p>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>Dashboard</h1>
+        <p style={{ color: '#64748b', fontSize: '15px' }}>Overview of your WhatsApp automation system</p>
       </div>
 
       {/* Stats Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-        <div style={{ background: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)', borderRadius: '16px', padding: '24px', color: 'white' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px', marginBottom: '32px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #667eea' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>Total Users</p>
-              <h3 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>{overview?.users?.total || 0}</h3>
-              <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>{overview?.users?.active || 0} active</p>
+              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '8px' }}>Total Users</p>
+              <h3 style={{ fontSize: '32px', fontWeight: '700', color: '#1e293b', margin: 0 }}>{overview?.users?.total || 0}</h3>
+              <p style={{ fontSize: '13px', color: '#10b981', marginTop: '8px' }}>{overview?.users?.active || 0} active</p>
             </div>
-            <Users size={40} style={{ opacity: 0.5 }} />
+            <div style={{ width: '48px', height: '48px', background: 'rgba(102, 126, 234, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={24} style={{ color: '#667eea' }} />
+            </div>
           </div>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #ec4899 0%, #db2777 100%)', borderRadius: '16px', padding: '24px', color: 'white' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #ec4899' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>Total Messages</p>
-              <h3 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>{overview?.messages?.total || 0}</h3>
-              <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>{overview?.messages?.today || 0} today</p>
+              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '8px' }}>Total Messages</p>
+              <h3 style={{ fontSize: '32px', fontWeight: '700', color: '#1e293b', margin: 0 }}>{overview?.messages?.total || 0}</h3>
+              <p style={{ fontSize: '13px', color: '#64748b', marginTop: '8px' }}>{overview?.messages?.today || 0} today</p>
             </div>
-            <MessageSquare size={40} style={{ opacity: 0.5 }} />
+            <div style={{ width: '48px', height: '48px', background: 'rgba(236, 72, 153, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <MessageSquare size={24} style={{ color: '#ec4899' }} />
+            </div>
           </div>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', borderRadius: '16px', padding: '24px', color: 'white' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #10b981' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>Sent Messages</p>
-              <h3 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>{overview?.messages?.sent || 0}</h3>
-              <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>{overview?.messages?.success_rate || 0}% success</p>
+              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '8px' }}>Sent Messages</p>
+              <h3 style={{ fontSize: '32px', fontWeight: '700', color: '#1e293b', margin: 0 }}>{overview?.messages?.sent || 0}</h3>
+              <p style={{ fontSize: '13px', color: '#10b981', marginTop: '8px' }}>{overview?.messages?.success_rate || 0}% success</p>
             </div>
-            <CheckCircle size={40} style={{ opacity: 0.5 }} />
+            <div style={{ width: '48px', height: '48px', background: 'rgba(16, 185, 129, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckCircle size={24} style={{ color: '#10b981' }} />
+            </div>
           </div>
         </div>
 
-        <div style={{ background: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', borderRadius: '16px', padding: '24px', color: 'white' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #ef4444' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <p style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>Failed Messages</p>
-              <h3 style={{ fontSize: '36px', fontWeight: '700', margin: 0 }}>{overview?.messages?.failed || 0}</h3>
-              <p style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>Issues detected</p>
+              <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '8px' }}>Failed Messages</p>
+              <h3 style={{ fontSize: '32px', fontWeight: '700', color: '#1e293b', margin: 0 }}>{overview?.messages?.failed || 0}</h3>
+              <p style={{ fontSize: '13px', color: '#ef4444', marginTop: '8px' }}>Issues detected</p>
             </div>
-            <XCircle size={40} style={{ opacity: 0.5 }} />
+            <div style={{ width: '48px', height: '48px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <XCircle size={24} style={{ color: '#ef4444' }} />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Charts Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '24px', marginBottom: '32px' }}>
-        {/* Message Trend Chart */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '20px' }}>Message Trend (Last 7 Days)</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={messageStats}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-              <XAxis dataKey="_id" stroke="#94a3b8" />
-              <YAxis stroke="#94a3b8" />
-              <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }} />
-              <Legend />
-              <Line type="monotone" dataKey="total" stroke="#8b5cf6" strokeWidth={3} name="Total" />
-              <Line type="monotone" dataKey="sent" stroke="#10b981" strokeWidth={3} name="Sent" />
-              <Line type="monotone" dataKey="failed" stroke="#ef4444" strokeWidth={3} name="Failed" />
-            </LineChart>
-          </ResponsiveContainer>
+        {/* Message Trend Bar Chart */}
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b', marginBottom: '20px' }}>Message Trend (Last 7 Days)</h3>
+          {messageStats.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={messageStats}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="_id" stroke="#64748b" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#64748b" tick={{ fontSize: 12 }} />
+                <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }} />
+                <Legend />
+                <Bar dataKey="total" fill="#667eea" name="Total" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="sent" fill="#10b981" name="Sent" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="failed" fill="#ef4444" name="Failed" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+              <MessageSquare size={48} style={{ marginBottom: '12px', opacity: 0.3 }} />
+              <p>No message data available</p>
+            </div>
+          )}
         </div>
 
         {/* Users Distribution Pie Chart */}
-        <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
-          <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '20px' }}>Users Status</h3>
-          <ResponsiveContainer width="100%" height={300}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b', marginBottom: '20px' }}>Users Status</h3>
+          <ResponsiveContainer width="100%" height={280}>
             <PieChart>
               <Pie
                 data={usersPieData}
@@ -146,7 +160,7 @@ export default function AdminDashboard() {
                 cy="50%"
                 labelLine={false}
                 label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                outerRadius={100}
+                outerRadius={90}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -154,30 +168,37 @@ export default function AdminDashboard() {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }} />
+              <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }} />
             </PieChart>
           </ResponsiveContainer>
         </div>
       </div>
 
-      {/* Top Users Chart */}
-      <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '600', color: '#f1f5f9', marginBottom: '20px' }}>Top 10 Active Users (Last 7 Days)</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={userActivity}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-            <XAxis dataKey="email" stroke="#94a3b8" angle={-45} textAnchor="end" height={100} />
-            <YAxis stroke="#94a3b8" />
-            <Tooltip contentStyle={{ background: '#0f172a', border: '1px solid #334155', borderRadius: '8px' }} />
-            <Bar dataKey="message_count" fill="#f59e0b" name="Messages" />
-          </BarChart>
-        </ResponsiveContainer>
+      {/* Top Users Bar Chart */}
+      <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1e293b', marginBottom: '20px' }}>Top 10 Active Users (Last 7 Days)</h3>
+        {userActivity.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={userActivity} layout="vertical">
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+              <XAxis type="number" stroke="#64748b" tick={{ fontSize: 12 }} />
+              <YAxis dataKey="email" type="category" stroke="#64748b" tick={{ fontSize: 11 }} width={150} />
+              <Tooltip contentStyle={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '8px' }} />
+              <Bar dataKey="message_count" fill="#f59e0b" name="Messages" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '60px', color: '#64748b' }}>
+            <Users size={48} style={{ marginBottom: '12px', opacity: 0.3 }} />
+            <p>No user activity data available</p>
+          </div>
+        )}
       </div>
 
       {/* Auto-refresh indicator */}
       <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <p style={{ color: '#64748b', fontSize: '13px' }}>
-          <Activity size={14} style={{ display: 'inline', marginRight: '6px' }} />
+        <p style={{ color: '#94a3b8', fontSize: '13px' }}>
+          <Activity size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
           Auto-refreshing every 10 seconds
         </p>
       </div>
