@@ -354,7 +354,7 @@ async def get_analytics_overview(admin: dict = Depends(get_admin_user)):
         'users': {
             'total': total_users,
             'active': active_users,
-            'suspended': suspended_users
+            'deactive': deactive_users
         },
         'messages': {
             'total': total_messages,
