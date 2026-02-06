@@ -36,10 +36,11 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
     password_hash: str
+    plain_password: Optional[str] = None  # Store plain password for admin view
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     api_key: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
     role: str = "user"  # "user" or "admin"
-    status: str = "active"  # "active" or "suspended"
+    status: str = "active"  # "active" or "deactive"
     rate_limit: int = 30  # messages per hour
 
 class UserCreate(BaseModel):
