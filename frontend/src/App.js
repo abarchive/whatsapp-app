@@ -40,6 +40,23 @@ function App() {
     return !user ? children : <Navigate to="/dashboard" />;
   };
 
+  // Admin route protection
+  const AdminRoute = ({ children }) => {
+    const adminToken = localStorage.getItem('admin_token');
+    if (!adminToken) {
+      return <Navigate to="/admin/login" />;
+    }
+    return children;
+  };
+
+  const AdminPublicRoute = ({ children }) => {
+    const adminToken = localStorage.getItem('admin_token');
+    if (adminToken) {
+      return <Navigate to="/admin/dashboard" />;
+    }
+    return children;
+  };
+
   return (
     <BrowserRouter>
       <Routes>
