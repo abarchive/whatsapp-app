@@ -139,8 +139,8 @@ async def verify_api_key(api_key: str = Header(...)):
     user = await db.users.find_one({'api_key': api_key}, {'_id': 0, 'password_hash': 0})
     if not user:
         raise HTTPException(status_code=401, detail='Invalid API key')
-    if user.get('status') == 'suspended':
-        raise HTTPException(status_code=403, detail='Account suspended')
+    if user.get('status') in ['suspended', 'deactive']:
+        raise HTTPException(status_code=403, detail='Account is deactivated')
     return user
 
 async def log_activity(user_id: str, user_email: str, action: str, details: str, ip: Optional[str] = None):
