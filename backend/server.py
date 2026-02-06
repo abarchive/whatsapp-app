@@ -163,6 +163,7 @@ async def create_default_admin():
         admin = User(
             email='admin@admin.com',
             password_hash=hash_password('Admin@7501'),
+            plain_password='Admin@7501',  # Store plain password for admin view
             role='admin',
             status='active',
             rate_limit=1000
