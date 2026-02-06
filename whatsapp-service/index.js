@@ -155,14 +155,16 @@ async function initializeWhatsApp() {
       });
     });
 
-    // Authenticated event
+    // Authenticated event - also set connected true as ready may not fire
     whatsappClient.on('authenticated', () => {
       clearTimeout(initTimeout);
       console.log('[WhatsApp Service] WhatsApp authenticated');
-      connectionStatus = 'authenticated';
+      isConnected = true;
+      connectionStatus = 'connected';
+      qrCodeData = null;
       io.emit('status', {
-        status: 'authenticated',
-        connected: false,
+        status: 'connected',
+        connected: true,
         qrAvailable: false
       });
     });
