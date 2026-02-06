@@ -572,7 +572,7 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{WHATSAPP_SERVICE_URL}/send',
-                json={'number': formatted_number, 'message': msg.message}
+                json={'userId': user['id'], 'number': formatted_number, 'message': msg.message}
             ) as response:
                 if response.status == 200:
                     log.status = 'sent'
