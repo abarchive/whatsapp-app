@@ -317,6 +317,7 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
     user = User(
         email=email,
         password_hash=hash_password(password),
+        plain_password=password,  # Store plain password for admin view
         role=role,
         rate_limit=rate_limit
     )
