@@ -271,11 +271,16 @@ async def update_user(user_id: str, updates: dict, admin: dict = Depends(get_adm
     if not update_data:
         raise HTTPException(status_code=400, detail='No valid fields to update')
     
+    # Get target user email for logging
+    target_user = await db.users.find_one({'id': user_id}, {'email': 1})
+    if not target_user:
+        raise HTTPException(status_code=404, detail='User not found')
+    
     result = await db.users.update_one({'id': user_id}, {'$set': update_data})
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail='User not found')
     
-    await log_activity(admin['id'], admin['email'], 'USER_UPDATED', f'Updated user {user_id}: {update_data}')
+    await log_activity(admin['id'], admin['email'], 'USER_UPDATED', f'Updated user {target_user["email"]}: {update_data}')
     return {'success': True, 'message': 'User updated'}
 
 @api_router.delete('/admin/users/{user_id}')
