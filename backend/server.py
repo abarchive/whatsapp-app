@@ -210,11 +210,6 @@ async def register(user_data: UserCreate):
 
 @api_router.post('/auth/login')
 async def login(credentials: UserLogin):
-    # Check maintenance mode
-    settings = await db.settings.find_one({'id': 'global_settings'})
-    if settings and settings.get('maintenance_mode', False):
-        raise HTTPException(status_code=503, detail='System is under maintenance. Please try again later.')
-    
     user = await db.users.find_one({'email': credentials.email}, {'_id': 0})
     if not user or not verify_password(credentials.password, user['password_hash']):
         raise HTTPException(status_code=401, detail='Invalid credentials')
@@ -222,6 +217,12 @@ async def login(credentials: UserLogin):
     # Check for deactive or suspended status
     if user.get('status') in ['suspended', 'deactive']:
         raise HTTPException(status_code=403, detail='Account is deactivated. Please contact administrator.')
+    
+    # Check maintenance mode (skip for admin users)
+    if user.get('role') != 'admin':
+        settings = await db.settings.find_one({'id': 'global_settings'})
+        if settings and settings.get('maintenance_mode', False):
+            raise HTTPException(status_code=503, detail='System is under maintenance. Please try again later.')
     
     token = create_access_token(user['id'], user['email'], user.get('role', 'user'))
     
