@@ -252,7 +252,7 @@ async def get_me(user: dict = Depends(get_current_user)):
 # Admin - Users Management
 @api_router.get('/admin/users')
 async def get_all_users(admin: dict = Depends(get_admin_user), skip: int = 0, limit: int = 50):
-    users = await db.users.find({}, {'_id': 0, 'password_hash': 0}).skip(skip).limit(limit).to_list(limit)
+    users = await db.users.find({}, {'_id': 0}).skip(skip).limit(limit).to_list(limit)
     total = await db.users.count_documents({})
     return {'users': users, 'total': total}
 
