@@ -13,7 +13,7 @@ export default function AdminWhatsApp() {
 
   useEffect(() => {
     fetchSessionData();
-    const interval = setInterval(fetchSessionData, 5000); // Auto-refresh every 5 seconds
+    const interval = setInterval(fetchSessionData, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -46,7 +46,6 @@ export default function AdminWhatsApp() {
         headers: { Authorization: `Bearer ${token}` }
       });
       
-      // Wait and refresh
       setTimeout(() => {
         fetchSessionData();
         setDisconnecting(false);
@@ -61,7 +60,7 @@ export default function AdminWhatsApp() {
   if (loading) {
     return (
       <AdminLayout>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#94a3b8' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '400px', color: '#64748b' }}>
           <div>Loading WhatsApp status...</div>
         </div>
       </AdminLayout>
@@ -74,12 +73,12 @@ export default function AdminWhatsApp() {
   return (
     <AdminLayout>
       <div style={{ marginBottom: '32px' }}>
-        <h1 style={{ fontSize: '32px', fontWeight: '700', color: '#f1f5f9', marginBottom: '8px' }}>WhatsApp Session Management</h1>
-        <p style={{ color: '#94a3b8', fontSize: '15px' }}>Monitor and manage the global WhatsApp connection</p>
+        <h1 style={{ fontSize: '28px', fontWeight: '700', color: '#1e293b', marginBottom: '8px' }}>WhatsApp Session Management</h1>
+        <p style={{ color: '#64748b', fontSize: '15px' }}>Monitor and manage the global WhatsApp connection</p>
       </div>
 
       {/* Connection Status Card */}
-      <div style={{ background: '#1e293b', borderRadius: '16px', padding: '32px', marginBottom: '24px' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: '32px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <div style={{
@@ -98,10 +97,10 @@ export default function AdminWhatsApp() {
               )}
             </div>
             <div>
-              <h2 style={{ color: '#f1f5f9', fontSize: '24px', fontWeight: '700', margin: 0 }}>
+              <h2 style={{ color: '#1e293b', fontSize: '22px', fontWeight: '700', margin: 0 }}>
                 Global WhatsApp Session
               </h2>
-              <p style={{ color: '#94a3b8', fontSize: '14px', margin: '4px 0 0 0' }}>
+              <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>
                 Single connection shared by all users
               </p>
             </div>
@@ -123,21 +122,21 @@ export default function AdminWhatsApp() {
 
         {/* Session Details */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-          <div style={{ padding: '16px', background: '#0f172a', borderRadius: '12px' }}>
+          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
             <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>Status</p>
-            <p style={{ color: '#f1f5f9', fontSize: '16px', fontWeight: '600', margin: 0, textTransform: 'capitalize' }}>
+            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0, textTransform: 'capitalize' }}>
               {session.status || 'Unknown'}
             </p>
           </div>
-          <div style={{ padding: '16px', background: '#0f172a', borderRadius: '12px' }}>
+          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
             <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>QR Available</p>
-            <p style={{ color: '#f1f5f9', fontSize: '16px', fontWeight: '600', margin: 0 }}>
+            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>
               {session.qrAvailable ? 'Yes' : 'No'}
             </p>
           </div>
-          <div style={{ padding: '16px', background: '#0f172a', borderRadius: '12px' }}>
+          <div style={{ padding: '16px', background: '#f8fafc', borderRadius: '12px' }}>
             <p style={{ color: '#64748b', fontSize: '12px', margin: '0 0 4px 0', textTransform: 'uppercase' }}>Mode</p>
-            <p style={{ color: '#f1f5f9', fontSize: '16px', fontWeight: '600', margin: 0 }}>
+            <p style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>
               Single Session
             </p>
           </div>
@@ -145,7 +144,7 @@ export default function AdminWhatsApp() {
 
         {/* Actions */}
         {isConnected && (
-          <div style={{ borderTop: '1px solid #334155', paddingTop: '24px' }}>
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
               <AlertTriangle size={20} style={{ color: '#f59e0b' }} />
               <span style={{ color: '#f59e0b', fontSize: '14px' }}>
@@ -177,9 +176,9 @@ export default function AdminWhatsApp() {
         )}
 
         {!isConnected && session.status !== 'qr_ready' && (
-          <div style={{ borderTop: '1px solid #334155', paddingTop: '24px' }}>
-            <div style={{ padding: '16px', background: 'rgba(245, 158, 11, 0.1)', borderRadius: '12px', borderLeft: '4px solid #f59e0b' }}>
-              <p style={{ color: '#f59e0b', fontSize: '14px', margin: 0 }}>
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
+            <div style={{ padding: '16px', background: '#fef3c7', borderRadius: '12px', borderLeft: '4px solid #f59e0b' }}>
+              <p style={{ color: '#92400e', fontSize: '14px', margin: 0 }}>
                 WhatsApp is not connected. Users need to initialize and scan the QR code from the main dashboard.
               </p>
             </div>
@@ -187,9 +186,9 @@ export default function AdminWhatsApp() {
         )}
 
         {session.status === 'qr_ready' && (
-          <div style={{ borderTop: '1px solid #334155', paddingTop: '24px' }}>
-            <div style={{ padding: '16px', background: 'rgba(139, 92, 246, 0.1)', borderRadius: '12px', borderLeft: '4px solid #8b5cf6' }}>
-              <p style={{ color: '#a78bfa', fontSize: '14px', margin: 0 }}>
+          <div style={{ borderTop: '1px solid #e2e8f0', paddingTop: '24px' }}>
+            <div style={{ padding: '16px', background: '#ede9fe', borderRadius: '12px', borderLeft: '4px solid #667eea' }}>
+              <p style={{ color: '#5b21b6', fontSize: '14px', margin: 0 }}>
                 QR code is ready. Waiting for user to scan and authenticate.
               </p>
             </div>
@@ -198,12 +197,12 @@ export default function AdminWhatsApp() {
       </div>
 
       {/* Info Note */}
-      <div style={{ background: '#1e293b', borderRadius: '16px', padding: '24px' }}>
-        <h3 style={{ color: '#f1f5f9', fontSize: '16px', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Radio size={18} />
           How it works
         </h3>
-        <ul style={{ color: '#94a3b8', fontSize: '14px', lineHeight: '1.8', margin: 0, paddingLeft: '20px' }}>
+        <ul style={{ color: '#64748b', fontSize: '14px', lineHeight: '1.8', margin: 0, paddingLeft: '20px' }}>
           <li>This system uses a single WhatsApp Web connection for all users</li>
           <li>When connected, all registered users can send messages through the API</li>
           <li>QR code can be generated from the user dashboard</li>
@@ -214,8 +213,8 @@ export default function AdminWhatsApp() {
 
       {/* Auto-refresh indicator */}
       <div style={{ marginTop: '24px', textAlign: 'center' }}>
-        <p style={{ color: '#64748b', fontSize: '13px' }}>
-          <RefreshCw size={14} style={{ display: 'inline', marginRight: '6px' }} />
+        <p style={{ color: '#94a3b8', fontSize: '13px' }}>
+          <RefreshCw size={14} style={{ display: 'inline', marginRight: '6px', verticalAlign: 'middle' }} />
           Auto-refreshing every 5 seconds
         </p>
       </div>
