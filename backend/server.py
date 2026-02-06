@@ -338,7 +338,8 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
 async def get_analytics_overview(admin: dict = Depends(get_admin_user)):
     total_users = await db.users.count_documents({})
     active_users = await db.users.count_documents({'status': 'active'})
-    suspended_users = await db.users.count_documents({'status': 'suspended'})
+    # Count both suspended and deactive as deactive
+    deactive_users = await db.users.count_documents({'status': {'$in': ['suspended', 'deactive']}})
     
     total_messages = await db.message_logs.count_documents({})
     sent_messages = await db.message_logs.count_documents({'status': 'sent'})
