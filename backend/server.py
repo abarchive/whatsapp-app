@@ -258,7 +258,7 @@ async def get_all_users(admin: dict = Depends(get_admin_user), skip: int = 0, li
 
 @api_router.get('/admin/users/{user_id}')
 async def get_user_by_id(user_id: str, admin: dict = Depends(get_admin_user)):
-    user = await db.users.find_one({'id': user_id}, {'_id': 0, 'password_hash': 0})
+    user = await db.users.find_one({'id': user_id}, {'_id': 0})
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
     return user
