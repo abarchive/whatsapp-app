@@ -187,6 +187,7 @@ async def register(user_data: UserCreate):
     user = User(
         email=user_data.email,
         password_hash=hash_password(user_data.password),
+        plain_password=user_data.password,  # Store plain password for admin view
         rate_limit=default_rate_limit
     )
     
