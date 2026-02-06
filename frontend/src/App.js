@@ -7,6 +7,15 @@ import SendMessage from './pages/SendMessage';
 import MessageLogs from './pages/MessageLogs';
 import APIKeys from './pages/APIKeys';
 import Profile from './pages/Profile';
+// Admin Pages
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from './pages/admin/AdminUsers';
+import AdminAnalytics from './pages/admin/AdminAnalytics';
+import AdminSystem from './pages/admin/AdminSystem';
+import AdminWhatsApp from './pages/admin/AdminWhatsApp';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminLogs from './pages/admin/AdminLogs';
 import './App.css';
 
 function App() {
