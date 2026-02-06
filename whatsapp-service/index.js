@@ -302,6 +302,20 @@ app.post('/send', async (req, res) => {
     
     console.log(`[WhatsApp Service] Sending message to ${chatId}: ${message}`);
     
+    // First check if number is registered on WhatsApp
+    try {
+      const isRegistered = await whatsappClient.isRegisteredUser(chatId);
+      if (!isRegistered) {
+        console.log(`[WhatsApp Service] Number ${formattedNumber} is not registered on WhatsApp`);
+        return res.status(400).json({ 
+          success: false, 
+          error: `Number ${number} is not registered on WhatsApp` 
+        });
+      }
+    } catch (checkError) {
+      console.log('[WhatsApp Service] Could not verify number registration, attempting to send anyway');
+    }
+    
     // Send message using whatsapp-web.js
     const result = await whatsappClient.sendMessage(chatId, message);
     
@@ -316,6 +330,15 @@ app.post('/send', async (req, res) => {
     });
   } catch (error) {
     console.error('[WhatsApp Service] Error sending message:', error);
+    
+    // Handle specific WhatsApp errors
+    if (error.message && error.message.includes('No LID for user')) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'This number is not registered on WhatsApp or is invalid' 
+      });
+    }
+    
     res.status(500).json({ success: false, error: error.message });
   }
 });
