@@ -549,7 +549,7 @@ async def get_qr(user: dict = Depends(get_current_user)):
 @api_router.post('/whatsapp/disconnect')
 async def disconnect_whatsapp(user: dict = Depends(get_current_user)):
     async with aiohttp.ClientSession() as session:
-        async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect') as response:
+        async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect', json={'userId': user['id']}) as response:
             data = await response.json()
             await log_activity(user['id'], user['email'], 'WHATSAPP_DISCONNECTED', 'Disconnected WhatsApp')
             return data
