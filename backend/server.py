@@ -602,8 +602,8 @@ async def send_message_api(api_key: str = Query(...), number: str = Query(...), 
     user = await db.users.find_one({'api_key': api_key}, {'_id': 0, 'password_hash': 0})
     if not user:
         raise HTTPException(status_code=401, detail='Invalid API key')
-    if user.get('status') == 'suspended':
-        raise HTTPException(status_code=403, detail='Account suspended')
+    if user.get('status') in ['suspended', 'deactive']:
+        raise HTTPException(status_code=403, detail='Account is deactivated')
     
     formatted_number = number
     if not formatted_number.startswith('+'):
@@ -621,9 +621,10 @@ async def send_message_api(api_key: str = Query(...), number: str = Query(...), 
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 f'{WHATSAPP_SERVICE_URL}/send',
-                json={'number': formatted_number, 'message': msg}
+                json={'userId': user['id'], 'number': formatted_number, 'message': msg}
             ) as response:
-                if response.status == 200:
+                result = await response.json()
+                if response.status == 200 and result.get('success'):
                     log.status = 'sent'
                     doc = log.model_dump()
                     doc['created_at'] = doc['created_at'].isoformat()
@@ -638,7 +639,10 @@ async def send_message_api(api_key: str = Query(...), number: str = Query(...), 
                     doc = log.model_dump()
                     doc['created_at'] = doc['created_at'].isoformat()
                     await db.message_logs.insert_one(doc)
-                    raise HTTPException(status_code=500, detail='Failed to send message')
+                    error_msg = result.get('error', 'Failed to send message')
+                    raise HTTPException(status_code=400, detail=error_msg)
+    except HTTPException:
+        raise
     except Exception as e:
         log.status = 'failed'
         doc = log.model_dump()
