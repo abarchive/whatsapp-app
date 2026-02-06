@@ -530,7 +530,7 @@ async def initialize_whatsapp(user: dict = Depends(get_current_user)):
 async def whatsapp_status(user: dict = Depends(get_current_user)):
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(f'{WHATSAPP_SERVICE_URL}/status') as response:
+            async with session.get(f'{WHATSAPP_SERVICE_URL}/status?userId={user["id"]}') as response:
                 data = await response.json()
                 return data
     except Exception as e:
