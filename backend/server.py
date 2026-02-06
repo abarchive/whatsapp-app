@@ -517,7 +517,7 @@ async def initialize_whatsapp(user: dict = Depends(get_current_user)):
             except Exception as e:
                 raise HTTPException(status_code=503, detail=f'WhatsApp service is unavailable: {str(e)}')
             
-            async with session.post(f'{WHATSAPP_SERVICE_URL}/initialize') as response:
+            async with session.post(f'{WHATSAPP_SERVICE_URL}/initialize', json={'userId': user['id']}) as response:
                 data = await response.json()
                 await log_activity(user['id'], user['email'], 'WHATSAPP_INITIALIZED', 'Initialized WhatsApp connection')
                 return data
