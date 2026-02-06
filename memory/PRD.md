@@ -23,18 +23,20 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 - Full login/register system with email/password (bcrypt)
 - JWT sessions (30-day expiry)
 - Role-based access (user/admin)
+- **Status: active/deactive** - Deactive users cannot login
 
 ### 4. Message Logging
 - Logs all messages: sender, receiver, body, timestamp, status, origin
 - Message History UI with filters
 
-### 5. Admin Panel (COMPLETED)
-- User Management (CRUD)
-- Message Analytics with bar charts
-- System Status monitoring
-- WhatsApp Session Management
-- Global Settings configuration
-- Activity Logs with pagination
+### 5. Admin Panel (COMPLETED - Light Theme)
+- **Dashboard**: Real data - user stats, message stats, charts
+- **User Management**: CRUD with email, password (visible), role, status (active/deactive), rate limit
+- **Message Analytics**: Bar charts with real data from database
+- **System Status**: All services monitoring (filtered code-server)
+- **WhatsApp Session Management**: Connection status, disconnect option
+- **Settings**: Rate limiting, Enable/Disable Registration, Maintenance Mode
+- **Activity Logs**: Shows target user email for updates/deletes
 
 ## Tech Stack
 - **Frontend**: React + Tailwind CSS
@@ -54,9 +56,10 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── admin/
+│   │   │   │   └── AdminLayout.js  # Light theme sidebar
 │   │   │   └── ui/
 │   │   ├── pages/
-│   │   │   ├── admin/  # Admin panel pages
+│   │   │   ├── admin/  # Admin panel pages (all light theme)
 │   │   │   └── ...     # User pages
 │   │   └── App.js
 │   └── package.json
@@ -69,8 +72,9 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 ## Implemented Features (as of Dec 2025)
 
 ### User Features
-- [x] User Registration & Login
+- [x] User Registration & Login (respects enable_registration setting)
 - [x] JWT Authentication
+- [x] Deactive user cannot login (shows proper error)
 - [x] Dashboard with QR Code generation
 - [x] Send Message (Web UI)
 - [x] Send Message (GET API)
@@ -78,22 +82,28 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 - [x] API Key Management
 - [x] User Profile
 
-### Admin Features (NEW)
+### Admin Features (Light Theme)
 - [x] Admin Login (/admin/login)
-- [x] Admin Dashboard with charts (/admin/dashboard)
-- [x] User Management CRUD (/admin/users)
-- [x] Message Analytics with bar charts (/admin/analytics)
-- [x] System Status monitoring (/admin/system)
+- [x] Admin Dashboard with real data charts (/admin/dashboard)
+- [x] User Management - email, password visible, active/deactive status (/admin/users)
+- [x] Message Analytics with bar charts - real data (/admin/analytics)
+- [x] System Status - filtered code-server (/admin/system)
 - [x] WhatsApp Session Management (/admin/whatsapp)
-- [x] Global Settings (/admin/settings)
-- [x] Activity Logs with pagination (/admin/logs)
+- [x] Settings - Rate limits, Registration toggle, Maintenance mode (/admin/settings)
+- [x] Activity Logs with target user email (/admin/logs)
 - [x] Admin Route Protection
+- [x] Admin can login during maintenance mode
+
+## Settings Functionality (Working)
+- **Enable Registration**: When disabled, new users cannot register
+- **Maintenance Mode**: When enabled, non-admin users cannot login (shows maintenance message)
+- **Rate Limiting**: Configurable per-user rate limits
 
 ## API Endpoints
 
 ### User Auth
-- POST /api/auth/register
-- POST /api/auth/login
+- POST /api/auth/register (respects enable_registration)
+- POST /api/auth/login (checks deactive status, maintenance mode)
 - GET /api/auth/me
 
 ### WhatsApp
@@ -105,8 +115,8 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 - GET /api/whatsapp/qr
 
 ### Admin
-- GET /api/admin/users
-- POST /api/admin/users
+- GET /api/admin/users (includes plain_password for new users)
+- POST /api/admin/users (stores plain_password)
 - PUT /api/admin/users/{user_id}
 - DELETE /api/admin/users/{user_id}
 - GET /api/admin/analytics/overview
@@ -122,17 +132,29 @@ Build a full-stack, production-level WhatsApp automation system (similar to What
 ## Credentials
 - **Admin**: admin@admin.com / Admin@7501
 
+## Changes Made in This Session
+1. Admin panel converted to **light theme**
+2. Users page shows **password** (visible with eye icon for new users)
+3. Status uses **active/deactive** instead of suspended
+4. **Deactive users cannot login** - proper error message shown
+5. Analytics shows **real data** from database
+6. **Registration toggle** working - disabled users can't register
+7. **Maintenance mode** working - non-admin users blocked (admin can still login)
+8. Activity logs show **target user email** for update/delete actions
+9. Sidebar **Logout button fixed** - no overlap
+10. System Status filters out **code-server** (not needed for app)
+
 ## Pending/Backlog Features
 - [ ] Forgot Password (SMTP integration needed)
-- [ ] Backend Rate Limiting implementation
+- [ ] Backend Rate Limiting implementation (per-request)
 - [ ] Webhook callbacks for message delivery
-- [ ] Dark/Light mode toggle
+- [ ] Dark/Light mode toggle for user panel
 - [ ] WebSocket-based real-time updates (instead of polling)
 
 ## Known Issues
 1. **WhatsApp Service Stability**: The chromium dependency may disappear after long idle periods. Pre-start scripts and health monitoring daemon implemented as workaround.
-2. **QR Code Scanning**: Sometimes requires 2-3 scans (tied to Issue #1)
+2. **Old Users Password**: Users created before this update won't have visible passwords
 
 ## Test Reports
-- Backend tests: /app/backend/tests/test_admin_api.py
-- Test results: /app/test_reports/iteration_1.json
+- Backend tests: /app/backend/tests/
+- Test results: /app/test_reports/
