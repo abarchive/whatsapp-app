@@ -453,7 +453,20 @@ async def get_whatsapp_sessions(admin: dict = Depends(get_admin_user)):
         async with aiohttp.ClientSession() as session:
             async with session.get(f'{WHATSAPP_SERVICE_URL}/admin/sessions') as response:
                 data = await response.json()
-                return data
+                
+                # Enrich sessions with user email
+                enriched_sessions = []
+                for sess in data.get('sessions', []):
+                    user_id = sess.get('userId') or sess.get('odlUserId')
+                    if user_id:
+                        user = await db.users.find_one({'id': user_id}, {'email': 1})
+                        sess['userEmail'] = user.get('email') if user else 'Unknown'
+                    enriched_sessions.append(sess)
+                
+                return {
+                    'sessions': enriched_sessions,
+                    'total': len(enriched_sessions)
+                }
     except Exception as e:
         return {'sessions': [], 'total': 0, 'error': str(e)}
 
