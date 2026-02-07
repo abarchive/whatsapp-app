@@ -120,11 +120,30 @@ async function initializeUserWhatsApp(userId) {
         '--disable-accelerated-2d-canvas',
         '--no-first-run',
         '--no-zygote',
-        '--disable-gpu'
+        '--disable-gpu',
+        '--disable-extensions',
+        '--disable-background-networking',
+        '--disable-sync',
+        '--disable-translate',
+        '--disable-default-apps',
+        '--mute-audio',
+        '--hide-scrollbars',
+        '--metrics-recording-only',
+        '--no-default-browser-check',
+        '--disable-hang-monitor',
+        '--disable-prompt-on-repost',
+        '--disable-client-side-phishing-detection',
+        '--disable-component-update',
+        '--disable-domain-reliability',
+        '--single-process'
       ],
       headless: true,
-      timeout: 60000
-    }
+      timeout: 30000
+    },
+    qrMaxRetries: 3,
+    authTimeoutMs: 30000,
+    takeoverOnConflict: true,
+    takeoverTimeoutMs: 10000
   });
   
   session.client = client;
