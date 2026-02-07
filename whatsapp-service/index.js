@@ -398,6 +398,7 @@ app.get('/admin/sessions', (req, res) => {
   userClients.forEach((session, odlUserId) => {
     sessions.push({
       odlUserId,
+      userId: odlUserId,
       status: session.status,
       connected: session.isConnected,
       phoneNumber: session.phoneNumber
