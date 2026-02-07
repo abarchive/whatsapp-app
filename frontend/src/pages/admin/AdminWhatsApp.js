@@ -152,10 +152,10 @@ export default function AdminWhatsApp() {
                   </div>
                   <div>
                     <p style={{ color: '#1e293b', fontWeight: '600', margin: '0 0 4px 0' }}>
-                      {formatPhoneNumber(session.phoneNumber)}
+                      {session.userEmail || 'Unknown User'}
                     </p>
                     <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>
-                      User ID: {session.userId?.slice(0, 8)}...
+                      📱 {formatPhoneNumber(session.phoneNumber)}
                     </p>
                   </div>
                 </div>
@@ -172,8 +172,8 @@ export default function AdminWhatsApp() {
                     Connected
                   </span>
                   <button
-                    onClick={() => handleDisconnect(session.userId)}
-                    disabled={disconnecting === session.userId}
+                    onClick={() => handleDisconnect(session.userId || session.odlUserId)}
+                    disabled={disconnecting === (session.userId || session.odlUserId)}
                     style={{
                       padding: '8px 16px',
                       background: '#fee2e2',
@@ -186,11 +186,11 @@ export default function AdminWhatsApp() {
                       display: 'flex',
                       alignItems: 'center',
                       gap: '6px',
-                      opacity: disconnecting === session.userId ? 0.6 : 1
+                      opacity: disconnecting === (session.userId || session.odlUserId) ? 0.6 : 1
                     }}
                   >
                     <Power size={14} />
-                    {disconnecting === session.userId ? 'Disconnecting...' : 'Disconnect'}
+                    {disconnecting === (session.userId || session.odlUserId) ? 'Disconnecting...' : 'Disconnect'}
                   </button>
                 </div>
               </div>
