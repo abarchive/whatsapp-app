@@ -98,23 +98,14 @@ export default function AdminWhatsApp() {
       </div>
 
       {/* Summary Card */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #10b981' }}>
+      <div style={{ marginBottom: '32px' }}>
+        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #10b981', maxWidth: '280px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '4px' }}>Active Connections</p>
               <h3 style={{ color: '#1e293b', fontSize: '32px', fontWeight: '700', margin: 0 }}>{connectedSessions.length}</h3>
             </div>
             <Wifi size={32} style={{ color: '#10b981' }} />
-          </div>
-        </div>
-        <div style={{ background: 'white', borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderLeft: '4px solid #667eea' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <p style={{ color: '#64748b', fontSize: '14px', marginBottom: '4px' }}>Total Sessions</p>
-              <h3 style={{ color: '#1e293b', fontSize: '32px', fontWeight: '700', margin: 0 }}>{sessions.length}</h3>
-            </div>
-            <Users size={32} style={{ color: '#667eea' }} />
           </div>
         </div>
       </div>
