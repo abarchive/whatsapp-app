@@ -331,19 +331,33 @@ app.post('/disconnect', async (req, res) => {
     return res.status(400).json({ error: 'userId is required' });
   }
   
-  const session = getUserSession(userId);
+  console.log(`[User ${userId}] Disconnect request received`);
+  
+  const session = userClients.get(userId);
+  
+  if (!session) {
+    console.log(`[User ${userId}] No session found`);
+    return res.json({ success: true, message: 'No session to disconnect' });
+  }
   
   try {
     if (session.client) {
-      console.log(`[User ${userId}] Disconnecting WhatsApp...`);
-      await session.client.destroy();
-      session.client = null;
+      console.log(`[User ${userId}] Destroying WhatsApp client...`);
+      try {
+        await session.client.logout();
+      } catch (e) {
+        console.log(`[User ${userId}] Logout error (ignoring):`, e.message);
+      }
+      try {
+        await session.client.destroy();
+      } catch (e) {
+        console.log(`[User ${userId}] Destroy error (ignoring):`, e.message);
+      }
     }
     
-    session.isConnected = false;
-    session.status = 'disconnected';
-    session.qrCode = null;
-    session.phoneNumber = null;
+    // Remove from Map
+    userClients.delete(userId);
+    console.log(`[User ${userId}] Removed from sessions map`);
     
     // Delete session data
     const sessionPath = path.join('/app/whatsapp-service/.wwebjs_auth', `session-${userId}`);
@@ -355,7 +369,9 @@ app.post('/disconnect', async (req, res) => {
     res.json({ success: true, message: 'Disconnected successfully' });
   } catch (error) {
     console.error(`[User ${userId}] Error disconnecting:`, error);
-    res.status(500).json({ success: false, error: error.message });
+    // Still try to remove from map
+    userClients.delete(userId);
+    res.json({ success: true, message: 'Disconnected with errors' });
   }
 });
 
