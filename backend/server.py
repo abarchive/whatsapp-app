@@ -569,10 +569,13 @@ async def initialize_whatsapp(user: dict = Depends(get_current_user)):
 @api_router.get('/whatsapp/status')
 async def whatsapp_status(user: dict = Depends(get_current_user)):
     try:
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=5)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(f'{WHATSAPP_SERVICE_URL}/status?userId={user["id"]}') as response:
                 data = await response.json()
                 return data
+    except aiohttp.ClientError as e:
+        return {'status': 'disconnected', 'connected': False, 'error': 'WhatsApp service unavailable'}
     except Exception as e:
         return {'status': 'error', 'connected': False, 'error': str(e)}
 
