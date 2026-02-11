@@ -620,7 +620,8 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
     )
     
     try:
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=30)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(
                 f'{WHATSAPP_SERVICE_URL}/send',
                 json={'userId': user['id'], 'number': formatted_number, 'message': msg.message}
@@ -639,6 +640,12 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
                     await db.message_logs.insert_one(doc)
                     error_msg = result.get('error', 'Failed to send message')
                     raise HTTPException(status_code=400, detail=error_msg)
+    except aiohttp.ClientError:
+        log.status = 'failed'
+        doc = log.model_dump()
+        doc['created_at'] = doc['created_at'].isoformat()
+        await db.message_logs.insert_one(doc)
+        raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
     except HTTPException:
         raise
     except Exception as e:
