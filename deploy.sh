@@ -184,7 +184,7 @@ REACT_APP_BACKEND_URL=https://$DOMAIN
 EOF
 fi
 
-npm install
+npm install --legacy-peer-deps
 npm run build
 print_status "Frontend built"
 
