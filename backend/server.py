@@ -476,7 +476,8 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
 @api_router.get('/admin/whatsapp/sessions')
 async def get_whatsapp_sessions(admin: dict = Depends(get_admin_user)):
     try:
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.get(f'{WHATSAPP_SERVICE_URL}/admin/sessions') as response:
                 data = await response.json()
                 
@@ -493,18 +494,23 @@ async def get_whatsapp_sessions(admin: dict = Depends(get_admin_user)):
                     'sessions': enriched_sessions,
                     'total': len(enriched_sessions)
                 }
+    except aiohttp.ClientError:
+        return {'sessions': [], 'total': 0, 'error': 'WhatsApp service unavailable'}
     except Exception as e:
         return {'sessions': [], 'total': 0, 'error': str(e)}
 
 @api_router.post('/admin/whatsapp/disconnect/{user_id}')
 async def admin_disconnect_user_whatsapp(user_id: str, admin: dict = Depends(get_admin_user)):
     try:
-        async with aiohttp.ClientSession() as session:
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect', json={'userId': user_id}) as response:
                 result = await response.json()
         
         await log_activity(admin['id'], admin['email'], 'WHATSAPP_DISCONNECTED', f'Admin disconnected WhatsApp for user {user_id}')
         return result
+    except aiohttp.ClientError:
+        raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
