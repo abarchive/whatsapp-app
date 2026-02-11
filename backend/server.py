@@ -442,7 +442,7 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
             async with session.get(f'{WHATSAPP_SERVICE_URL}/health', timeout=aiohttp.ClientTimeout(total=5)) as response:
                 whatsapp_health = await response.json()
                 whatsapp_status = 'healthy' if response.status == 200 else 'unhealthy'
-    except:
+    except Exception:
         whatsapp_status = 'unreachable'
         whatsapp_health = {}
     
@@ -459,7 +459,7 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
                         'status': parts[1],
                         'uptime': ' '.join(parts[4:]) if len(parts) > 4 else 'N/A'
                     })
-    except:
+    except Exception:
         services = []
     
     return {
