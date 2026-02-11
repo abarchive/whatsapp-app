@@ -5,7 +5,6 @@ import { Radio, Wifi, WifiOff, RefreshCw, Power, Users } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
-const WHATSAPP_SERVICE_URL = 'http://localhost:8002';
 
 export default function AdminWhatsApp() {
   const [sessions, setSessions] = useState([]);
