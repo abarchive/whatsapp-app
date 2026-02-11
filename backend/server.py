@@ -581,21 +581,29 @@ async def whatsapp_status(user: dict = Depends(get_current_user)):
 
 @api_router.get('/whatsapp/qr')
 async def get_qr(user: dict = Depends(get_current_user)):
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f'{WHATSAPP_SERVICE_URL}/qr?userId={user["id"]}') as response:
-            if response.status == 200:
-                data = await response.json()
-                return data
-            else:
-                raise HTTPException(status_code=404, detail='QR code not available')
+    try:
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.get(f'{WHATSAPP_SERVICE_URL}/qr?userId={user["id"]}') as response:
+                if response.status == 200:
+                    data = await response.json()
+                    return data
+                else:
+                    raise HTTPException(status_code=404, detail='QR code not available')
+    except aiohttp.ClientError:
+        raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
 
 @api_router.post('/whatsapp/disconnect')
 async def disconnect_whatsapp(user: dict = Depends(get_current_user)):
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect', json={'userId': user['id']}) as response:
-            data = await response.json()
-            await log_activity(user['id'], user['email'], 'WHATSAPP_DISCONNECTED', 'Disconnected WhatsApp')
-            return data
+    try:
+        timeout = aiohttp.ClientTimeout(total=10)
+        async with aiohttp.ClientSession(timeout=timeout) as session:
+            async with session.post(f'{WHATSAPP_SERVICE_URL}/disconnect', json={'userId': user['id']}) as response:
+                data = await response.json()
+                await log_activity(user['id'], user['email'], 'WHATSAPP_DISCONNECTED', 'Disconnected WhatsApp')
+                return data
+    except aiohttp.ClientError:
+        raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
 
 @api_router.post('/messages/send')
 async def send_message(msg: MessageSend, user: dict = Depends(get_current_user)):
