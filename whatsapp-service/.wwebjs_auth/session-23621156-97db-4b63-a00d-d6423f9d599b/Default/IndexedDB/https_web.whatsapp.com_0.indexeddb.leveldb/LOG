@@ -262,3 +262,17 @@
 2026/02/11-16:55:59.379 1b1c Level-0 table #139: started
 2026/02/11-16:55:59.397 1b1c Level-0 table #139: 1035761 bytes OK
 2026/02/11-16:55:59.402 1b1c Delete type=0 #131
+2026/02/11-16:56:00.387 1b1e Compacting 1@1 + 5@2 files
+2026/02/11-16:56:00.516 1b1e Generated table #140@1: 72991 keys, 2223055 bytes
+2026/02/11-16:56:00.594 1b1e Generated table #141@1: 7496 keys, 2159521 bytes
+2026/02/11-16:56:00.614 1b1e Generated table #142@1: 3183 keys, 2156584 bytes
+2026/02/11-16:56:00.647 1b1e Generated table #143@1: 21672 keys, 2211083 bytes
+2026/02/11-16:56:00.698 1b1e Generated table #144@1: 24757 keys, 1110489 bytes
+2026/02/11-16:56:00.698 1b1e Compacted 1@1 + 5@2 files => 9860732 bytes
+2026/02/11-16:56:00.703 1b1e compacted to: files[ 0 0 5 0 0 0 0 ]
+2026/02/11-16:56:00.703 1b1e Delete type=2 #135
+2026/02/11-16:56:00.703 1b1e Delete type=2 #137
+2026/02/11-16:56:00.703 1b1e Delete type=2 #139
+2026/02/11-16:56:00.703 1b1e Delete type=2 #133
+2026/02/11-16:56:00.703 1b1e Delete type=2 #134
+2026/02/11-16:56:00.703 1b1e Delete type=2 #136
