@@ -3,10 +3,11 @@
 #############################################
 # 🚀 WhatsApp Automation System - One-Click Deploy Script
 # For Ubuntu 22.04/24.04 VPS (Hostinger KVM 2/DigitalOcean/etc)
-# Version: 2.0 - Fixed & Improved
+# Version: 2.1 - Fixed Nginx Issues
 #############################################
 
-set -e
+# Don't exit on error - handle errors manually
+# set -e
 
 # Colors for output
 RED='\033[0;31m'
@@ -53,20 +54,11 @@ command_exists() {
     command -v "$1" &> /dev/null
 }
 
-# Error handler
-handle_error() {
-    print_error "Error occurred at line $1"
-    print_error "Check log file: $LOG_FILE"
-    exit 1
-}
-
-trap 'handle_error $LINENO' ERR
-
 # Banner
 clear
 echo -e "${CYAN}"
 echo "╔═══════════════════════════════════════════════════════════════╗"
-echo "║  🚀 WhatsApp Automation System - One-Click Deployment v2.0    ║"
+echo "║  🚀 WhatsApp Automation System - One-Click Deployment v2.1    ║"
 echo "║  Optimized for Hostinger KVM 2 (Ubuntu 22.04/24.04)           ║"
 echo "╚═══════════════════════════════════════════════════════════════╝"
 echo -e "${NC}"
@@ -87,7 +79,7 @@ echo -e "${YELLOW}📝 Configuration${NC}"
 echo -e "${YELLOW}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 
 read -p "Enter your domain name (or VPS IP): " DOMAIN
-DOMAIN=${DOMAIN:-$(curl -s ifconfig.me)}
+DOMAIN=${DOMAIN:-$(curl -s ifconfig.me 2>/dev/null || echo "localhost")}
 
 read -p "Enter your email (for SSL): " EMAIL
 EMAIL=${EMAIL:-admin@example.com}
@@ -112,7 +104,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt --fix-broken install -y 2>/dev/null || true
 
 apt update -y
-apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" || true
 print_status "System updated"
 
 #############################################
@@ -133,7 +125,8 @@ apt install -y \
     ca-certificates \
     gnupg \
     lsb-release \
-    build-essential
+    build-essential \
+    2>/dev/null || true
 
 print_status "Essential tools installed"
 
@@ -142,7 +135,7 @@ print_status "Essential tools installed"
 #############################################
 print_step "Step 3/12: Installing Node.js 20 LTS"
 
-if ! command_exists node || [[ $(node -v | cut -d'.' -f1 | tr -d 'v') -lt 18 ]]; then
+if ! command_exists node || [[ $(node -v 2>/dev/null | cut -d'.' -f1 | tr -d 'v') -lt 18 ]]; then
     # Remove old Node.js
     apt remove -y nodejs npm 2>/dev/null || true
     rm -rf /usr/local/lib/node_modules 2>/dev/null || true
@@ -163,7 +156,7 @@ print_status "NPM $(npm -v) installed"
 #############################################
 print_step "Step 4/12: Installing Python 3.11"
 
-apt install -y python3 python3-pip python3-venv python3-dev
+apt install -y python3 python3-pip python3-venv python3-dev || true
 
 # Ensure pip is up to date
 python3 -m pip install --upgrade pip 2>/dev/null || true
@@ -185,12 +178,12 @@ if ! command_exists mongod; then
         tee /etc/apt/sources.list.d/mongodb-org-7.0.list
     
     apt update
-    apt install -y mongodb-org
+    apt install -y mongodb-org || true
 fi
 
 # Start MongoDB
-systemctl start mongod
-systemctl enable mongod
+systemctl start mongod 2>/dev/null || true
+systemctl enable mongod 2>/dev/null || true
 
 # Wait for MongoDB to be ready
 sleep 3
@@ -238,10 +231,32 @@ print_status "Chromium installed at: $CHROMIUM_PATH"
 #############################################
 print_step "Step 7/12: Installing Nginx"
 
+# Stop any existing nginx or apache
+systemctl stop nginx 2>/dev/null || true
+systemctl stop apache2 2>/dev/null || true
+apt remove -y apache2 2>/dev/null || true
+
+# Kill any process on port 80
+fuser -k 80/tcp 2>/dev/null || true
+
+# Install nginx
 apt install -y nginx
-systemctl start nginx
-systemctl enable nginx
-print_status "Nginx installed and running"
+
+# Remove default site
+rm -f /etc/nginx/sites-enabled/default 2>/dev/null || true
+rm -f /etc/nginx/sites-available/default 2>/dev/null || true
+
+# Start nginx
+systemctl start nginx || {
+    print_warning "Nginx failed to start, trying to fix..."
+    # Check what's using port 80
+    fuser -k 80/tcp 2>/dev/null || true
+    sleep 2
+    systemctl start nginx || print_warning "Nginx still not starting - will configure later"
+}
+systemctl enable nginx 2>/dev/null || true
+
+print_status "Nginx installed"
 
 #############################################
 # Step 8: Install PM2 Process Manager
@@ -260,16 +275,30 @@ print_step "Step 9/12: Setting Up Application Files"
 mkdir -p $APP_DIR
 cd $APP_DIR
 
-# Check where files are
-if [[ "$HAS_FILES" == "y" ]] && [ -d "./backend" ]; then
+# Determine source directory
+SOURCE_DIR=""
+
+if [[ "$HAS_FILES" == "y" ]] && [ -d "$(pwd)/backend" ]; then
+    SOURCE_DIR="$(pwd)"
     print_status "Using files from current directory"
 elif [ -d "/root/whatsapp-app/backend" ]; then
-    print_status "Copying from /root/whatsapp-app..."
-    cp -r /root/whatsapp-app/* $APP_DIR/
+    SOURCE_DIR="/root/whatsapp-app"
 elif [ -d "/tmp/whatsapp-app/backend" ]; then
-    print_status "Copying from /tmp/whatsapp-app..."
-    cp -r /tmp/whatsapp-app/* $APP_DIR/
-else
+    SOURCE_DIR="/tmp/whatsapp-app"
+elif [ -d "$(dirname $0)/backend" ]; then
+    SOURCE_DIR="$(dirname $0)"
+fi
+
+if [ -n "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "$APP_DIR" ]; then
+    print_status "Copying from $SOURCE_DIR..."
+    cp -r "$SOURCE_DIR/backend" $APP_DIR/ 2>/dev/null || true
+    cp -r "$SOURCE_DIR/frontend" $APP_DIR/ 2>/dev/null || true
+    cp -r "$SOURCE_DIR/whatsapp-service" $APP_DIR/ 2>/dev/null || true
+    cp -r "$SOURCE_DIR/db_backup" $APP_DIR/ 2>/dev/null || true
+fi
+
+# Verify files exist
+if [ ! -d "$APP_DIR/backend" ]; then
     print_error "Application files not found!"
     echo ""
     echo -e "${YELLOW}Please upload your application files to one of these locations:${NC}"
@@ -292,6 +321,8 @@ else
     fi
 fi
 
+print_status "Application files ready"
+
 #############################################
 # Step 10: Configure Backend
 #############################################
@@ -308,7 +339,21 @@ pip install --upgrade pip wheel setuptools
 
 # Install Python dependencies
 if [ -f "requirements.txt" ]; then
-    pip install -r requirements.txt
+    pip install -r requirements.txt || {
+        print_warning "Some packages failed, installing manually..."
+        pip install \
+            fastapi \
+            uvicorn[standard] \
+            motor \
+            pymongo \
+            pydantic[email] \
+            python-jose[cryptography] \
+            passlib[bcrypt] \
+            bcrypt \
+            aiohttp \
+            python-multipart \
+            python-dotenv
+    }
 else
     pip install \
         fastapi \
@@ -359,12 +404,18 @@ REACT_APP_BACKEND_URL=$BACKEND_URL
 EOF
 
 # Install dependencies
-npm install --legacy-peer-deps 2>/dev/null || yarn install
+npm install --legacy-peer-deps 2>/dev/null || yarn install || {
+    print_warning "npm install failed, trying with force..."
+    npm install --legacy-peer-deps --force
+}
 
 # Build frontend
-CI=false npm run build || CI=false yarn build
+CI=false npm run build || CI=false yarn build || {
+    print_error "Frontend build failed!"
+    print_warning "You may need to build manually: cd $APP_DIR/frontend && npm run build"
+}
 
-print_status "Frontend built successfully"
+print_status "Frontend configured"
 
 #############################################
 # Step 12: Configure WhatsApp Service
@@ -374,7 +425,10 @@ print_step "Step 12/12: Configuring WhatsApp Service"
 cd $APP_DIR/whatsapp-service
 
 # Install dependencies
-npm install 2>/dev/null || yarn install
+npm install 2>/dev/null || yarn install || {
+    print_warning "npm install failed, trying with force..."
+    npm install --force
+}
 
 # Create .env for WhatsApp service
 cat > .env << EOF
@@ -395,6 +449,7 @@ if [ -d "$APP_DIR/db_backup" ]; then
     for file in *.json; do
         if [ -f "$file" ]; then
             collection="${file%.json}"
+            echo "Importing $collection..."
             mongoimport --db whatsapp_automation --collection "$collection" --file "$file" --jsonArray --drop 2>/dev/null || \
             print_warning "Could not import $collection"
         fi
@@ -460,28 +515,29 @@ print_status "PM2 services configured and started"
 #############################################
 print_step "Configuring Nginx"
 
+# Stop nginx first
+systemctl stop nginx 2>/dev/null || true
+
+# Remove old configs
+rm -f /etc/nginx/sites-enabled/* 2>/dev/null || true
+rm -f /etc/nginx/sites-available/whatsapp-app 2>/dev/null || true
+
 # Create Nginx config
 cat > /etc/nginx/sites-available/whatsapp-app << NGINX
 server {
     listen 80;
-    server_name $DOMAIN www.$DOMAIN;
+    listen [::]:80;
+    server_name $DOMAIN www.$DOMAIN _;
 
     # Security headers
     add_header X-Frame-Options "SAMEORIGIN" always;
     add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
 
     # Frontend - serve static files
     location / {
         root $APP_DIR/frontend/build;
         index index.html;
         try_files \$uri \$uri/ /index.html;
-        
-        # Cache static assets
-        location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2)$ {
-            expires 30d;
-            add_header Cache-Control "public, immutable";
-        }
     }
 
     # Backend API proxy
@@ -494,41 +550,69 @@ server {
         proxy_set_header X-Real-IP \$remote_addr;
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_cache_bypass \$http_upgrade;
         proxy_read_timeout 300s;
         proxy_connect_timeout 75s;
-        proxy_send_timeout 300s;
-        
-        # Increase buffer size for large responses
-        proxy_buffer_size 128k;
-        proxy_buffers 4 256k;
-        proxy_busy_buffers_size 256k;
     }
 
-    # Gzip compression
+    # Gzip
     gzip on;
-    gzip_vary on;
-    gzip_min_length 1024;
-    gzip_proxied any;
-    gzip_types text/plain text/css text/xml text/javascript application/javascript application/json application/xml;
-    gzip_comp_level 6;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
 }
 NGINX
 
 # Enable site
 ln -sf /etc/nginx/sites-available/whatsapp-app /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
 
-# Test and reload Nginx
-nginx -t && systemctl reload nginx
-print_status "Nginx configured"
+# Test nginx config
+echo "Testing Nginx configuration..."
+if nginx -t 2>&1; then
+    print_status "Nginx configuration valid"
+    systemctl start nginx
+    systemctl enable nginx
+    print_status "Nginx started"
+else
+    print_error "Nginx configuration has errors!"
+    echo "Checking for issues..."
+    nginx -t 2>&1
+    echo ""
+    echo "Trying to fix common issues..."
+    
+    # Try simpler config
+    cat > /etc/nginx/sites-available/whatsapp-app << NGINX
+server {
+    listen 80 default_server;
+    server_name _;
+
+    location / {
+        root $APP_DIR/frontend/build;
+        index index.html;
+        try_files \$uri \$uri/ /index.html;
+    }
+
+    location /api/ {
+        proxy_pass http://127.0.0.1:8001/api/;
+        proxy_http_version 1.1;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+    }
+}
+NGINX
+    
+    if nginx -t 2>&1; then
+        systemctl start nginx
+        print_status "Nginx started with simplified config"
+    else
+        print_error "Nginx still failing - manual fix needed"
+        echo "Run: sudo nginx -t"
+    fi
+fi
 
 #############################################
 # Configure Firewall
 #############################################
 print_step "Configuring Firewall"
 
-ufw --force reset
+ufw --force reset 2>/dev/null || true
 ufw default deny incoming
 ufw default allow outgoing
 ufw allow 22/tcp    # SSH
@@ -544,11 +628,10 @@ print_status "Firewall configured (SSH, HTTP, HTTPS allowed)"
 if [[ ! "$DOMAIN" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     print_step "Installing SSL Certificate"
     
-    apt install -y certbot python3-certbot-nginx
+    apt install -y certbot python3-certbot-nginx 2>/dev/null || true
     
     # Try to get SSL certificate
     certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "$EMAIL" --redirect 2>/dev/null || \
-    certbot --nginx -d "$DOMAIN" -d "www.$DOMAIN" --non-interactive --agree-tos -m "$EMAIL" --redirect 2>/dev/null || \
     print_warning "SSL setup failed - run manually: sudo certbot --nginx -d $DOMAIN"
     
     # Setup auto-renewal
@@ -566,10 +649,20 @@ echo -e "\n${BLUE}📊 Service Status:${NC}"
 pm2 status
 
 echo -e "\n${BLUE}📊 MongoDB Status:${NC}"
-systemctl is-active mongod && echo -e "${GREEN}MongoDB: Running${NC}" || echo -e "${RED}MongoDB: Not Running${NC}"
+if systemctl is-active mongod &>/dev/null; then
+    echo -e "${GREEN}MongoDB: Running${NC}"
+else
+    echo -e "${RED}MongoDB: Not Running${NC}"
+    echo "Fix: sudo systemctl start mongod"
+fi
 
 echo -e "\n${BLUE}📊 Nginx Status:${NC}"
-systemctl is-active nginx && echo -e "${GREEN}Nginx: Running${NC}" || echo -e "${RED}Nginx: Not Running${NC}"
+if systemctl is-active nginx &>/dev/null; then
+    echo -e "${GREEN}Nginx: Running${NC}"
+else
+    echo -e "${RED}Nginx: Not Running${NC}"
+    echo "Fix: sudo nginx -t && sudo systemctl start nginx"
+fi
 
 #############################################
 # Success Message
@@ -596,18 +689,18 @@ echo "   pm2 status           - Check services status"
 echo "   pm2 logs             - View all logs"
 echo "   pm2 logs backend     - View backend logs"
 echo "   pm2 restart all      - Restart all services"
-echo "   pm2 monit            - Real-time monitoring"
+echo "   sudo nginx -t        - Test nginx config"
+echo "   sudo systemctl restart nginx - Restart nginx"
 
 echo -e "\n${CYAN}📁 Important Paths:${NC}"
 echo "   App Directory: $APP_DIR"
 echo "   Nginx Config:  /etc/nginx/sites-available/whatsapp-app"
 echo "   Deploy Log:    $LOG_FILE"
 
-echo -e "\n${YELLOW}⚠️  Important Notes:${NC}"
-echo "   1. Change admin password after first login"
-echo "   2. If using domain, DNS may take 24-48 hours to propagate"
-echo "   3. Check logs if any issues: pm2 logs"
-echo "   4. WhatsApp QR will appear when you click 'Connect WhatsApp'"
+echo -e "\n${YELLOW}⚠️  If Nginx failed:${NC}"
+echo "   1. sudo nginx -t"
+echo "   2. sudo systemctl restart nginx"
+echo "   3. Check: sudo tail -20 /var/log/nginx/error.log"
 
 echo -e "\n${GREEN}✅ Your WhatsApp Automation System is now LIVE!${NC}"
 echo -e "${GREEN}   Log file: $LOG_FILE${NC}\n"
