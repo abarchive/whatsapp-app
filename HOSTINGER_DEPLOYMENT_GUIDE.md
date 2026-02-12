@@ -1,342 +1,274 @@
-# 🚀 Hostinger VPS Deployment Guide - WhatsApp Automation System
+# 🚀 WhatsApp Automation - Hostinger KVM 2 Deployment Guide
 
-## 📋 Prerequisites (पहले यह करें)
+## 📋 Prerequisites
 
-### Step 1: Hostinger VPS खरीदें
-1. जाएं: https://www.hostinger.in/vps-hosting
-2. **KVM 2** plan select करें (4GB RAM - ₹519/month)
-3. **Ubuntu 22.04** Operating System चुनें
-4. Payment करें और VPS activate होने का wait करें (5-10 minutes)
-
-### Step 2: Domain Connect करें (Optional but Recommended)
-1. Hostinger panel में जाएं
-2. **DNS Zone** में जाकर A Record add करें:
-   - Name: `@` या `api`
-   - Points to: `Your VPS IP Address`
-   - TTL: 14400
-
-### Step 3: VPS Access Details नोट करें
-Hostinger panel से यह details नोट करें:
-- **IP Address**: xxx.xxx.xxx.xxx
-- **Username**: root
-- **Password**: (जो आपने set किया)
+- **Server:** Hostinger KVM 2 with Ubuntu 22.04/24.04
+- **Domain:** (Optional) Point your domain to server IP
+- **SSH Access:** Root access to your VPS
 
 ---
 
-## 🖥️ VPS में Login करें
+## 🔧 Quick Deployment Steps
 
-### Windows Users:
-1. **PuTTY** download करें: https://putty.org
-2. PuTTY खोलें
-3. Host Name में अपना **VPS IP** डालें
-4. Port: **22**
-5. **Open** click करें
-6. Username: `root` और Password डालें
-
-### Mac/Linux Users:
-Terminal खोलें और type करें:
+### Step 1: Connect to Server
 ```bash
-ssh root@YOUR_VPS_IP
+ssh root@YOUR_SERVER_IP
 ```
+
+### Step 2: Download Application
+```bash
+# Create directory
+mkdir -p /root/whatsapp-app
+cd /root/whatsapp-app
+
+# Option A: From GitHub (after saving to GitHub)
+git clone YOUR_GITHUB_REPO_URL .
+
+# Option B: Upload files via SFTP/SCP
+# Use FileZilla or similar to upload:
+#   - backend/
+#   - frontend/
+#   - whatsapp-service/
+#   - db_backup/
+#   - deploy.sh
+```
+
+### Step 3: Run Deployment Script
+```bash
+cd /root/whatsapp-app
+chmod +x deploy.sh
+sudo bash deploy.sh
+```
+
+### Step 4: Follow On-Screen Prompts
+- Enter your domain/IP
+- Enter your email (for SSL)
+- Wait for installation (10-15 minutes)
 
 ---
 
-## 🔧 One-Click Deployment (आसान तरीका)
+## 📁 Required Files Structure
 
-एक बार login करने के बाद, बस यह एक command run करें:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/your-repo/deploy.sh | bash
 ```
-
-**या** नीचे दिया गया script manually copy-paste करें:
-
-```bash
-wget -O deploy.sh https://your-domain.com/deploy.sh && chmod +x deploy.sh && ./deploy.sh
-```
-
----
-
-## 📝 Manual Step-by-Step Installation
-
-अगर one-click script काम न करे, तो यह steps follow करें:
-
-### Step 1: System Update करें
-```bash
-apt update && apt upgrade -y
-```
-
-### Step 2: Required Software Install करें
-```bash
-# Basic tools
-apt install -y curl wget git unzip nano ufw
-
-# Node.js 20 Install
-curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y nodejs
-
-# Python 3.11 Install
-apt install -y python3 python3-pip python3-venv
-
-# MongoDB Install
-curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg --dearmor
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-7.0.gpg ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-7.0.list
-apt update
-apt install -y mongodb-org
-systemctl start mongod
-systemctl enable mongod
-
-# Chromium Install (WhatsApp के लिए जरूरी)
-apt install -y chromium-browser || apt install -y chromium
-
-# Nginx Install
-apt install -y nginx
-
-# PM2 Install (Process Manager)
-npm install -g pm2
-```
-
-### Step 3: Firewall Setup करें
-```bash
-ufw allow 22
-ufw allow 80
-ufw allow 443
-ufw --force enable
-```
-
-### Step 4: Project Files Upload करें
-
-**Option A: GitHub से (Recommended)**
-```bash
-cd /var/www
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO.git whatsapp-app
-cd whatsapp-app
-```
-
-**Option B: Local से Upload (FileZilla से)**
-1. FileZilla download करें
-2. Connect करें:
-   - Host: Your VPS IP
-   - Username: root
-   - Password: Your Password
-   - Port: 22
-3. Files को `/var/www/whatsapp-app/` में upload करें
-
-### Step 5: Backend Setup करें
-```bash
-cd /var/www/whatsapp-app/backend
-
-# Virtual Environment बनाएं
-python3 -m venv venv
-source venv/bin/activate
-
-# Dependencies Install करें
-pip install -r requirements.txt
-
-# Environment File बनाएं
-cat > .env << 'EOF'
-MONGO_URL=mongodb://localhost:27017
-DB_NAME=whatsapp_automation
-JWT_SECRET=your-super-secret-key-change-this-to-random-string
-JWT_ALGORITHM=HS256
-WHATSAPP_SERVICE_URL=http://localhost:8002
-EOF
-```
-
-### Step 6: Frontend Setup करें
-```bash
-cd /var/www/whatsapp-app/frontend
-
-# Dependencies Install करें
-npm install
-
-# Environment File बनाएं
-cat > .env << 'EOF'
-REACT_APP_BACKEND_URL=https://yourdomain.com
-EOF
-
-# Production Build बनाएं
-npm run build
-```
-
-### Step 7: WhatsApp Service Setup करें
-```bash
-cd /var/www/whatsapp-app/whatsapp-service
-
-# Dependencies Install करें
-npm install
-```
-
-### Step 8: PM2 से Services Start करें
-```bash
-cd /var/www/whatsapp-app
-
-# Backend Start करें
-pm2 start "cd /var/www/whatsapp-app/backend && source venv/bin/activate && uvicorn server:app --host 0.0.0.0 --port 8001" --name backend
-
-# WhatsApp Service Start करें
-pm2 start /var/www/whatsapp-app/whatsapp-service/index.js --name whatsapp-service
-
-# PM2 Startup (Auto-restart on reboot)
-pm2 startup
-pm2 save
-```
-
-### Step 9: Nginx Configure करें
-```bash
-cat > /etc/nginx/sites-available/whatsapp-app << 'EOF'
-server {
-    listen 80;
-    server_name yourdomain.com www.yourdomain.com;
-
-    # Frontend (React Build)
-    location / {
-        root /var/www/whatsapp-app/frontend/build;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-    }
-
-    # Backend API
-    location /api/ {
-        proxy_pass http://localhost:8001/api/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        proxy_read_timeout 300s;
-        proxy_connect_timeout 75s;
-    }
-}
-EOF
-
-# Enable Site
-ln -sf /etc/nginx/sites-available/whatsapp-app /etc/nginx/sites-enabled/
-rm -f /etc/nginx/sites-enabled/default
-
-# Test & Restart Nginx
-nginx -t && systemctl restart nginx
-```
-
-### Step 10: SSL Certificate Install करें (HTTPS)
-```bash
-# Certbot Install करें
-apt install -y certbot python3-certbot-nginx
-
-# SSL Certificate लें (अपना domain डालें)
-certbot --nginx -d yourdomain.com -d www.yourdomain.com --non-interactive --agree-tos -m your@email.com
+/root/whatsapp-app/
+├── backend/
+│   ├── server.py
+│   ├── requirements.txt
+│   └── .env (created by script)
+├── frontend/
+│   ├── src/
+│   ├── public/
+│   ├── package.json
+│   └── .env (created by script)
+├── whatsapp-service/
+│   ├── index.js
+│   └── package.json
+├── db_backup/           # Optional - for data migration
+│   ├── users.json
+│   ├── message_logs.json
+│   ├── settings.json
+│   └── activity_logs.json
+├── deploy.sh
+└── import_data.sh
 ```
 
 ---
 
-## ✅ Verification (Check करें सब काम कर रहा है)
+## 🔑 Default Credentials
+
+After deployment:
+- **URL:** http://YOUR_IP or https://YOUR_DOMAIN
+- **Admin Email:** admin@admin.com
+- **Admin Password:** Admin@7501
+
+⚠️ **Change admin password after first login!**
+
+---
+
+## 📝 Useful Commands
 
 ```bash
-# Services Status Check करें
+# Check service status
 pm2 status
 
-# MongoDB Check करें
-systemctl status mongod
-
-# Nginx Check करें
-systemctl status nginx
-
-# Logs देखें
+# View logs
 pm2 logs
+pm2 logs backend
+pm2 logs whatsapp-service
+
+# Restart services
+pm2 restart all
+pm2 restart backend
+pm2 restart whatsapp-service
+
+# Real-time monitoring
+pm2 monit
+
+# Check MongoDB
+sudo systemctl status mongod
+
+# Check Nginx
+sudo systemctl status nginx
+sudo nginx -t  # Test config
+
+# View Nginx logs
+sudo tail -f /var/log/nginx/error.log
 ```
 
 ---
 
-## 🔄 Useful Commands
+## 🔧 Troubleshooting
 
-### Services Restart करें:
+### Issue: Services not starting
 ```bash
+# Check logs
+pm2 logs
+
+# Restart services
 pm2 restart all
+
+# Check if ports are in use
+sudo lsof -i :8001
+sudo lsof -i :8002
 ```
 
-### Logs देखें:
+### Issue: WhatsApp QR not showing
 ```bash
-pm2 logs backend
+# Check WhatsApp service logs
 pm2 logs whatsapp-service
+
+# Check Chromium
+which chromium-browser || which chromium
+
+# Restart WhatsApp service
+pm2 restart whatsapp-service
 ```
 
-### Services Stop करें:
+### Issue: Cannot access website
 ```bash
+# Check Nginx
+sudo nginx -t
+sudo systemctl restart nginx
+
+# Check firewall
+sudo ufw status
+
+# Allow ports
+sudo ufw allow 80
+sudo ufw allow 443
+```
+
+### Issue: MongoDB connection error
+```bash
+# Check MongoDB status
+sudo systemctl status mongod
+
+# Start MongoDB
+sudo systemctl start mongod
+
+# Check MongoDB logs
+sudo tail -f /var/log/mongodb/mongod.log
+```
+
+### Issue: SSL Certificate failed
+```bash
+# Manually run certbot
+sudo certbot --nginx -d yourdomain.com
+
+# Renew certificate
+sudo certbot renew
+```
+
+---
+
+## 🔄 Update Application
+
+```bash
+# Stop services
 pm2 stop all
-```
 
-### Update करें (नया code deploy):
-```bash
+# Pull latest code (if using Git)
 cd /var/www/whatsapp-app
 git pull origin main
-cd frontend && npm install && npm run build
-cd ../backend && source venv/bin/activate && pip install -r requirements.txt
+
+# Or upload new files via SFTP
+
+# Rebuild frontend
+cd frontend
+npm run build
+
+# Restart services
 pm2 restart all
 ```
 
 ---
 
-## ⚠️ Important Notes
+## 📊 Data Migration
 
-1. **Domain DNS**: DNS propagation में 24-48 hours लग सकते हैं
-2. **WhatsApp Session**: Server restart पर QR फिर से scan करना पड़ सकता है
-3. **Backup**: Regular database backup लें:
-   ```bash
-   mongodump --db whatsapp_automation --out /backup/$(date +%Y%m%d)
-   ```
-4. **Security**: 
-   - JWT_SECRET को strong random string में बदलें
-   - Regular system updates करें: `apt update && apt upgrade -y`
+If you have backup data from preview environment:
 
----
-
-## 🆘 Troubleshooting
-
-### Problem: Site नहीं खुल रही
 ```bash
-# Nginx logs check करें
-tail -f /var/log/nginx/error.log
+# Copy db_backup folder to server
+cd /var/www/whatsapp-app
 
-# Services check करें
-pm2 status
-```
-
-### Problem: API Error आ रही है
-```bash
-# Backend logs check करें
-pm2 logs backend
-```
-
-### Problem: WhatsApp Connect नहीं हो रहा
-```bash
-# WhatsApp service logs check करें
-pm2 logs whatsapp-service
-
-# Chromium check करें
-which chromium || which chromium-browser
-```
-
-### Problem: MongoDB Connection Error
-```bash
-# MongoDB status check करें
-systemctl status mongod
-
-# MongoDB restart करें
-systemctl restart mongod
+# Run import script
+chmod +x import_data.sh
+./import_data.sh db_backup/
 ```
 
 ---
 
-## 📞 Support
+## ⚙️ Configuration Files
 
-अगर कोई problem आए तो:
-1. Error message screenshot लें
-2. `pm2 logs` का output save करें
-3. Developer से contact करें
+### Backend .env (`/var/www/whatsapp-app/backend/.env`)
+```env
+MONGO_URL=mongodb://localhost:27017
+DB_NAME=whatsapp_automation
+JWT_SECRET=your-secure-jwt-secret
+WHATSAPP_SERVICE_URL=http://localhost:8002
+CORS_ORIGINS=*
+```
+
+### Frontend .env (`/var/www/whatsapp-app/frontend/.env`)
+```env
+REACT_APP_BACKEND_URL=https://yourdomain.com
+```
+
+### PM2 Ecosystem (`/var/www/whatsapp-app/ecosystem.config.js`)
+```javascript
+module.exports = {
+  apps: [
+    {
+      name: 'backend',
+      cwd: '/var/www/whatsapp-app/backend',
+      script: './venv/bin/python',
+      args: '-m uvicorn server:app --host 0.0.0.0 --port 8001'
+    },
+    {
+      name: 'whatsapp-service',
+      cwd: '/var/www/whatsapp-app/whatsapp-service',
+      script: 'index.js'
+    }
+  ]
+};
+```
 
 ---
 
-**🎉 Congratulations! आपका WhatsApp Automation System Live है!**
+## 🆘 Support
+
+If you face any issues:
+1. Check logs: `pm2 logs`
+2. Check deployment log: `cat /var/log/whatsapp-deploy.log`
+3. Restart services: `pm2 restart all`
+
+---
+
+## ✅ Post-Deployment Checklist
+
+- [ ] Can access website at domain/IP
+- [ ] Can login with admin credentials
+- [ ] Admin panel is accessible
+- [ ] WhatsApp QR code appears when clicking "Connect"
+- [ ] SSL certificate working (if using domain)
+- [ ] Changed default admin password
