@@ -75,3 +75,7 @@ chainlit.md
 whatsapp-service/.wwebjs_auth/
 whatsapp-service/.wwebjs_cache/
 frontend/node_modules/.cache/default-development/0.pack
+-e 
+# Environment files
+*.env
+*.env.*
