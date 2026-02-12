@@ -1,0 +1,11 @@
+[
+  {
+    "_id": "6986002245166c0104089be8",
+    "id": "global_settings",
+    "default_rate_limit": 30,
+    "max_rate_limit": 100,
+    "enable_registration": true,
+    "maintenance_mode": false,
+    "updated_at": "2026-02-06T16:03:07.696725+00:00"
+  }
+]

@@ -1,0 +1,1032 @@
+[
+  {
+    "_id": "693284272640121cd996ab7b",
+    "id": "06d1dd89-7f0c-4b23-a3da-3c1cd8a01b46",
+    "user_id": "8b4bf5dd-8aae-4389-9acc-6567c4c1a812",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:05:11.213542+00:00"
+  },
+  {
+    "_id": "693284272640121cd996ab7c",
+    "id": "06d1dd89-7f0c-4b23-a3da-3c1cd8a01b46",
+    "user_id": "8b4bf5dd-8aae-4389-9acc-6567c4c1a812",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:05:11.213542+00:00"
+  },
+  {
+    "_id": "693284522640121cd996ab7e",
+    "id": "b3dd36fa-d9c6-4531-a9ed-9ef61e3e22cd",
+    "user_id": "2bb12df2-46fe-4a65-b5de-c903e4063715",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:05:54.148758+00:00"
+  },
+  {
+    "_id": "693284522640121cd996ab7f",
+    "id": "b3dd36fa-d9c6-4531-a9ed-9ef61e3e22cd",
+    "user_id": "2bb12df2-46fe-4a65-b5de-c903e4063715",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:05:54.148758+00:00"
+  },
+  {
+    "_id": "693284522640121cd996ab80",
+    "id": "ffb5a632-7813-4bb3-95a5-4d93bad32bbf",
+    "user_id": "2bb12df2-46fe-4a65-b5de-c903e4063715",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:05:54.231531+00:00"
+  },
+  {
+    "_id": "693284522640121cd996ab81",
+    "id": "ffb5a632-7813-4bb3-95a5-4d93bad32bbf",
+    "user_id": "2bb12df2-46fe-4a65-b5de-c903e4063715",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:05:54.231531+00:00"
+  },
+  {
+    "_id": "693284652640121cd996ab83",
+    "id": "2b9f37b6-e037-4285-a72a-2ebd487ed64d",
+    "user_id": "6b64bc8c-dc79-4f6c-ac6f-64dbed98cf1c",
+    "receiver_number": "+919876543210",
+    "message_body": "Debug test",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2025-12-05T07:06:13.157410+00:00"
+  },
+  {
+    "_id": "6932846d2640121cd996ab85",
+    "id": "b1b5beb8-a926-43a0-afd5-8838a3c5e930",
+    "user_id": "be4363dc-ae0e-4a41-b199-891597340832",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:06:21.107236+00:00"
+  },
+  {
+    "_id": "6932846d2640121cd996ab86",
+    "id": "b1b5beb8-a926-43a0-afd5-8838a3c5e930",
+    "user_id": "be4363dc-ae0e-4a41-b199-891597340832",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:06:21.107236+00:00"
+  },
+  {
+    "_id": "6932846d2640121cd996ab87",
+    "id": "663e3076-2b69-44d5-8dcc-ba076ffcee1f",
+    "user_id": "be4363dc-ae0e-4a41-b199-891597340832",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:06:21.150366+00:00"
+  },
+  {
+    "_id": "6932846d2640121cd996ab88",
+    "id": "663e3076-2b69-44d5-8dcc-ba076ffcee1f",
+    "user_id": "be4363dc-ae0e-4a41-b199-891597340832",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:06:21.150366+00:00"
+  },
+  {
+    "_id": "693284902640121cd996ab8a",
+    "id": "4ba60277-a725-4430-abf1-303baca0be31",
+    "user_id": "f396fe9d-84b3-4b32-bde2-1b411b691713",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:06:56.477836+00:00"
+  },
+  {
+    "_id": "693284902640121cd996ab8b",
+    "id": "4ba60277-a725-4430-abf1-303baca0be31",
+    "user_id": "f396fe9d-84b3-4b32-bde2-1b411b691713",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:06:56.477836+00:00"
+  },
+  {
+    "_id": "693284902640121cd996ab8c",
+    "id": "772af0ee-2d7b-471f-9f68-41138bff14a4",
+    "user_id": "f396fe9d-84b3-4b32-bde2-1b411b691713",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:06:56.558371+00:00"
+  },
+  {
+    "_id": "693284902640121cd996ab8d",
+    "id": "772af0ee-2d7b-471f-9f68-41138bff14a4",
+    "user_id": "f396fe9d-84b3-4b32-bde2-1b411b691713",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:06:56.558371+00:00"
+  },
+  {
+    "_id": "6932849a2640121cd996ab8e",
+    "id": "8bdc52e1-6f70-41a7-96e6-4f3062894518",
+    "user_id": "6b64bc8c-dc79-4f6c-ac6f-64dbed98cf1c",
+    "receiver_number": "+919876543210",
+    "message_body": "Isolated test",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2025-12-05T07:07:06.361491+00:00"
+  },
+  {
+    "_id": "693284b22640121cd996ab90",
+    "id": "3d4ddf6a-e3ae-4f84-9bcd-0c39a9113412",
+    "user_id": "033420f8-d94f-49d5-82f1-9922d56dd170",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:07:30.416218+00:00"
+  },
+  {
+    "_id": "693284b22640121cd996ab91",
+    "id": "3d4ddf6a-e3ae-4f84-9bcd-0c39a9113412",
+    "user_id": "033420f8-d94f-49d5-82f1-9922d56dd170",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from backend test",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2025-12-05T07:07:30.416218+00:00"
+  },
+  {
+    "_id": "693284b22640121cd996ab92",
+    "id": "72c49753-7cff-4871-9485-5f662dd61d88",
+    "user_id": "033420f8-d94f-49d5-82f1-9922d56dd170",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:07:30.499305+00:00"
+  },
+  {
+    "_id": "693284b22640121cd996ab93",
+    "id": "72c49753-7cff-4871-9485-5f662dd61d88",
+    "user_id": "033420f8-d94f-49d5-82f1-9922d56dd170",
+    "receiver_number": "+919876543210",
+    "message_body": "Test message from API endpoint",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2025-12-05T07:07:30.499305+00:00"
+  },
+  {
+    "_id": "695fae5f26b3b7d85ac2b2e2",
+    "id": "69ef2ad1-ed46-4029-9ecf-4bf74b82118e",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "hii",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-08T13:17:19.616131+00:00"
+  },
+  {
+    "_id": "695fb03cb8b8b76014f32b49",
+    "id": "837e271f-feed-48b2-98c8-12c8b1a3ce05",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-08T13:25:16.796144+00:00"
+  },
+  {
+    "_id": "695fb0a4b8b8b76014f32b4a",
+    "id": "ae9974d2-824c-4764-8b2a-a1e5252e7dde",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "good",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-08T13:27:00.384106+00:00"
+  },
+  {
+    "_id": "695fb149b8b8b76014f32b4c",
+    "id": "8b9d02f0-257d-4372-8aa3-af404a6a8458",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "good",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-08T13:29:45.812387+00:00"
+  },
+  {
+    "_id": "695fb149b8b8b76014f32b4d",
+    "id": "8b9d02f0-257d-4372-8aa3-af404a6a8458",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "good",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-08T13:29:45.812387+00:00"
+  },
+  {
+    "_id": "695fb52f751f215cc9751d69",
+    "id": "f8e480ae-f6aa-4e9a-91dc-5ca0a68ea78a",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "he",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-08T13:46:23.388973+00:00"
+  },
+  {
+    "_id": "695fb549751f215cc9751d6a",
+    "id": "4aa8ba93-7f08-4514-9d0a-731eef2982bc",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "hii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-01-08T13:46:49.003516+00:00"
+  },
+  {
+    "_id": "695fb549751f215cc9751d6b",
+    "id": "4aa8ba93-7f08-4514-9d0a-731eef2982bc",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "hii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-01-08T13:46:49.003516+00:00"
+  },
+  {
+    "_id": "695fba3d751f215cc9751d6c",
+    "id": "72c8ab22-f34f-4600-8466-0b90046dc312",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "bii",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-08T14:07:57.528723+00:00"
+  },
+  {
+    "_id": "695fba52751f215cc9751d6d",
+    "id": "631d6ce2-f36b-4a9c-8116-97cc84363758",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "okok",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-01-08T14:08:18.613075+00:00"
+  },
+  {
+    "_id": "695fba52751f215cc9751d6e",
+    "id": "631d6ce2-f36b-4a9c-8116-97cc84363758",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "okok",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-01-08T14:08:18.613075+00:00"
+  },
+  {
+    "_id": "695fe032c0b4d10b7c046cf4",
+    "id": "ef5bd4b0-d400-411a-b1ff-768757fcbe62",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "na",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-08T16:49:54.714386+00:00"
+  },
+  {
+    "_id": "695fe052c0b4d10b7c046cf5",
+    "id": "395a1af4-467e-49a6-9ef5-5cd6e6c1b234",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "receiver_number": "+917908053909",
+    "message_body": "Hello World",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-08T16:50:25.771666+00:00"
+  },
+  {
+    "_id": "69609f654fc486d4ea580735",
+    "id": "b970b5bc-441a-48ff-9f54-94161afa1397",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+917908053909",
+    "message_body": "iiin",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-09T06:25:41.009108+00:00"
+  },
+  {
+    "_id": "69648d70fa3f433c1fcd775c",
+    "id": "fbd70f58-0db9-42a4-b4e7-4e025f6ae650",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+917980718926",
+    "message_body": "@message4",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T05:58:08.281551+00:00"
+  },
+  {
+    "_id": "696496f7f6b81971d208356b",
+    "id": "3e515aac-c51c-4cb6-aa28-1fe27128e8bc",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+91918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:38:47.532328+00:00"
+  },
+  {
+    "_id": "6964974bf6b81971d208356c",
+    "id": "db4287e5-f204-4f40-ac0f-3ac4cc435c72",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+91918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:40:11.441116+00:00"
+  },
+  {
+    "_id": "6964974bf6b81971d208356d",
+    "id": "db4287e5-f204-4f40-ac0f-3ac4cc435c72",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+91918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:40:11.441116+00:00"
+  },
+  {
+    "_id": "6964976af6b81971d208356e",
+    "id": "28f932d5-da71-4a5c-824e-709d41d3c4bc",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:40:42.706115+00:00"
+  },
+  {
+    "_id": "6964976af6b81971d208356f",
+    "id": "28f932d5-da71-4a5c-824e-709d41d3c4bc",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:40:42.706115+00:00"
+  },
+  {
+    "_id": "69649795f6b81971d2083570",
+    "id": "de2404e0-425b-47d8-8901-a0774fbc889e",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+91918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:41:24.962674+00:00"
+  },
+  {
+    "_id": "69649795f6b81971d2083571",
+    "id": "de2404e0-425b-47d8-8901-a0774fbc889e",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+91918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T06:41:24.962674+00:00"
+  },
+  {
+    "_id": "696497a8f6b81971d2083572",
+    "id": "0e1f233b-fc4f-4d61-8162-19c610d66453",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918670006727",
+    "message_body": "Your Wallet has been credited by Rs. 50000.00 from ZEDPAY, (BAL: Rs. 66384.1730)",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T06:41:43.993462+00:00"
+  },
+  {
+    "_id": "69649851f6b81971d2083573",
+    "id": "5096a3cc-e622-45f1-97d6-1425e33b3327",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+919333524710",
+    "message_body": "Your Wallet has been credited by Rs. 6000.00 from ZEDPAY, (BAL: Rs. 6989.0455)",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T06:44:33.046160+00:00"
+  },
+  {
+    "_id": "696498d6f6b81971d2083574",
+    "id": "7cefd3b0-76b2-42a1-8968-581e1ad42d91",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+919123098973",
+    "message_body": "😍 *ACCOUNT CREATED* 😍\r\nDear ARIJIT, Thank you for registering with ZEDPAY. Username: 9123098973, Password: 96903273. Please login to zedpay.in. Thanks!",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T06:46:45.123845+00:00"
+  },
+  {
+    "_id": "696498ebf6b81971d2083575",
+    "id": "03f9529b-4219-4124-af9a-7e2fadff6c6c",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+919123098973",
+    "message_body": "😍 *ACCOUNT CREATED* 😍\r\nDear ARIJIT, Thank you for registering with ZEDPAY. Username: 9123098973, Password: 53446971. Please login to zedpay.in. Thanks!",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T06:47:06.162718+00:00"
+  },
+  {
+    "_id": "69649f31045cde8032656c2e",
+    "id": "f40860a8-a3d3-4c97-aab5-3c241120f3be",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+917908053909",
+    "message_body": "ojoj",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-01-12T07:13:53.362779+00:00"
+  },
+  {
+    "_id": "6964ee1884c467a6ec9ea480",
+    "id": "715eec1b-7a85-4107-91a9-245e187f03c0",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918016848963",
+    "message_body": "550359 is the SECRET One Time Password (OTP). Do not share it with anyone. Thanks!",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T12:50:32.810066+00:00"
+  },
+  {
+    "_id": "6964ee1884c467a6ec9ea481",
+    "id": "715eec1b-7a85-4107-91a9-245e187f03c0",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918016848963",
+    "message_body": "550359 is the SECRET One Time Password (OTP). Do not share it with anyone. Thanks!",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-01-12T12:50:32.810066+00:00"
+  },
+  {
+    "_id": "6964efd984c467a6ec9ea482",
+    "id": "d4a9d66b-c3c0-465b-af58-0be7f7ad3435",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+919333524710",
+    "message_body": "Your Wallet has been credited by Rs. 8000.00 from ZEDPAY, (BAL: Rs. 8065.0735)",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T12:58:00.920679+00:00"
+  },
+  {
+    "_id": "6964f0ce84c467a6ec9ea483",
+    "id": "83861815-de5a-439c-8459-64c16719ac87",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918620088660",
+    "message_body": "637935 is the SECRET One Time Password (OTP). Do not share it with anyone. Thanks!",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T13:02:05.076927+00:00"
+  },
+  {
+    "_id": "6964f17884c467a6ec9ea484",
+    "id": "68cf7e95-cba0-4e06-8118-167d2aecab52",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918620088660",
+    "message_body": "Your Wallet has been credited by Rs. 20000.00 from ZEDPAY, (BAL: Rs. 20167.2201)",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T13:04:56.334748+00:00"
+  },
+  {
+    "_id": "6964f21984c467a6ec9ea485",
+    "id": "844c4298-01b8-4f8d-a4ed-b97ca33b41c2",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918167788002",
+    "message_body": "259871 is the SECRET One Time Password (OTP). Do not share it with anyone. Thanks!",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T13:07:36.973898+00:00"
+  },
+  {
+    "_id": "6964f37f84c467a6ec9ea486",
+    "id": "cd7f3150-2447-43c4-ba05-51485c5c05f4",
+    "user_id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "receiver_number": "+918167788002",
+    "message_body": "Your Wallet has been credited by Rs. 10000.00 from ZEDPAY, (BAL: Rs. 10560.7305)",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-01-12T13:13:35.399250+00:00"
+  },
+  {
+    "_id": "698614fd794ea353acae1478",
+    "id": "fe6fb1e3-4054-4451-8db7-077a63771e9a",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "hiii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:16.980650+00:00"
+  },
+  {
+    "_id": "698614fd794ea353acae1479",
+    "id": "fe6fb1e3-4054-4451-8db7-077a63771e9a",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "hiii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:16.980650+00:00"
+  },
+  {
+    "_id": "69861502794ea353acae147a",
+    "id": "d9228d66-df02-4435-9ee8-c6d6114ccea9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "hiii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:22.789296+00:00"
+  },
+  {
+    "_id": "69861502794ea353acae147b",
+    "id": "d9228d66-df02-4435-9ee8-c6d6114ccea9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "hiii",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:22.789296+00:00"
+  },
+  {
+    "_id": "69861513794ea353acae147c",
+    "id": "70a734e2-09d6-414d-8199-f05375e095a9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "kokok",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:39.481335+00:00"
+  },
+  {
+    "_id": "69861513794ea353acae147d",
+    "id": "70a734e2-09d6-414d-8199-f05375e095a9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "kokok",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:21:39.481335+00:00"
+  },
+  {
+    "_id": "69861551794ea353acae1480",
+    "id": "5d68bf41-8916-4801-a7ab-365d80d59cc9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+918584078162",
+    "message_body": "nijo",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:22:41.611209+00:00"
+  },
+  {
+    "_id": "69861551794ea353acae1481",
+    "id": "5d68bf41-8916-4801-a7ab-365d80d59cc9",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+918584078162",
+    "message_body": "nijo",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:22:41.611209+00:00"
+  },
+  {
+    "_id": "69861556794ea353acae1482",
+    "id": "12d562ff-c45f-4bb2-8a82-c8f6a47dc91e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "nijo",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:22:46.932246+00:00"
+  },
+  {
+    "_id": "69861556794ea353acae1483",
+    "id": "12d562ff-c45f-4bb2-8a82-c8f6a47dc91e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "nijo",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:22:46.932246+00:00"
+  },
+  {
+    "_id": "69861590794ea353acae1485",
+    "id": "b269c5b8-5a54-4006-ba7d-308d5cb31b41",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "oojook",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:23:44.556714+00:00"
+  },
+  {
+    "_id": "69861590794ea353acae1486",
+    "id": "b269c5b8-5a54-4006-ba7d-308d5cb31b41",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "oojook",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:23:44.556714+00:00"
+  },
+  {
+    "_id": "69861595794ea353acae1487",
+    "id": "3f6d6cc2-5c61-4c09-8a82-512b6efe7d8e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "oojook",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:23:49.582900+00:00"
+  },
+  {
+    "_id": "69861595794ea353acae1488",
+    "id": "3f6d6cc2-5c61-4c09-8a82-512b6efe7d8e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "oojook",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:23:49.582900+00:00"
+  },
+  {
+    "_id": "698615ab794ea353acae1489",
+    "id": "374a9856-d4c5-4344-bcb5-3d19f021f032",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:24:11.443436+00:00"
+  },
+  {
+    "_id": "698615ab794ea353acae148a",
+    "id": "374a9856-d4c5-4344-bcb5-3d19f021f032",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:24:11.443436+00:00"
+  },
+  {
+    "_id": "698616b9794ea353acae148d",
+    "id": "080f5542-1545-4a29-a859-a0147b141e30",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "4494",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:28:41.422207+00:00"
+  },
+  {
+    "_id": "698616b9794ea353acae148e",
+    "id": "080f5542-1545-4a29-a859-a0147b141e30",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "4494",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:28:41.422207+00:00"
+  },
+  {
+    "_id": "698616c1794ea353acae148f",
+    "id": "4149c21f-960c-45ff-8591-b8a8b06292a4",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:28:49.944031+00:00"
+  },
+  {
+    "_id": "698616c1794ea353acae1490",
+    "id": "4149c21f-960c-45ff-8591-b8a8b06292a4",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:28:49.944031+00:00"
+  },
+  {
+    "_id": "69861795794ea353acae1493",
+    "id": "1cd003f6-721b-4ad2-9d13-0b22ce097815",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "26161",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:32:21.576429+00:00"
+  },
+  {
+    "_id": "69861795794ea353acae1494",
+    "id": "1cd003f6-721b-4ad2-9d13-0b22ce097815",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "26161",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:32:21.576429+00:00"
+  },
+  {
+    "_id": "698617a0794ea353acae1495",
+    "id": "e69c1d63-3b3e-4bc4-bcba-eb2bd9fb251e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:32:32.037859+00:00"
+  },
+  {
+    "_id": "698617a0794ea353acae1496",
+    "id": "e69c1d63-3b3e-4bc4-bcba-eb2bd9fb251e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:32:32.037859+00:00"
+  },
+  {
+    "_id": "69861a088347fe9f4e914cf5",
+    "id": "61e40b38-e141-4507-abef-53d7186d4da6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "991",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:42:47.893060+00:00"
+  },
+  {
+    "_id": "69861a088347fe9f4e914cf6",
+    "id": "61e40b38-e141-4507-abef-53d7186d4da6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "991",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-06T16:42:47.893060+00:00"
+  },
+  {
+    "_id": "69861a378347fe9f4e914cf9",
+    "id": "3023736b-b1e5-4e05-a670-20806c54a581",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:43:35.247515+00:00"
+  },
+  {
+    "_id": "69861a378347fe9f4e914cfa",
+    "id": "3023736b-b1e5-4e05-a670-20806c54a581",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-06T16:43:35.247515+00:00"
+  },
+  {
+    "_id": "69861b538347fe9f4e914cfd",
+    "id": "7a4162f2-b1b4-492b-99d0-84a933be1e07",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "5959",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-06T16:48:19.753989+00:00"
+  },
+  {
+    "_id": "69861b648347fe9f4e914cfe",
+    "id": "853c3168-532a-4225-ac5a-13e2b904265a",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "9111",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-06T16:48:35.449814+00:00"
+  },
+  {
+    "_id": "69861b828347fe9f4e914cff",
+    "id": "e3d91b23-4182-4fb4-9765-b841477e8773",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "89919",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-06T16:49:06.359800+00:00"
+  },
+  {
+    "_id": "69861e7e8347fe9f4e914d00",
+    "id": "b2bc58a3-2821-481d-bd19-6f510a69b18b",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-06T17:01:50.177041+00:00"
+  },
+  {
+    "_id": "69861e9c8347fe9f4e914d01",
+    "id": "0c7e34d4-dca7-473c-b675-3e05a634be4f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-06T17:02:20.348549+00:00"
+  },
+  {
+    "_id": "69861e9f8347fe9f4e914d02",
+    "id": "95e4ae45-9299-47c9-b815-597f9ca46fcc",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "MESSAGE_TEXT",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-06T17:02:22.932541+00:00"
+  },
+  {
+    "_id": "69861f068347fe9f4e914d06",
+    "id": "1e1fd9b4-5154-4693-b0b1-3c1bef45ae69",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "receiver_number": "+917908053909",
+    "message_body": "sff",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-06T17:04:06.069031+00:00"
+  },
+  {
+    "_id": "6986c4254b53cfc205003526",
+    "id": "367038f7-2b86-44cf-afd5-ea52efa602cd",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "ffefe",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T04:48:36.846833+00:00"
+  },
+  {
+    "_id": "6986c42c4b53cfc205003527",
+    "id": "b1ad15c9-3a90-4ff0-bb54-afe3eb48151e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+918584078162",
+    "message_body": "sfs",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-07T04:48:44.463929+00:00"
+  },
+  {
+    "_id": "6986c43e4b53cfc205003528",
+    "id": "7eae26e6-edec-49a2-b6da-90d3a9e5e1a6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "sfswwd",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T04:49:01.709178+00:00"
+  },
+  {
+    "_id": "6986c4734b53cfc205003529",
+    "id": "63ebcd5c-f015-436c-b557-c19d2271b1a8",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+919876543210",
+    "message_body": "Hello World",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-07T04:49:55.138645+00:00"
+  },
+  {
+    "_id": "6986c47f4b53cfc20500352a",
+    "id": "ba3cf716-bd7a-45da-89f1-80262badd318",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+918584078162",
+    "message_body": "Hello World",
+    "status": "failed",
+    "source": "api",
+    "created_at": "2026-02-07T04:50:07.216087+00:00"
+  },
+  {
+    "_id": "6986ed4bfa980f4701d2b423",
+    "id": "1be92a11-f1ca-4f93-8dd8-b5ce028b01bb",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "grsrg",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T07:44:11.039636+00:00"
+  },
+  {
+    "_id": "6986ee2afa980f4701d2b425",
+    "id": "3ba62b99-b807-4645-b91b-8198bc6b6258",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "eff",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T07:47:54.617079+00:00"
+  },
+  {
+    "_id": "6986f0414d26b49b0c963e0b",
+    "id": "d4c80625-42a4-4709-b07e-745de004814c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "626",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T07:56:48.811902+00:00"
+  },
+  {
+    "_id": "6986f05a4d26b49b0c963e0c",
+    "id": "1c948e22-64b3-4546-98a1-5777377a5aa7",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "Hello World",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-07T07:57:13.781843+00:00"
+  },
+  {
+    "_id": "6986f16d4d26b49b0c963e12",
+    "id": "4a21c96d-d692-45ec-b84d-a204e8dbde1c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "29191",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-07T08:01:48.894443+00:00"
+  },
+  {
+    "_id": "698cb3e888d6fb0ed779c442",
+    "id": "096e5c6e-1bb0-4322-9cd3-e995296beae6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "59115",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-11T16:52:56.058396+00:00"
+  },
+  {
+    "_id": "698cb3f188d6fb0ed779c443",
+    "id": "796ee183-7ed3-40aa-8e2e-29cba559a43c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "115",
+    "status": "sent",
+    "source": "web",
+    "created_at": "2026-02-11T16:53:04.654609+00:00"
+  },
+  {
+    "_id": "698cb3f688d6fb0ed779c444",
+    "id": "a3fa815a-8299-4dff-9da9-f8987806feaf",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+918584078162",
+    "message_body": "4949",
+    "status": "failed",
+    "source": "web",
+    "created_at": "2026-02-11T16:53:10.186011+00:00"
+  },
+  {
+    "_id": "698cb43488d6fb0ed779c445",
+    "id": "f435b010-2c6b-4c2a-a04e-c0b287b4c9c4",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "receiver_number": "+917908053909",
+    "message_body": "Hello World",
+    "status": "sent",
+    "source": "api",
+    "created_at": "2026-02-11T16:54:12.448757+00:00"
+  }
+]

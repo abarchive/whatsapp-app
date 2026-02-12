@@ -1,0 +1,2152 @@
+[
+  {
+    "_id": "6985fcbfb0b2bd4b859d0b6e",
+    "id": "a2f20df0-2f7c-4a76-a485-ce99c43d3128",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "user_email": "test2@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:37:51.794618+00:00"
+  },
+  {
+    "_id": "6985fcc4b0b2bd4b859d0b6f",
+    "id": "9c285489-e253-4be4-a6a4-ffac7d1b2633",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "user_email": "test2@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:37:56.035288+00:00"
+  },
+  {
+    "_id": "6985fcceb0b2bd4b859d0b70",
+    "id": "f5185831-719c-4e21-ba06-50276b07f180",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:38:06.536641+00:00"
+  },
+  {
+    "_id": "6985ffcc4ecb0198c0606e6c",
+    "id": "a15f3362-a80b-4ad3-8b97-775ee13e479c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:50:52.259356+00:00"
+  },
+  {
+    "_id": "6986001d45166c0104089bd2",
+    "id": "1cdc817c-a54e-4ab5-b681-e247f1d063ae",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:13.122343+00:00"
+  },
+  {
+    "_id": "6986001d45166c0104089bd4",
+    "id": "75a53f91-7937-4c37-8cbd-d5300bffc67f",
+    "user_id": "80252c9f-26d9-4acf-9775-3204d9265e39",
+    "user_email": "TEST_regular_user_3c7f008f@test.com",
+    "action": "USER_REGISTERED",
+    "details": "New user registration",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:13.668371+00:00"
+  },
+  {
+    "_id": "6986001d45166c0104089bd5",
+    "id": "75bb9a3f-e33c-4988-aef2-680e8925498f",
+    "user_id": "80252c9f-26d9-4acf-9775-3204d9265e39",
+    "user_email": "TEST_regular_user_3c7f008f@test.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:13.932468+00:00"
+  },
+  {
+    "_id": "6986001e45166c0104089bd6",
+    "id": "09838de4-d2be-4617-b79a-101089fe53d3",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:14.236318+00:00"
+  },
+  {
+    "_id": "6986001e45166c0104089bd7",
+    "id": "7e726a38-09da-4587-a890-d8c43592b1d4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:14.558865+00:00"
+  },
+  {
+    "_id": "6986001e45166c0104089bd9",
+    "id": "b73ca3ee-b097-469a-a900-f77eadb225d9",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user TEST_admin_created_3706fdc5@test.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:14.827353+00:00"
+  },
+  {
+    "_id": "6986001f45166c0104089bda",
+    "id": "5a11978a-6210-49bc-b3e5-eda8bd5362b0",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:15.129471+00:00"
+  },
+  {
+    "_id": "6986001f45166c0104089bdc",
+    "id": "5e74c5da-6b3d-4e61-b9f7-712a7a4ead7a",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user TEST_update_user_2347d28f@test.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:15.399943+00:00"
+  },
+  {
+    "_id": "6986001f45166c0104089bdd",
+    "id": "37f18010-d5db-4c93-8aa5-6273ba0480c6",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 3cafe16b-b5c7-4d95-81e4-4a0ccb190153: {'rate_limit': 100, 'status': 'suspended'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:15.447579+00:00"
+  },
+  {
+    "_id": "6986001f45166c0104089bde",
+    "id": "a66fae8a-5adc-4ed0-9f33-8cfd71fb35bc",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:15.755891+00:00"
+  },
+  {
+    "_id": "6986002045166c0104089be0",
+    "id": "1c153e77-9244-494e-a547-317ad974dbb4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user TEST_delete_user_dde17631@test.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:16.064928+00:00"
+  },
+  {
+    "_id": "6986002045166c0104089be1",
+    "id": "31024c12-b27d-40f7-bcf4-5e31f4189670",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_DELETED",
+    "details": "Deleted user b687d8bd-ea7f-49e6-933f-3523de9103e4",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:16.114720+00:00"
+  },
+  {
+    "_id": "6986002045166c0104089be2",
+    "id": "478a8d6c-01ae-4cb3-a913-3e0e2609bc59",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:16.418036+00:00"
+  },
+  {
+    "_id": "6986002045166c0104089be3",
+    "id": "1f616b57-6d58-4d30-9bdf-24111f2e0ebe",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:16.723475+00:00"
+  },
+  {
+    "_id": "6986002145166c0104089be4",
+    "id": "119dd730-980f-4e14-9f7a-0c510f8cf0cb",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:17.023394+00:00"
+  },
+  {
+    "_id": "6986002145166c0104089be5",
+    "id": "bc2f8394-d4b7-41fb-9190-0888e0e1e716",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:17.332186+00:00"
+  },
+  {
+    "_id": "6986002145166c0104089be6",
+    "id": "0abcd2d5-ea27-49cb-bb84-0d8145e4d87d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:17.797118+00:00"
+  },
+  {
+    "_id": "6986002245166c0104089be7",
+    "id": "b9d33c6c-0352-4852-a60e-5e6c19a868d8",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:18.123942+00:00"
+  },
+  {
+    "_id": "6986002245166c0104089be9",
+    "id": "9505d1d8-f9d3-4adc-a68a-8fd4492e59ea",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:18.441017+00:00"
+  },
+  {
+    "_id": "6986002245166c0104089bea",
+    "id": "897ebf89-04da-44ab-b328-2ac88b250575",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'default_rate_limit': 40, 'updated_at': '2026-02-06T14:52:18.518652+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:18.520310+00:00"
+  },
+  {
+    "_id": "6986002245166c0104089beb",
+    "id": "8bbb221a-689f-42c3-bf9f-1da927364ff7",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'default_rate_limit': 30, 'updated_at': '2026-02-06T14:52:18.595150+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:18.595672+00:00"
+  },
+  {
+    "_id": "6986002245166c0104089bec",
+    "id": "8a5861a7-54de-4535-961f-3011357e43af",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:18.864438+00:00"
+  },
+  {
+    "_id": "6986002345166c0104089bed",
+    "id": "dec00eb6-e204-43c2-9f68-592b5ef4823b",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:19.186394+00:00"
+  },
+  {
+    "_id": "6986004745166c0104089bee",
+    "id": "6d2413ff-acca-4ad5-93d3-da2d79c75b99",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:52:55.513738+00:00"
+  },
+  {
+    "_id": "6986005945166c0104089bef",
+    "id": "d3b16577-b973-43a1-a097-69199446a125",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:53:13.601773+00:00"
+  },
+  {
+    "_id": "6986007045166c0104089bf0",
+    "id": "94ee77db-a41c-4d4a-8480-7dfa49e1a7b5",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:53:36.018448+00:00"
+  },
+  {
+    "_id": "6986008645166c0104089bf1",
+    "id": "6d999832-e61f-4687-aa4c-7238ac22b0b8",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:53:58.703141+00:00"
+  },
+  {
+    "_id": "698600a245166c0104089bf2",
+    "id": "f0686147-4215-4490-9456-3df2f5e2d07f",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:54:26.342424+00:00"
+  },
+  {
+    "_id": "698600b645166c0104089bf3",
+    "id": "2dadb736-d5a2-46d9-bec4-543d2455f4a1",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:54:46.717786+00:00"
+  },
+  {
+    "_id": "698600d445166c0104089bf4",
+    "id": "6d0cf013-1ff7-4698-b39b-65ad881a7207",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:55:16.503281+00:00"
+  },
+  {
+    "_id": "698600e645166c0104089bf5",
+    "id": "125d84f9-5f9e-48fa-9f6f-d091c7683f21",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:55:34.529483+00:00"
+  },
+  {
+    "_id": "6986011445166c0104089bf6",
+    "id": "ad657c3d-8643-4721-8468-509bffe87713",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:56:20.358037+00:00"
+  },
+  {
+    "_id": "698601d745166c0104089bf7",
+    "id": "2a9eb1d2-3654-4e81-8c65-25439b406d55",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:59:35.512319+00:00"
+  },
+  {
+    "_id": "698601e745166c0104089bf8",
+    "id": "62140f8b-34a0-4b9f-b2e5-920eed0a8f92",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 8b4bf5dd-8aae-4389-9acc-6567c4c1a812: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:59:51.448547+00:00"
+  },
+  {
+    "_id": "698601e945166c0104089bf9",
+    "id": "709786be-47cf-488f-b173-725e1a91cdf8",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 8b4bf5dd-8aae-4389-9acc-6567c4c1a812: {'status': 'suspended'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:59:53.447902+00:00"
+  },
+  {
+    "_id": "698601eb45166c0104089bfa",
+    "id": "133d20ec-9410-4867-8590-5c3984b33acf",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 8b4bf5dd-8aae-4389-9acc-6567c4c1a812: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T14:59:55.688446+00:00"
+  },
+  {
+    "_id": "6986020645166c0104089bfb",
+    "id": "7448f9b8-7db2-46c4-bbfd-ab29edb2af9c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 2bb12df2-46fe-4a65-b5de-c903e4063715: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:00:22.518940+00:00"
+  },
+  {
+    "_id": "6986020845166c0104089bfc",
+    "id": "a28c7633-399a-48ba-90a0-9cb84eacdc2e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 6b64bc8c-dc79-4f6c-ac6f-64dbed98cf1c: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:00:24.074877+00:00"
+  },
+  {
+    "_id": "6986020945166c0104089bfd",
+    "id": "bbef713a-1e61-43f4-bf33-31748b337f85",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user be4363dc-ae0e-4a41-b199-891597340832: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:00:25.128320+00:00"
+  },
+  {
+    "_id": "6986021045166c0104089bfe",
+    "id": "c64a90c7-f0e8-4490-8fbb-5c14ded7f6ac",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user be4363dc-ae0e-4a41-b199-891597340832: {'status': 'suspended'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:00:32.131937+00:00"
+  },
+  {
+    "_id": "6986021145166c0104089bff",
+    "id": "5c0010eb-25ac-4f19-bf6f-be057117987c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user be4363dc-ae0e-4a41-b199-891597340832: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:00:33.556972+00:00"
+  },
+  {
+    "_id": "6986024b45166c0104089c00",
+    "id": "5af451c0-d795-4e55-a950-18227c67a069",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 347d26e1-1de2-48c2-96db-7b8686095b3a: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:01:31.586870+00:00"
+  },
+  {
+    "_id": "6986024c45166c0104089c01",
+    "id": "9f9328a3-a9c5-4ec3-a0f5-7fc206e89680",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user 347d26e1-1de2-48c2-96db-7b8686095b3a: {'status': 'suspended'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:01:32.960804+00:00"
+  },
+  {
+    "_id": "6986043c45166c0104089c02",
+    "id": "23807024-f10d-4df2-b8fb-46a70dda8956",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_DELETED",
+    "details": "Deleted user 8b4bf5dd-8aae-4389-9acc-6567c4c1a812",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:09:48.531644+00:00"
+  },
+  {
+    "_id": "698607ee12acb920e53f8262",
+    "id": "bde6827a-2230-4fae-8a6f-e4f1828ae3df",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': True, 'maintenance_mode': False, 'updated_at': '2026-02-06T15:25:34.268774+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:25:34.270546+00:00"
+  },
+  {
+    "_id": "698608912d11c22b20076a73",
+    "id": "3f49d5f1-53c6-4d2f-aa95-b32d85cb3a54",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918377@example.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:28:17.534815+00:00"
+  },
+  {
+    "_id": "698608952d11c22b20076a74",
+    "id": "0e450593-5079-4a25-a424-dbef31eeda59",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918377@example.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:28:21.117032+00:00"
+  },
+  {
+    "_id": "698609ab2d11c22b20076a75",
+    "id": "a551afdb-6cf3-403f-8228-415bc34ec974",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': False, 'maintenance_mode': False, 'updated_at': '2026-02-06T15:32:59.831916+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:32:59.832620+00:00"
+  },
+  {
+    "_id": "698609b12d11c22b20076a76",
+    "id": "ad525a5a-1f29-4030-acc9-535f5f803965",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': False, 'maintenance_mode': False, 'updated_at': '2026-02-06T15:33:05.335784+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:33:05.336497+00:00"
+  },
+  {
+    "_id": "69860a3d2d11c22b20076a77",
+    "id": "1cff74dc-85f4-45ac-b291-f5298b8232ad",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:35:25.904960+00:00"
+  },
+  {
+    "_id": "69860a7a2d11c22b20076a78",
+    "id": "088443ca-c276-42e8-9a9b-c05775796221",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:36:26.438936+00:00"
+  },
+  {
+    "_id": "69860a7c2d11c22b20076a79",
+    "id": "d593b96b-e6f8-4c1c-8b64-69ca92959266",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:36:28.399880+00:00"
+  },
+  {
+    "_id": "69860b9d2d11c22b20076a7a",
+    "id": "72d645ba-b8e7-48ac-a11b-1bb0b21e62e5",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:41:17.994819+00:00"
+  },
+  {
+    "_id": "69860bb12d11c22b20076a7b",
+    "id": "529aabb6-9888-4872-a931-7289c881a402",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:41:37.922127+00:00"
+  },
+  {
+    "_id": "69860bb22d11c22b20076a7d",
+    "id": "5f0b6170-a176-4cfd-993b-cb93f9c92b17",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user testdeactive@test.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:41:38.210881+00:00"
+  },
+  {
+    "_id": "69860bb92d11c22b20076a7e",
+    "id": "36d84df0-db71-43fe-9e6d-d9541fbf7bae",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:41:45.886989+00:00"
+  },
+  {
+    "_id": "69860bb92d11c22b20076a7f",
+    "id": "8e43b42b-fff3-4ff5-b7a2-facda26491ee",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user testdeactive@test.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:41:45.969645+00:00"
+  },
+  {
+    "_id": "69860bc92d11c22b20076a80",
+    "id": "71614db5-291e-4e4f-b35b-240dda8c8d51",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:01.599533+00:00"
+  },
+  {
+    "_id": "69860bda2d11c22b20076a81",
+    "id": "4b4425ef-6079-4f63-90d8-e1e248e402ae",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:18.056717+00:00"
+  },
+  {
+    "_id": "69860bda2d11c22b20076a82",
+    "id": "dc173c9d-8855-409a-b35f-4d65a445c560",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'maintenance_mode': True, 'updated_at': '2026-02-06T15:42:18.116746+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:18.117455+00:00"
+  },
+  {
+    "_id": "69860bfa794ea353acae1439",
+    "id": "8443b014-33c5-4273-9e4c-0e5bd26eb7a5",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:50.658115+00:00"
+  },
+  {
+    "_id": "69860c03794ea353acae143a",
+    "id": "450ded27-2231-49c7-9645-700dbb8b9fdf",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:59.319345+00:00"
+  },
+  {
+    "_id": "69860c03794ea353acae143b",
+    "id": "9e970053-cd82-466c-a203-a8b18e1e4e80",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'maintenance_mode': False, 'enable_registration': True, 'updated_at': '2026-02-06T15:42:59.379724+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:42:59.380511+00:00"
+  },
+  {
+    "_id": "69860c42794ea353acae143c",
+    "id": "ba3cdaf8-d92d-4de3-a873-463a549dd5c2",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:44:02.248820+00:00"
+  },
+  {
+    "_id": "69860c52794ea353acae143d",
+    "id": "27a2f920-927d-4548-abf1-eab7981eb48a",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:44:18.318226+00:00"
+  },
+  {
+    "_id": "69860c98794ea353acae143e",
+    "id": "b48e7ecc-8f06-4bba-90c3-7abb5e806f8e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:45:28.695600+00:00"
+  },
+  {
+    "_id": "69860c98794ea353acae1440",
+    "id": "25825046-9b41-499d-aa43-1443040c0407",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user newtest@example.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:45:28.983624+00:00"
+  },
+  {
+    "_id": "69860ca0794ea353acae1441",
+    "id": "2e8312d5-055d-4634-ae11-2b4967caed5d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:45:36.479954+00:00"
+  },
+  {
+    "_id": "69860cb7794ea353acae1442",
+    "id": "10fdffa4-8eb6-4df5-b8c6-88aa13e537f6",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:45:59.618287+00:00"
+  },
+  {
+    "_id": "69860cc5794ea353acae1443",
+    "id": "2d581374-6c6f-481b-8a26-0f4a6fdcb328",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:46:13.126573+00:00"
+  },
+  {
+    "_id": "69860cde794ea353acae1444",
+    "id": "03599ec6-a352-4565-a1e6-e43c6dc1a3a3",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:46:38.500111+00:00"
+  },
+  {
+    "_id": "69860cf2794ea353acae1445",
+    "id": "6d874601-b4c8-40b7-864f-0a1e13a8bc5c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:46:58.065384+00:00"
+  },
+  {
+    "_id": "69860cf7794ea353acae1446",
+    "id": "a76d39d7-932d-4330-8b0e-708fad0cbfde",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': False, 'maintenance_mode': False, 'updated_at': '2026-02-06T15:47:03.436075+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:47:03.436765+00:00"
+  },
+  {
+    "_id": "69860d1c794ea353acae1447",
+    "id": "f38fde7c-79f0-4c4a-84ac-e3964fb48bb1",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:47:40.408440+00:00"
+  },
+  {
+    "_id": "69860d1c794ea353acae1448",
+    "id": "d4a61216-ff8f-4141-ba0d-0e6a22eb3d57",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'enable_registration': True, 'updated_at': '2026-02-06T15:47:40.463049+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:47:40.463788+00:00"
+  },
+  {
+    "_id": "69860d42794ea353acae1449",
+    "id": "cb06522e-f78b-40f1-902f-0a3b25252950",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:48:18.429784+00:00"
+  },
+  {
+    "_id": "69860d56794ea353acae144a",
+    "id": "6b2b6bd5-c188-43d4-a26c-4fb7d576ff9a",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:48:38.422061+00:00"
+  },
+  {
+    "_id": "69860d6a794ea353acae144b",
+    "id": "31258fbb-b4ba-414c-b91f-a3ede4f0746e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:48:58.980314+00:00"
+  },
+  {
+    "_id": "69860e97794ea353acae144c",
+    "id": "3ab15758-d4c0-4aec-96f0-2cea103536c6",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:53:59.549133+00:00"
+  },
+  {
+    "_id": "69860e99794ea353acae144d",
+    "id": "e6d8474c-8cb6-4046-93d3-bda0a2d720e0",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:54:01.640419+00:00"
+  },
+  {
+    "_id": "69860f1d794ea353acae144e",
+    "id": "07802aeb-526e-4469-b33a-9d60c9aacbc5",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': False, 'maintenance_mode': False, 'updated_at': '2026-02-06T15:56:13.427379+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:56:13.431266+00:00"
+  },
+  {
+    "_id": "69860f67794ea353acae1450",
+    "id": "eea017e6-a574-458c-9839-6f02cfd67fba",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_CREATED",
+    "details": "Created user test6@gmail.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:57:27.265501+00:00"
+  },
+  {
+    "_id": "69860f9f794ea353acae1451",
+    "id": "b2088784-0cf0-430b-82c0-38882f48cf60",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:58:23.230202+00:00"
+  },
+  {
+    "_id": "69860fb9794ea353acae1452",
+    "id": "c9e2df45-cf06-47d2-b2a7-12755c8c054d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T15:58:49.308512+00:00"
+  },
+  {
+    "_id": "69861027794ea353acae1453",
+    "id": "c9baa6dd-657d-4480-9d65-5c49b274ee14",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:00:39.459015+00:00"
+  },
+  {
+    "_id": "69861052794ea353acae1454",
+    "id": "7380ddde-e35d-4f0e-8667-6433058ed133",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:01:22.587867+00:00"
+  },
+  {
+    "_id": "69861062794ea353acae1455",
+    "id": "9cbf20bf-c814-493d-bbed-546c9c5d11d5",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:01:38.481699+00:00"
+  },
+  {
+    "_id": "69861064794ea353acae1456",
+    "id": "cab42bce-79cc-4bc0-b9fe-eed2588ff54d",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:01:40.419653+00:00"
+  },
+  {
+    "_id": "69861075794ea353acae1457",
+    "id": "09485bf7-a243-42e5-b312-8167df88811d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_DELETED",
+    "details": "Deleted user test_1764918350@example.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:01:57.647782+00:00"
+  },
+  {
+    "_id": "69861096794ea353acae1458",
+    "id": "8514e99f-f677-49bf-bdaf-8fce13c5ee9a",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': False, 'maintenance_mode': True, 'updated_at': '2026-02-06T16:02:30.219030+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:02:30.219776+00:00"
+  },
+  {
+    "_id": "698610bb794ea353acae1459",
+    "id": "465f6c22-56c6-4047-a306-f70d1a6adb54",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "SETTINGS_UPDATED",
+    "details": "Updated settings: {'id': 'global_settings', 'default_rate_limit': 30, 'max_rate_limit': 100, 'enable_registration': True, 'maintenance_mode': False, 'updated_at': '2026-02-06T16:03:07.696725+00:00'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:07.697417+00:00"
+  },
+  {
+    "_id": "698610c0794ea353acae145a",
+    "id": "0156e962-f13c-409d-a054-bf8f10011039",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:12.406967+00:00"
+  },
+  {
+    "_id": "698610ca794ea353acae145b",
+    "id": "04027432-6487-494f-b84c-c8225a77fe0e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:22.821169+00:00"
+  },
+  {
+    "_id": "698610d1794ea353acae145c",
+    "id": "e9aa0c97-e526-4fe5-bc35-ba46dedbb58c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:29.058421+00:00"
+  },
+  {
+    "_id": "698610da794ea353acae145d",
+    "id": "8ed31145-d0c9-405b-83bf-96a19f9bff90",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:38.079510+00:00"
+  },
+  {
+    "_id": "698610dd794ea353acae145e",
+    "id": "42af16f6-03e4-4933-8d17-09458dd606ab",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:03:41.978972+00:00"
+  },
+  {
+    "_id": "69861107794ea353acae145f",
+    "id": "d850f487-5746-434b-a433-dd28527110ef",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918412@example.com: {'email': 'test_1764918412@example.com', 'role': 'admin', 'rate_limit': 30, 'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:04:23.749958+00:00"
+  },
+  {
+    "_id": "6986110c794ea353acae1460",
+    "id": "681af38c-9901-434c-9955-7fb0ccdaf6f9",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918412@example.com: {'email': 'test_1764918412@example.com', 'role': 'user', 'rate_limit': 30, 'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:04:28.224183+00:00"
+  },
+  {
+    "_id": "69861116794ea353acae1461",
+    "id": "2c8a360e-493e-48a6-b871-564616c760e4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user admin@admin.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:04:38.546193+00:00"
+  },
+  {
+    "_id": "6986127c794ea353acae1462",
+    "id": "c599fd54-90e8-49ef-be11-3d2e1ab1d6da",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:10:36.596780+00:00"
+  },
+  {
+    "_id": "69861283794ea353acae1463",
+    "id": "3b6a37dc-a6cf-44b5-bc35-588ef173006d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:10:43.878357+00:00"
+  },
+  {
+    "_id": "698612c6794ea353acae1464",
+    "id": "80096998-d7fa-4ff1-9980-bd70d3a2bdeb",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user newtest@example.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:11:50.924141+00:00"
+  },
+  {
+    "_id": "698612e2794ea353acae1465",
+    "id": "337139ff-e342-44a8-8021-ebfd268e170c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_DELETED",
+    "details": "Deleted user debug_test@example.com",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:12:18.527092+00:00"
+  },
+  {
+    "_id": "69861317794ea353acae1466",
+    "id": "bca55ee2-4869-4827-99b5-28484a7098a1",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user newtest@example.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:13:11.150860+00:00"
+  },
+  {
+    "_id": "6986134f794ea353acae1467",
+    "id": "4eacfc5a-e3c1-4a59-b675-e2e79c7318cf",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918377@example.com: {'email': 'test_1764918377@example.com', 'role': 'user', 'rate_limit': 30, 'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:14:07.386196+00:00"
+  },
+  {
+    "_id": "69861350794ea353acae1468",
+    "id": "9e5eb34e-2634-4b98-88f7-1f9e6f604fef",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test_1764918377@example.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:14:08.923334+00:00"
+  },
+  {
+    "_id": "698613bd794ea353acae1469",
+    "id": "032a01fd-6bff-41ed-b364-620988cfab69",
+    "user_id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "user_email": "test2@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:15:57.565673+00:00"
+  },
+  {
+    "_id": "698613c9794ea353acae146a",
+    "id": "31ad3ea3-1795-491c-9339-3ca0d523f8e6",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:09.553586+00:00"
+  },
+  {
+    "_id": "698613cb794ea353acae146b",
+    "id": "04a774a9-d172-4812-8c66-c5caa39f4636",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:11.172952+00:00"
+  },
+  {
+    "_id": "698613cb794ea353acae146c",
+    "id": "f19af80d-b71d-4ef1-82a8-e6449fa1f84e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:11.556766+00:00"
+  },
+  {
+    "_id": "698613cb794ea353acae146d",
+    "id": "03e8c6c1-2d46-43b0-a109-b99cdc7a2733",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:11.779385+00:00"
+  },
+  {
+    "_id": "698613cc794ea353acae146e",
+    "id": "216bb7e5-4592-4d27-9628-713e78422bf0",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:12.964551+00:00"
+  },
+  {
+    "_id": "698613d0794ea353acae146f",
+    "id": "71b1f5e9-55e6-4da0-bc9d-6732c897ddc4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test2@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:16.423715+00:00"
+  },
+  {
+    "_id": "698613e5794ea353acae1470",
+    "id": "9457aa12-12b9-4278-992c-c31c6154c5bb",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:16:37.697420+00:00"
+  },
+  {
+    "_id": "6986141f794ea353acae1471",
+    "id": "7c6e462e-e264-4a6e-b7d4-3bb8bc6ce662",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:17:35.180150+00:00"
+  },
+  {
+    "_id": "69861421794ea353acae1472",
+    "id": "bcf61507-2111-4d36-ab99-95171608eb74",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:17:37.390043+00:00"
+  },
+  {
+    "_id": "69861436794ea353acae1473",
+    "id": "2a5d6277-f16e-4a73-a730-44e1c3cf6a43",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:17:58.402224+00:00"
+  },
+  {
+    "_id": "6986147f794ea353acae1474",
+    "id": "ef844e57-ea83-4c7e-a95a-a0af506a3f87",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:19:11.781424+00:00"
+  },
+  {
+    "_id": "69861489794ea353acae1475",
+    "id": "f0e3fe1f-46fa-45c4-8e7d-b45709a1be9e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:19:21.224536+00:00"
+  },
+  {
+    "_id": "698614bd794ea353acae1476",
+    "id": "fc0fd2c8-220b-4c1b-a48a-3500b1da4724",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:20:13.893449+00:00"
+  },
+  {
+    "_id": "698614e4794ea353acae1477",
+    "id": "b74b0268-5f1e-40ce-90a2-7c88c5fa8e1c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:20:52.938363+00:00"
+  },
+  {
+    "_id": "69861526794ea353acae147e",
+    "id": "eb7ed8d3-54b5-42d7-a972-62c4004dd682",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:21:58.115572+00:00"
+  },
+  {
+    "_id": "69861533794ea353acae147f",
+    "id": "e86c6c28-3fcf-4a22-bbc9-d9b929b5c98d",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:22:11.530504+00:00"
+  },
+  {
+    "_id": "6986157c794ea353acae1484",
+    "id": "6025b882-082a-4dad-930c-e81f4fa4d66e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:23:24.210293+00:00"
+  },
+  {
+    "_id": "698615b4794ea353acae148b",
+    "id": "7544018e-a22d-4c35-a913-a69d1bcfba2c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:24:20.621362+00:00"
+  },
+  {
+    "_id": "698616a5794ea353acae148c",
+    "id": "2451cfae-d7e7-4e91-93e3-6d8fe9df6476",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:28:21.174398+00:00"
+  },
+  {
+    "_id": "69861771794ea353acae1491",
+    "id": "ea6079a9-4c7b-4366-8203-03f3a93b50d6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:31:45.947922+00:00"
+  },
+  {
+    "_id": "6986177c794ea353acae1492",
+    "id": "26ff863d-2d87-484c-b5b7-7bd3edf47554",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:31:56.747702+00:00"
+  },
+  {
+    "_id": "69861848794ea353acae1497",
+    "id": "c3cc7238-09bd-44ec-8507-18d44522639c",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:35:20.280306+00:00"
+  },
+  {
+    "_id": "698619f28347fe9f4e914cf4",
+    "id": "e17ef78f-3d3d-4531-9ba1-3fa679005ac8",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:42:26.324846+00:00"
+  },
+  {
+    "_id": "69861a128347fe9f4e914cf7",
+    "id": "6b510736-25f9-4f61-82e3-742816ca8bb1",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:42:58.262147+00:00"
+  },
+  {
+    "_id": "69861a1b8347fe9f4e914cf8",
+    "id": "e9e93a2f-3666-4a1c-b045-4cda17c1c650",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:43:07.839286+00:00"
+  },
+  {
+    "_id": "69861a3c8347fe9f4e914cfb",
+    "id": "c184f4c1-cbe0-415e-b5b6-66d350a34e6f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:43:40.058670+00:00"
+  },
+  {
+    "_id": "69861b3b8347fe9f4e914cfc",
+    "id": "f11bef85-69b2-49ad-ae84-e04f90f47018",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T16:47:55.272683+00:00"
+  },
+  {
+    "_id": "69861ed08347fe9f4e914d03",
+    "id": "51f0a26f-f302-44d3-ba93-6df9f6e07182",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user newtest@example.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:03:12.430110+00:00"
+  },
+  {
+    "_id": "69861ede8347fe9f4e914d04",
+    "id": "8a02f145-4d4c-4c2a-8d4f-d80835350919",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user newtest@example.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:03:26.159004+00:00"
+  },
+  {
+    "_id": "69861ee68347fe9f4e914d05",
+    "id": "b83354b8-4c68-4752-8263-cca3e4d8f71e",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:03:34.837213+00:00"
+  },
+  {
+    "_id": "6986235d47c0e8ab0cef09be",
+    "id": "8835e6a0-c540-4024-8788-97229d34ef35",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:22:37.547419+00:00"
+  },
+  {
+    "_id": "6986236547c0e8ab0cef09bf",
+    "id": "6b70f369-b68d-4550-ab29-3ad12d7117c1",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:22:45.775498+00:00"
+  },
+  {
+    "_id": "698623ca47c0e8ab0cef09c0",
+    "id": "48a54eeb-a543-4c30-979b-c0fa431af965",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:24:26.397119+00:00"
+  },
+  {
+    "_id": "698623d147c0e8ab0cef09c1",
+    "id": "93cbf855-7769-4ca9-85d4-8f550d1a5969",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user undefined",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:24:33.753804+00:00"
+  },
+  {
+    "_id": "698623dd47c0e8ab0cef09c2",
+    "id": "34c3b774-7812-44ac-9133-ef3e95bc3710",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user undefined",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:24:45.626851+00:00"
+  },
+  {
+    "_id": "698623eb47c0e8ab0cef09c3",
+    "id": "7fbfd5ad-8da6-4362-9987-73d9e8d38ab3",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:24:59.693998+00:00"
+  },
+  {
+    "_id": "698623f047c0e8ab0cef09c4",
+    "id": "3fc70f9e-bb5d-482c-973f-fb0d65e3eb45",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:25:04.151037+00:00"
+  },
+  {
+    "_id": "698623fa47c0e8ab0cef09c5",
+    "id": "4205a61f-54c5-46c3-8888-2eafdaed892b",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:25:14.724000+00:00"
+  },
+  {
+    "_id": "698623ff47c0e8ab0cef09c6",
+    "id": "0439b945-0c06-431b-8b87-4f3c6f4a3731",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:25:19.750627+00:00"
+  },
+  {
+    "_id": "6986240d47c0e8ab0cef09c7",
+    "id": "8c88d0db-7067-42e5-adbc-1203171269e8",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:25:33.731936+00:00"
+  },
+  {
+    "_id": "6986253147c0e8ab0cef09c8",
+    "id": "f605d65b-fc39-4eed-a794-738457c0d762",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user undefined",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:30:25.907576+00:00"
+  },
+  {
+    "_id": "6986254c47c0e8ab0cef09c9",
+    "id": "e8800c42-8025-4207-9835-b50201fd56aa",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:30:52.328082+00:00"
+  },
+  {
+    "_id": "6986259947c0e8ab0cef09ca",
+    "id": "cc38c298-d00a-4ce4-8b18-677c2a570517",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:32:09.369740+00:00"
+  },
+  {
+    "_id": "6986259d47c0e8ab0cef09cb",
+    "id": "fe9235a8-067a-4346-beff-055f160f4237",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:32:13.454620+00:00"
+  },
+  {
+    "_id": "698625a647c0e8ab0cef09cc",
+    "id": "f08988a7-eb22-4575-8615-b5ac18ff0f39",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:32:22.720094+00:00"
+  },
+  {
+    "_id": "698625f947c0e8ab0cef09cd",
+    "id": "ad4b117a-c35c-460a-8ee7-d78b9bf2762f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:33:45.701019+00:00"
+  },
+  {
+    "_id": "6986265647c0e8ab0cef09ce",
+    "id": "0e4786cf-04ff-49a8-a6f6-f46b3568e46f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:35:18.494275+00:00"
+  },
+  {
+    "_id": "698626a347c0e8ab0cef09cf",
+    "id": "522af71c-552e-45db-a8ce-ca72d4ccace5",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:36:35.016558+00:00"
+  },
+  {
+    "_id": "698626b547c0e8ab0cef09d0",
+    "id": "18faaebf-7f56-4058-a863-19fdb28cf505",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:36:53.709317+00:00"
+  },
+  {
+    "_id": "698626c247c0e8ab0cef09d1",
+    "id": "986e8470-27b0-4e7b-95aa-0f52b1e36660",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:37:06.082545+00:00"
+  },
+  {
+    "_id": "698626c947c0e8ab0cef09d2",
+    "id": "594c81b3-bc8a-4e4e-abaf-8fc4dae85d60",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:37:13.330762+00:00"
+  },
+  {
+    "_id": "698626f247c0e8ab0cef09d3",
+    "id": "7ca0d7eb-da62-472a-babe-2202a1b0e6d5",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:37:54.910662+00:00"
+  },
+  {
+    "_id": "6986270747c0e8ab0cef09d4",
+    "id": "13381488-ae28-4446-b1c6-1480fa9c5a47",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:38:15.104012+00:00"
+  },
+  {
+    "_id": "6986272847c0e8ab0cef09d5",
+    "id": "1ccca873-8276-496e-9534-73f323cf546f",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:38:48.082204+00:00"
+  },
+  {
+    "_id": "6986273847c0e8ab0cef09d6",
+    "id": "672b8920-092d-41e5-ab2e-6797d57446f2",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:04.015665+00:00"
+  },
+  {
+    "_id": "6986273b47c0e8ab0cef09d7",
+    "id": "d8baf4dd-69fc-41fa-9217-1bc55fc5da1d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:07.605601+00:00"
+  },
+  {
+    "_id": "6986274b47c0e8ab0cef09d8",
+    "id": "c3ffc72e-3bb7-4846-b947-fb1804e56935",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:23.500864+00:00"
+  },
+  {
+    "_id": "6986275347c0e8ab0cef09d9",
+    "id": "95d907e0-d8a6-4646-a8f7-8c38add6715e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:31.627789+00:00"
+  },
+  {
+    "_id": "6986275a47c0e8ab0cef09da",
+    "id": "13c9952f-a7f6-4fd5-b529-0fe0830d1ad0",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:38.627020+00:00"
+  },
+  {
+    "_id": "6986276c47c0e8ab0cef09db",
+    "id": "48bf5ab7-77bc-4921-8c65-165f35b865f3",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'deactive'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:39:56.076621+00:00"
+  },
+  {
+    "_id": "6986277847c0e8ab0cef09dc",
+    "id": "ecf7ef35-0d76-4d94-a3c9-25094c78f0d9",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_UPDATED",
+    "details": "Updated user test6@gmail.com: {'status': 'active'}",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:40:08.354685+00:00"
+  },
+  {
+    "_id": "6986277a47c0e8ab0cef09dd",
+    "id": "a7e988ec-90bc-4b10-b1af-733f31b01600",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:40:10.653679+00:00"
+  },
+  {
+    "_id": "6986279047c0e8ab0cef09de",
+    "id": "1b0f1a74-dc69-4e8e-9fea-0b5426c64f17",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-06T17:40:32.352466+00:00"
+  },
+  {
+    "_id": "6986b1b03680ff222bb03980",
+    "id": "ac33c732-9235-4109-a727-eeffc5a12a4d",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:29:52.580785+00:00"
+  },
+  {
+    "_id": "6986b1ba3680ff222bb03981",
+    "id": "f618a214-c5ed-4ec7-9a12-d33da3a7f987",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:30:02.879378+00:00"
+  },
+  {
+    "_id": "6986b1be3680ff222bb03982",
+    "id": "351e367b-71db-48c9-81b8-6f6b7996d59f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:30:06.414435+00:00"
+  },
+  {
+    "_id": "6986b1c83680ff222bb03983",
+    "id": "af9de2c0-b0c6-4272-90ce-93e2b00d2906",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:30:16.475422+00:00"
+  },
+  {
+    "_id": "6986b1cb3680ff222bb03984",
+    "id": "9547faa4-e17a-442e-a6f3-634c852ed662",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:30:19.397464+00:00"
+  },
+  {
+    "_id": "6986b20e3680ff222bb03985",
+    "id": "3d36e8d8-fbd2-4d6a-bcb9-8f9d1e4cc9ba",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "API_KEY_REGENERATED",
+    "details": "User regenerated API key",
+    "ip_address": null,
+    "created_at": "2026-02-07T03:31:26.742315+00:00"
+  },
+  {
+    "_id": "6986c3f44b53cfc205003524",
+    "id": "73948f33-5223-4a17-bd77-4657b7c5da2b",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T04:47:48.856921+00:00"
+  },
+  {
+    "_id": "6986c4024b53cfc205003525",
+    "id": "22566dff-0c74-434e-a8e3-ff6ee7181b44",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T04:48:02.639015+00:00"
+  },
+  {
+    "_id": "6986eba9fa980f4701d2b41c",
+    "id": "4bdba149-4391-4d28-b03e-f0a240d4f6ba",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:37:13.616756+00:00"
+  },
+  {
+    "_id": "6986ebcafa980f4701d2b41d",
+    "id": "68e633f5-f873-4229-8967-10a1da332d24",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:37:46.613702+00:00"
+  },
+  {
+    "_id": "6986ec13fa980f4701d2b41e",
+    "id": "fe4f471b-13fa-43c4-ab2d-9966dc99cf45",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:38:59.438415+00:00"
+  },
+  {
+    "_id": "6986ec64fa980f4701d2b41f",
+    "id": "502b1395-7838-4cb0-bcb4-9f0fd63ba1a6",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:40:20.416556+00:00"
+  },
+  {
+    "_id": "6986ec6cfa980f4701d2b420",
+    "id": "d0896af6-6429-4e7f-8c3b-97add3dcb06b",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:40:28.552077+00:00"
+  },
+  {
+    "_id": "6986ecaffa980f4701d2b421",
+    "id": "168a3e29-aa12-40b8-be83-583ed6a728da",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:41:35.146551+00:00"
+  },
+  {
+    "_id": "6986ed36fa980f4701d2b422",
+    "id": "959370f6-b46d-415a-9c90-298c0b77ba40",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:43:50.562161+00:00"
+  },
+  {
+    "_id": "6986ee20fa980f4701d2b424",
+    "id": "135f50f3-19cb-4573-a7f4-556568012882",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user undefined",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:47:44.272685+00:00"
+  },
+  {
+    "_id": "6986ef6d4d26b49b0c963e08",
+    "id": "effddc5d-867a-4c37-b30f-ed856e94333b",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:53:17.446005+00:00"
+  },
+  {
+    "_id": "6986ef9c4d26b49b0c963e09",
+    "id": "6ce612d6-5849-4f48-af4c-76dcdc019b1d",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user 23621156-97db-4b63-a00d-d6423f9d599b",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:54:04.937091+00:00"
+  },
+  {
+    "_id": "6986f0204d26b49b0c963e0a",
+    "id": "1d0acf5d-10ca-4728-8697-6ea6c8575863",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:56:16.256222+00:00"
+  },
+  {
+    "_id": "6986f06c4d26b49b0c963e0d",
+    "id": "378257d5-02ae-4883-8225-6747f187b96c",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user 23621156-97db-4b63-a00d-d6423f9d599b",
+    "ip_address": null,
+    "created_at": "2026-02-07T07:57:32.202712+00:00"
+  },
+  {
+    "_id": "6986f1334d26b49b0c963e0e",
+    "id": "d732a89c-1b45-481f-ace6-9ddc73c5f8a2",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:00:51.153366+00:00"
+  },
+  {
+    "_id": "6986f1484d26b49b0c963e0f",
+    "id": "29dbbfcd-127c-4ff4-81a9-f644257959d5",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:01:12.398438+00:00"
+  },
+  {
+    "_id": "6986f14c4d26b49b0c963e10",
+    "id": "5ab0bb2c-9e88-421e-b28f-d7cb338355e3",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:01:16.110583+00:00"
+  },
+  {
+    "_id": "6986f1544d26b49b0c963e11",
+    "id": "bb61f2b4-896a-47a1-a6da-5210d747964a",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:01:24.827511+00:00"
+  },
+  {
+    "_id": "6986f1964d26b49b0c963e13",
+    "id": "779215f9-d1f5-4838-a58f-1cffb97b6c88",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:02:30.324744+00:00"
+  },
+  {
+    "_id": "6986f19f4d26b49b0c963e14",
+    "id": "facdee16-a390-4aa9-89ee-a23ad35d04d8",
+    "user_id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "user_email": "newtest@example.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:02:39.353978+00:00"
+  },
+  {
+    "_id": "6986f1cc4d26b49b0c963e15",
+    "id": "5ea72f8c-b09a-423c-bf6c-252d7bd4edd4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Admin disconnected WhatsApp for user 1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:03:24.820917+00:00"
+  },
+  {
+    "_id": "6986f1e44d26b49b0c963e16",
+    "id": "87957ac7-6552-4762-bd51-dccf17aa5c7e",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:03:48.875839+00:00"
+  },
+  {
+    "_id": "6986f1e84d26b49b0c963e17",
+    "id": "b689867d-0087-4580-81bc-6786b86ad174",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_DISCONNECTED",
+    "details": "Disconnected WhatsApp",
+    "ip_address": null,
+    "created_at": "2026-02-07T08:03:52.555172+00:00"
+  },
+  {
+    "_id": "698712f62f2218e9345c0e86",
+    "id": "ac847095-97bd-48f8-8c46-c78b324d8a12",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-07T10:24:54.330030+00:00"
+  },
+  {
+    "_id": "6988233942008d70219cc6b8",
+    "id": "00270297-c1f6-4417-b607-dade62279327",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-08T05:46:33.288668+00:00"
+  },
+  {
+    "_id": "698cb20488d6fb0ed779c43c",
+    "id": "6fd70c56-c27d-4d6b-930b-15d1502ec6ec",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:44:52.474370+00:00"
+  },
+  {
+    "_id": "698cb20d88d6fb0ed779c43d",
+    "id": "e01266af-fd77-4784-86b2-bc3c7139793f",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:45:01.720026+00:00"
+  },
+  {
+    "_id": "698cb24b88d6fb0ed779c43e",
+    "id": "6e0ffcd1-9432-4b4a-9223-e77ae01bc9f4",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:46:03.122362+00:00"
+  },
+  {
+    "_id": "698cb28288d6fb0ed779c43f",
+    "id": "cafb12c0-7fad-4743-93fc-a7738c9efd27",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:46:58.156494+00:00"
+  },
+  {
+    "_id": "698cb38288d6fb0ed779c440",
+    "id": "6c82eab8-9b33-4082-9fe7-8438f6c9b71a",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:51:14.312488+00:00"
+  },
+  {
+    "_id": "698cb3ce88d6fb0ed779c441",
+    "id": "4687daee-bc27-4bcf-91d6-4103214afb18",
+    "user_id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "user_email": "test6@gmail.com",
+    "action": "WHATSAPP_INITIALIZED",
+    "details": "Initialized WhatsApp connection",
+    "ip_address": null,
+    "created_at": "2026-02-11T16:52:30.035079+00:00"
+  },
+  {
+    "_id": "698cb766a1beef0758a48b31",
+    "id": "ac7756d6-69be-4915-a99a-6af2c02b80b2",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T17:07:50.897190+00:00"
+  },
+  {
+    "_id": "698cbbfc418b603b2bb94b95",
+    "id": "351a3e39-94cd-4880-9805-5e6837c2ccee",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T17:27:24.928178+00:00"
+  },
+  {
+    "_id": "698cbeb1e9d730a741aef858",
+    "id": "2947716e-5c95-4b05-ad91-fdfaa2bc339e",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T17:38:57.028236+00:00"
+  },
+  {
+    "_id": "698cbeb9e9d730a741aef859",
+    "id": "145937b9-05b3-4257-81cd-19d4b571e7c9",
+    "user_id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "user_email": "admin@admin.com",
+    "action": "USER_LOGIN",
+    "details": "User logged in",
+    "ip_address": null,
+    "created_at": "2026-02-11T17:39:05.195697+00:00"
+  }
+]

@@ -1,0 +1,146 @@
+[
+  {
+    "_id": "693284692640121cd996ab84",
+    "id": "be4363dc-ae0e-4a41-b199-891597340832",
+    "email": "test_1764918377@example.com",
+    "password_hash": "$2b$12$6Pnln3HJFjJ7O/S5bPi7LuTyiKbjGfe/GHAI1s61NSajXOwfRWXeK",
+    "created_at": "2025-12-05T07:06:17.558146+00:00",
+    "api_key": "rOktWrhx40ZIX_-BFtueK_GkSJMeicigmoE0daeH9Hs",
+    "status": "active",
+    "rate_limit": 30,
+    "role": "user"
+  },
+  {
+    "_id": "6932848c2640121cd996ab89",
+    "id": "f396fe9d-84b3-4b32-bde2-1b411b691713",
+    "email": "test_1764918412@example.com",
+    "password_hash": "$2b$12$7A1owD9WBYEirPtBuP/druP.YGWbnP1NH47ytgJ76IIGhCFBov3Fu",
+    "created_at": "2025-12-05T07:06:52.968185+00:00",
+    "api_key": "BkvUGBio14js_6Ig7dkr4iyLAyPX6RZ3Dkqfv7WMkn4",
+    "rate_limit": 30,
+    "role": "user",
+    "status": "active"
+  },
+  {
+    "_id": "693284ae2640121cd996ab8f",
+    "id": "033420f8-d94f-49d5-82f1-9922d56dd170",
+    "email": "backend_test@example.com",
+    "password_hash": "$2b$12$ufDE.94ZJflXnZUETPAu0e3o3YQNZ3W7wrkOHMzzBfO5M6zNsCCrK",
+    "created_at": "2025-12-05T07:07:26.864952+00:00",
+    "api_key": "fdvmTLHglDF5T1vy8xiM-SCXTc8OmrKwoepK3AuiKAA"
+  },
+  {
+    "_id": "693285062640121cd996ab94",
+    "id": "347d26e1-1de2-48c2-96db-7b8686095b3a",
+    "email": "test@gmail.com",
+    "password_hash": "$2b$12$tYYRIHNkshcVhULUesmrPu4pShYiLYqCwZVL2ZQNzea3aIH7F6k6G",
+    "created_at": "2025-12-05T07:08:54.004684+00:00",
+    "api_key": "d40wWSxf5y4GHG_Fz8CA4oN_uWLqmM4dAEtu9sLEGiA",
+    "status": "deactive"
+  },
+  {
+    "_id": "695facaf26b3b7d85ac2b2e0",
+    "id": "bb6221aa-6830-4eb6-b26b-da1fddd4eb43",
+    "email": "test@whatsapp.com",
+    "password_hash": "$2b$12$UQJVI5Q5bLFTp1kHnvE9rewcc4e6HDobuZKeCMg9hfoq2Fh8hyOvq",
+    "created_at": "2026-01-08T13:10:07.544302+00:00",
+    "api_key": "2BfJBjtNLtXXDk7K6Urg48Cui5pNox-T-DIY2KYjxFc"
+  },
+  {
+    "_id": "695fadcb26b3b7d85ac2b2e1",
+    "id": "4553516c-3dfc-409b-8cd9-66c55bb307ca",
+    "email": "test2@gmail.com",
+    "password_hash": "$2b$12$Tby8MhAxMukC2C38mqKsSeDToC8tpuq89N0zfSXrBnl3nigtnk1Tq",
+    "created_at": "2026-01-08T13:14:51.779525+00:00",
+    "api_key": "FR8reYcXywp5gMBYdeatUEu-e50fAebjsRH8aEWbIjI",
+    "status": "deactive"
+  },
+  {
+    "_id": "695fb131b8b8b76014f32b4b",
+    "id": "d9afa3d6-bd26-407c-9712-1a72417922f6",
+    "email": "test3@gmail.com",
+    "password_hash": "$2b$12$Gb/EbJeyxIxyEVRTAv//Duvmzv5ELcqHntk4jO9SCp3CdrzoC4mSe",
+    "created_at": "2026-01-08T13:29:21.529947+00:00",
+    "api_key": "JR2fqOjUdGeJTaqPjAaMVt0ax4rBbx2L8eFNZz1Rme8"
+  },
+  {
+    "_id": "6985fc49b0b2bd4b859d0b6d",
+    "id": "3a87bb8a-cf18-438a-bb2d-9e5c82648b9c",
+    "email": "admin@admin.com",
+    "password_hash": "$2b$12$rl4lRc9l/OFF/vScP0FKEO4U0Lg48Pj0WkhSPdpfnc92kRWXs7DVy",
+    "created_at": "2026-02-06T14:35:53.863190+00:00",
+    "api_key": "hHD7AiERubuJEOm3tropio3KAurZqt-3FA5fHJhyWqE",
+    "role": "admin",
+    "status": "active",
+    "rate_limit": 1000
+  },
+  {
+    "_id": "6986001d45166c0104089bd3",
+    "id": "80252c9f-26d9-4acf-9775-3204d9265e39",
+    "email": "TEST_regular_user_3c7f008f@test.com",
+    "password_hash": "$2b$12$W9oGH4yZlBNfsywX5jGsSORfbFo7LzXag6VlULe9Lg1gxM1cliXqG",
+    "created_at": "2026-02-06T14:52:13.665299+00:00",
+    "api_key": "R0wvKBUhLfUBupT_7ZapN8oa1JcepcFsFM_Zu0x1VEY",
+    "role": "user",
+    "status": "active",
+    "rate_limit": 30
+  },
+  {
+    "_id": "6986001e45166c0104089bd8",
+    "id": "ad1e6711-f41e-49dc-bf99-44e3906c3116",
+    "email": "TEST_admin_created_3706fdc5@test.com",
+    "password_hash": "$2b$12$wzJrtzrb5vaGHAirDZoJHOrYowOchf5XmkCXZcreJbTfDAe0Ax9DK",
+    "created_at": "2026-02-06T14:52:14.826429+00:00",
+    "api_key": "W9dw2AGTr-1APO-ZcWI8kz72HGRwl2bdEq1Pdh6n1Mk",
+    "role": "user",
+    "status": "active",
+    "rate_limit": 50
+  },
+  {
+    "_id": "6986001f45166c0104089bdb",
+    "id": "3cafe16b-b5c7-4d95-81e4-4a0ccb190153",
+    "email": "TEST_update_user_2347d28f@test.com",
+    "password_hash": "$2b$12$CUXrtHxPbWTv8xWzTb0DiONwNiPqW/Lad6n/807fyzEP.6Y/xiSfi",
+    "created_at": "2026-02-06T14:52:15.398989+00:00",
+    "api_key": "FGbqlIZtEFKWJJBGzOcWu-GjMc_CzDg2g7pkHziyUp0",
+    "role": "user",
+    "status": "suspended",
+    "rate_limit": 100
+  },
+  {
+    "_id": "69860bb22d11c22b20076a7c",
+    "id": "6685db71-c89f-468a-a58b-83e202ac54fa",
+    "email": "testdeactive@test.com",
+    "password_hash": "$2b$12$xLjUtSonGx/h3tR42qlwUO50xxNH6B48HcobD2ZXlq.PCCN/ju4fG",
+    "plain_password": "Test@123",
+    "created_at": "2026-02-06T15:41:38.209563+00:00",
+    "api_key": "LZjFreIFyZhry6UxNFti5bDsiHCJCUP-0M5kOLHca-o",
+    "role": "user",
+    "status": "deactive",
+    "rate_limit": 30
+  },
+  {
+    "_id": "69860c98794ea353acae143f",
+    "id": "1a32317c-9511-4c24-931c-7068c9bb34f1",
+    "email": "newtest@example.com",
+    "password_hash": "$2b$12$Q4GaaRQ4TFOTLljlKGMtE.i8aMrYJgYoiOyYBswgan2uxUR6pSJ6K",
+    "plain_password": "MyPass@123",
+    "created_at": "2026-02-06T15:45:28.982629+00:00",
+    "api_key": "d4fTL2fXd8XauD5U4bF_cJah0dKrKtBojZoBzHdTGnE",
+    "role": "user",
+    "status": "active",
+    "rate_limit": 50
+  },
+  {
+    "_id": "69860f67794ea353acae144f",
+    "id": "23621156-97db-4b63-a00d-d6423f9d599b",
+    "email": "test6@gmail.com",
+    "password_hash": "$2b$12$cxpW/VOW4CQsbH9lWgug3eT6j37HbwvHe7L/qNMKxynkKA3cA.5Fm",
+    "plain_password": "Password@123",
+    "created_at": "2026-02-06T15:57:27.264588+00:00",
+    "api_key": "Qz7KRQkwBowk8qkVQ8zLeaG0nLWU5qDa1lbRuUpyA2c",
+    "role": "user",
+    "status": "active",
+    "rate_limit": 30
+  }
+]
