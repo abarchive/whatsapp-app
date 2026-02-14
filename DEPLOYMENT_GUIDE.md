@@ -23,7 +23,7 @@ This guide covers everything you need to deploy and use the WhatsApp automation 
 ## 📋 Quick Start Guide
 
 ### Step 1: Access the Application
-Open your browser and navigate to: `https://autowhats-9.preview.emergentagent.com`
+Open your browser and navigate to: `https://msg-sender-5.preview.emergentagent.com`
 
 ### Step 2: Create Account
 1. Click "Sign up"
@@ -53,7 +53,7 @@ Open your browser and navigate to: `https://autowhats-9.preview.emergentagent.co
 
 **Via API:**
 ```bash
-curl -X GET "https://autowhats-9.preview.emergentagent.com/api/send?number=9876543210&msg=Hello+World" \
+curl -X GET "https://msg-sender-5.preview.emergentagent.com/api/send?number=9876543210&msg=Hello+World" \
   -H "api_key: YOUR_API_KEY"
 ```
 
@@ -371,7 +371,7 @@ const axios = require('axios');
 async function sendMessage(number, message, apiKey) {
   try {
     const response = await axios.get(
-      `https://autowhats-9.preview.emergentagent.com/api/send`,
+      `https://msg-sender-5.preview.emergentagent.com/api/send`,
       {
         params: { number, msg: message },
         headers: { 'api_key': apiKey }
@@ -391,7 +391,7 @@ sendMessage('9876543210', 'Hello from Node.js!', 'YOUR_API_KEY');
 import requests
 
 def send_message(number, message, api_key):
-    url = 'https://autowhats-9.preview.emergentagent.com/api/send'
+    url = 'https://msg-sender-5.preview.emergentagent.com/api/send'
     headers = {'api_key': api_key}
     params = {'number': number, 'msg': message}
     
@@ -404,7 +404,7 @@ print(result)
 
 ### cURL
 ```bash
-curl -X GET "https://autowhats-9.preview.emergentagent.com/api/send?number=9876543210&msg=Hello+from+cURL" \
+curl -X GET "https://msg-sender-5.preview.emergentagent.com/api/send?number=9876543210&msg=Hello+from+cURL" \
   -H "api_key: YOUR_API_KEY"
 ```
 
