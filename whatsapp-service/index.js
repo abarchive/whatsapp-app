@@ -20,7 +20,16 @@ app.use(cors());
 app.use(express.json());
 
 // Store clients per user
-const userClients = new Map(); // userId -> { client, status, qrCode, phoneNumber }
+const userClients = new Map(); // userId -> { client, status, qrCode, phoneNumber, browserPid }
+const initializingUsers = new Set(); // Track users currently initializing
+
+// Auth path
+const AUTH_PATH = '/app/whatsapp-service/.wwebjs_auth';
+
+// Ensure auth directory exists
+if (!fs.existsSync(AUTH_PATH)) {
+  fs.mkdirSync(AUTH_PATH, { recursive: true });
+}
 
 // Function to find Chromium executable
 function findChromiumPath() {
@@ -49,7 +58,7 @@ function findChromiumPath() {
 }
 
 const chromiumPath = findChromiumPath();
-console.log('[WhatsApp Service] Server running on port 8002');
+console.log('[WhatsApp Service] Server starting on port 8002');
 console.log('[WhatsApp Service] Per-user WhatsApp connections enabled');
 if (chromiumPath) {
   console.log(`[WhatsApp Service] Found Chromium at: ${chromiumPath}`);
@@ -57,59 +66,105 @@ if (chromiumPath) {
   console.error('[WhatsApp Service] Chromium not found!');
 }
 
-// Get or create user session
-function getUserSession(userId) {
-  if (!userClients.has(userId)) {
-    userClients.set(userId, {
-      client: null,
-      status: 'disconnected',
-      qrCode: null,
-      phoneNumber: null,
-      isConnected: false
-    });
+// Helper function to delay
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Kill user's chromium processes
+function killUserChromium(userId) {
+  try {
+    execSync(`pkill -f "session-${userId}" 2>/dev/null || true`, { encoding: 'utf8' });
+  } catch (e) {}
+}
+
+// Delete user session folder
+function deleteUserSession(userId) {
+  const sessionPath = path.join(AUTH_PATH, `session-${userId}`);
+  try {
+    if (fs.existsSync(sessionPath)) {
+      fs.rmSync(sessionPath, { recursive: true, force: true });
+      console.log(`[User ${userId}] Session folder deleted`);
+    }
+  } catch (e) {
+    console.log(`[User ${userId}] Error deleting session:`, e.message);
   }
-  return userClients.get(userId);
+}
+
+// Full cleanup for a user
+async function cleanupUser(userId) {
+  console.log(`[User ${userId}] Running full cleanup...`);
+  
+  const session = userClients.get(userId);
+  
+  if (session) {
+    if (session.client) {
+      try {
+        await session.client.destroy();
+      } catch (e) {
+        console.log(`[User ${userId}] Destroy error (ignoring):`, e.message);
+      }
+    }
+    userClients.delete(userId);
+  }
+  
+  initializingUsers.delete(userId);
+  killUserChromium(userId);
+  deleteUserSession(userId);
+  
+  console.log(`[User ${userId}] Cleanup complete`);
 }
 
 // Initialize WhatsApp for a specific user
 async function initializeUserWhatsApp(userId) {
-  const session = getUserSession(userId);
+  // Check if already initializing
+  if (initializingUsers.has(userId)) {
+    console.log(`[User ${userId}] Already initializing, please wait...`);
+    const session = userClients.get(userId);
+    return { success: true, status: session?.status || 'initializing' };
+  }
+  
+  const existingSession = userClients.get(userId);
   
   // If already connected, return
-  if (session.isConnected && session.client) {
-    return { success: true, status: 'already_connected', phoneNumber: session.phoneNumber };
+  if (existingSession?.isConnected && existingSession?.client) {
+    return { success: true, status: 'already_connected', phoneNumber: existingSession.phoneNumber };
   }
   
-  // If already initializing, return
-  if (session.status === 'initializing') {
-    return { success: true, status: 'initializing' };
+  // If has QR ready, return it
+  if (existingSession?.status === 'qr_ready' && existingSession?.qrCode) {
+    return { success: true, status: 'qr_ready' };
   }
   
-  // Destroy old client if exists
-  if (session.client) {
-    try {
-      await session.client.destroy();
-    } catch (e) {
-      console.log(`[User ${userId}] Error destroying old client:`, e.message);
-    }
-    session.client = null;
-  }
+  // Mark as initializing
+  initializingUsers.add(userId);
+  
+  // Full cleanup first
+  await cleanupUser(userId);
+  
+  // Wait for cleanup
+  await delay(2000);
   
   console.log(`[User ${userId}] Initializing WhatsApp client...`);
-  session.status = 'initializing';
-  session.qrCode = null;
-  session.isConnected = false;
-  session.phoneNumber = null;
+  
+  // Create new session
+  const session = {
+    client: null,
+    status: 'initializing',
+    qrCode: null,
+    phoneNumber: null,
+    isConnected: false
+  };
+  userClients.set(userId, session);
   
   if (!chromiumPath) {
     session.status = 'error';
+    initializingUsers.delete(userId);
     throw new Error('Chromium browser not found');
   }
   
   const client = new Client({
     authStrategy: new LocalAuth({
       clientId: userId,
-      dataPath: '/app/whatsapp-service/.wwebjs_auth'
+      dataPath: AUTH_PATH
     }),
     puppeteer: {
       executablePath: chromiumPath,
@@ -138,12 +193,13 @@ async function initializeUserWhatsApp(userId) {
         '--single-process'
       ],
       headless: true,
-      timeout: 30000
+      timeout: 60000,
+      protocolTimeout: 60000
     },
-    qrMaxRetries: 3,
-    authTimeoutMs: 30000,
+    qrMaxRetries: 5,
+    authTimeoutMs: 60000,
     takeoverOnConflict: true,
-    takeoverTimeoutMs: 10000
+    takeoverTimeoutMs: 30000
   });
   
   session.client = client;
@@ -153,6 +209,7 @@ async function initializeUserWhatsApp(userId) {
     console.log(`[User ${userId}] QR Code received`);
     session.qrCode = qr;
     session.status = 'qr_ready';
+    initializingUsers.delete(userId);
     io.emit(`qr_${userId}`, { qr });
   });
   
@@ -162,6 +219,7 @@ async function initializeUserWhatsApp(userId) {
     session.isConnected = true;
     session.status = 'connected';
     session.qrCode = null;
+    initializingUsers.delete(userId);
     
     // Get connected phone number
     try {
@@ -178,9 +236,8 @@ async function initializeUserWhatsApp(userId) {
   });
   
   // Authenticated event
-  client.on('authenticated', async () => {
+  client.on('authenticated', () => {
     console.log(`[User ${userId}] WhatsApp authenticated`);
-    session.status = 'authenticated';
   });
   
   // Auth failure event
@@ -190,6 +247,10 @@ async function initializeUserWhatsApp(userId) {
     session.qrCode = null;
     session.client = null;
     session.isConnected = false;
+    initializingUsers.delete(userId);
+    
+    // Cleanup on auth failure
+    cleanupUser(userId);
   });
   
   // Disconnected event
@@ -200,6 +261,7 @@ async function initializeUserWhatsApp(userId) {
     session.qrCode = null;
     session.phoneNumber = null;
     session.client = null;
+    initializingUsers.delete(userId);
     io.emit(`disconnected_${userId}`, { reason });
   });
   
@@ -211,6 +273,11 @@ async function initializeUserWhatsApp(userId) {
     console.error(`[User ${userId}] Initialization error:`, error.message);
     session.status = 'error';
     session.client = null;
+    initializingUsers.delete(userId);
+    
+    // Cleanup on error
+    await cleanupUser(userId);
+    
     throw error;
   }
 }
@@ -222,7 +289,6 @@ app.get('/status', (req, res) => {
   const userId = req.query.userId;
   
   if (!userId) {
-    // Return global status for backward compatibility
     return res.json({
       status: 'disconnected',
       connected: false,
@@ -231,7 +297,16 @@ app.get('/status', (req, res) => {
     });
   }
   
-  const session = getUserSession(userId);
+  const session = userClients.get(userId);
+  if (!session) {
+    return res.json({
+      status: 'disconnected',
+      connected: false,
+      qrAvailable: false,
+      phoneNumber: null
+    });
+  }
+  
   res.json({
     status: session.status,
     connected: session.isConnected,
@@ -248,8 +323,8 @@ app.get('/qr', (req, res) => {
     return res.status(400).json({ error: 'userId is required' });
   }
   
-  const session = getUserSession(userId);
-  if (session.qrCode) {
+  const session = userClients.get(userId);
+  if (session && session.qrCode) {
     res.json({ qr: session.qrCode, status: session.status });
   } else {
     res.status(404).json({ error: 'QR code not available' });
@@ -285,9 +360,9 @@ app.post('/send', async (req, res) => {
     return res.status(400).json({ error: 'number and message are required' });
   }
   
-  const session = getUserSession(userId);
+  const session = userClients.get(userId);
   
-  if (!session.isConnected || !session.client) {
+  if (!session || !session.isConnected || !session.client) {
     return res.status(400).json({ error: 'WhatsApp not connected. Please scan QR code first.' });
   }
   
@@ -360,36 +435,27 @@ app.post('/disconnect', async (req, res) => {
   }
   
   try {
+    // Try to logout first (this invalidates the session on WhatsApp servers)
     if (session.client) {
-      console.log(`[User ${userId}] Destroying WhatsApp client...`);
+      console.log(`[User ${userId}] Logging out from WhatsApp...`);
       try {
         await session.client.logout();
+        console.log(`[User ${userId}] Logged out successfully`);
       } catch (e) {
         console.log(`[User ${userId}] Logout error (ignoring):`, e.message);
       }
-      try {
-        await session.client.destroy();
-      } catch (e) {
-        console.log(`[User ${userId}] Destroy error (ignoring):`, e.message);
-      }
     }
     
-    // Remove from Map
-    userClients.delete(userId);
-    console.log(`[User ${userId}] Removed from sessions map`);
-    
-    // Delete session data
-    const sessionPath = path.join('/app/whatsapp-service/.wwebjs_auth', `session-${userId}`);
-    if (fs.existsSync(sessionPath)) {
-      fs.rmSync(sessionPath, { recursive: true, force: true });
-      console.log(`[User ${userId}] Session data deleted`);
-    }
+    // Full cleanup
+    await cleanupUser(userId);
     
     res.json({ success: true, message: 'Disconnected successfully' });
   } catch (error) {
     console.error(`[User ${userId}] Error disconnecting:`, error);
-    // Still try to remove from map
-    userClients.delete(userId);
+    
+    // Force cleanup even on error
+    await cleanupUser(userId);
+    
     res.json({ success: true, message: 'Disconnected with errors' });
   }
 });
