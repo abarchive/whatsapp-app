@@ -135,14 +135,14 @@ export default function AdminSystem() {
               <Database size={24} style={{ color: '#667eea' }} />
             </div>
             <div>
-              <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>MongoDB Database</h3>
+              <h3 style={{ color: '#1e293b', fontSize: '16px', fontWeight: '600', margin: 0 }}>PostgreSQL Database</h3>
               <p style={{ color: '#64748b', fontSize: '13px', margin: 0 }}>Primary Data Store</p>
             </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {getStatusIcon(systemStatus?.database)}
-            <span style={{ color: getStatusColor(systemStatus?.database), fontWeight: '600', textTransform: 'capitalize' }}>
-              {systemStatus?.database || 'Unknown'}
+            {getStatusIcon(systemStatus?.database === 'postgresql' ? 'connected' : systemStatus?.database)}
+            <span style={{ color: getStatusColor(systemStatus?.database === 'postgresql' ? 'connected' : systemStatus?.database), fontWeight: '600', textTransform: 'capitalize' }}>
+              {systemStatus?.database === 'postgresql' ? 'Connected' : (systemStatus?.database || 'Unknown')}
             </span>
           </div>
         </div>
