@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-from motor.motor_asyncio import AsyncIOMotorClient
+import asyncpg
 import os
 import logging
 from pathlib import Path
@@ -15,23 +15,46 @@ import jwt
 import secrets
 import aiohttp
 import subprocess
+from contextlib import asynccontextmanager
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-mongo_url = os.environ['MONGO_URL']
-# MongoDB connection with better settings for Atlas
-client = AsyncIOMotorClient(
-    mongo_url,
-    serverSelectionTimeoutMS=5000,
-    connectTimeoutMS=10000,
-    socketTimeoutMS=10000,
-    retryWrites=True,
-    w='majority'
-)
-db = client[os.environ['DB_NAME']]
+# PostgreSQL connection settings
+DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
 
-app = FastAPI()
+# Global connection pool
+db_pool = None
+
+async def get_db_pool():
+    global db_pool
+    if db_pool is None:
+        db_pool = await asyncpg.create_pool(
+            DATABASE_URL,
+            min_size=2,
+            max_size=10,
+            command_timeout=60
+        )
+    return db_pool
+
+async def close_db_pool():
+    global db_pool
+    if db_pool:
+        await db_pool.close()
+        db_pool = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await get_db_pool()
+    await create_default_admin()
+    logger.info("Database pool initialized")
+    yield
+    # Shutdown
+    await close_db_pool()
+    logger.info("Database pool closed")
+
+app = FastAPI(lifespan=lifespan)
 api_router = APIRouter(prefix="/api")
 security = HTTPBearer()
 
@@ -40,8 +63,9 @@ security = HTTPBearer()
 async def health_check():
     """Health check endpoint for monitoring and load balancers"""
     try:
-        # Check MongoDB connection
-        await db.command('ping')
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.fetchval('SELECT 1')
         db_status = "connected"
     except Exception:
         db_status = "disconnected"
@@ -50,10 +74,11 @@ async def health_check():
         "status": "ok",
         "service": "whatsapp-automation-api",
         "database": db_status,
+        "database_type": "postgresql",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
-JWT_SECRET = os.environ['JWT_SECRET']
+JWT_SECRET = os.environ.get('JWT_SECRET', 'your-secret-key-change-in-production')
 JWT_ALGORITHM = 'HS256'
 WHATSAPP_SERVICE_URL = os.environ.get('WHATSAPP_SERVICE_URL', 'http://localhost:8002')
 
@@ -62,12 +87,12 @@ class User(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     email: EmailStr
     password_hash: str
-    plain_password: Optional[str] = None  # Store plain password for admin view
+    plain_password: Optional[str] = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     api_key: str = Field(default_factory=lambda: secrets.token_urlsafe(32))
-    role: str = "user"  # "user" or "admin"
-    status: str = "active"  # "active" or "deactive"
-    rate_limit: int = 30  # messages per hour
+    role: str = "user"
+    status: str = "active"
+    rate_limit: int = 30
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -139,18 +164,37 @@ def create_access_token(user_id: str, email: str, role: str = "user") -> str:
     }
     return jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
+# Helper function to convert asyncpg Record to dict
+def record_to_dict(record):
+    if record is None:
+        return None
+    return dict(record)
+
+def records_to_list(records):
+    return [dict(r) for r in records]
+
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
         token = credentials.credentials
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get('sub')
-        user = await db.users.find_one({'id': user_id}, {'_id': 0, 'password_hash': 0})
+        
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            user = await conn.fetchrow(
+                'SELECT id, email, api_key, role, status, rate_limit, created_at FROM users WHERE id = $1',
+                uuid.UUID(user_id)
+            )
+        
         if not user:
             raise HTTPException(status_code=401, detail='User not found')
-        # Check for deactive or suspended status
-        if user.get('status') in ['suspended', 'deactive']:
+        
+        user_dict = record_to_dict(user)
+        user_dict['id'] = str(user_dict['id'])
+        
+        if user_dict.get('status') in ['suspended', 'deactive']:
             raise HTTPException(status_code=403, detail='Account is deactivated. Please contact administrator.')
-        return user
+        return user_dict
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail='Token expired')
     except jwt.InvalidTokenError:
@@ -162,107 +206,134 @@ async def get_admin_user(user: dict = Depends(get_current_user)):
     return user
 
 async def verify_api_key(api_key: str = Header(...)):
-    user = await db.users.find_one({'api_key': api_key}, {'_id': 0, 'password_hash': 0})
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow(
+            'SELECT id, email, api_key, role, status, rate_limit FROM users WHERE api_key = $1',
+            api_key
+        )
+    
     if not user:
         raise HTTPException(status_code=401, detail='Invalid API key')
-    if user.get('status') in ['suspended', 'deactive']:
+    
+    user_dict = record_to_dict(user)
+    user_dict['id'] = str(user_dict['id'])
+    
+    if user_dict.get('status') in ['suspended', 'deactive']:
         raise HTTPException(status_code=403, detail='Account is deactivated')
-    return user
+    return user_dict
 
 async def log_activity(user_id: str, user_email: str, action: str, details: str, ip: Optional[str] = None):
-    log = ActivityLog(
-        user_id=user_id,
-        user_email=user_email,
-        action=action,
-        details=details,
-        ip_address=ip
-    )
-    doc = log.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.activity_logs.insert_one(doc)
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            '''INSERT INTO activity_logs (id, user_id, user_email, action, details, ip_address, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+            uuid.uuid4(), uuid.UUID(user_id), user_email, action, details, ip, datetime.now(timezone.utc)
+        )
 
 # Create default admin user
-@app.on_event("startup")
 async def create_default_admin():
-    admin_exists = await db.users.find_one({'role': 'admin'})
-    if not admin_exists:
-        admin = User(
-            email='admin@admin.com',
-            password_hash=hash_password('Admin@7501'),
-            plain_password='Admin@7501',  # Store plain password for admin view
-            role='admin',
-            status='active',
-            rate_limit=1000
-        )
-        doc = admin.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.users.insert_one(doc)
-        logger.info('Default admin user created: admin@admin.com')
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        admin_exists = await conn.fetchrow("SELECT id FROM users WHERE role = 'admin'")
+        if not admin_exists:
+            admin_id = uuid.uuid4()
+            await conn.execute(
+                '''INSERT INTO users (id, email, password_hash, plain_password, api_key, role, status, rate_limit, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)''',
+                admin_id,
+                'admin@admin.com',
+                hash_password('Admin@7501'),
+                'Admin@7501',
+                secrets.token_urlsafe(32),
+                'admin',
+                'active',
+                1000,
+                datetime.now(timezone.utc)
+            )
+            logger.info('Default admin user created: admin@admin.com')
 
 # Auth Endpoints
 @api_router.post('/auth/register', response_model=UserResponse)
 async def register(user_data: UserCreate):
-    settings = await db.settings.find_one({'id': 'global_settings'})
-    if settings and not settings.get('enable_registration', True):
-        raise HTTPException(status_code=403, detail='Registration is currently disabled')
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        settings = await conn.fetchrow("SELECT * FROM settings WHERE id = 'global_settings'")
+        if settings and not settings['enable_registration']:
+            raise HTTPException(status_code=403, detail='Registration is currently disabled')
+        
+        existing = await conn.fetchrow('SELECT id FROM users WHERE email = $1', user_data.email)
+        if existing:
+            raise HTTPException(status_code=400, detail='Email already registered')
+        
+        default_rate_limit = settings['default_rate_limit'] if settings else 30
+        user_id = uuid.uuid4()
+        api_key = secrets.token_urlsafe(32)
+        created_at = datetime.now(timezone.utc)
+        
+        await conn.execute(
+            '''INSERT INTO users (id, email, password_hash, plain_password, api_key, role, status, rate_limit, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)''',
+            user_id,
+            user_data.email,
+            hash_password(user_data.password),
+            user_data.password,
+            api_key,
+            'user',
+            'active',
+            default_rate_limit,
+            created_at
+        )
     
-    existing = await db.users.find_one({'email': user_data.email})
-    if existing:
-        raise HTTPException(status_code=400, detail='Email already registered')
-    
-    default_rate_limit = settings.get('default_rate_limit', 30) if settings else 30
-    user = User(
-        email=user_data.email,
-        password_hash=hash_password(user_data.password),
-        plain_password=user_data.password,  # Store plain password for admin view
-        rate_limit=default_rate_limit
-    )
-    
-    doc = user.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.users.insert_one(doc)
-    
-    await log_activity(user.id, user.email, 'USER_REGISTERED', 'New user registration')
+    await log_activity(str(user_id), user_data.email, 'USER_REGISTERED', 'New user registration')
     
     return UserResponse(
-        id=user.id,
-        email=user.email,
-        created_at=user.created_at,
-        api_key=user.api_key,
-        role=user.role,
-        status=user.status,
-        rate_limit=user.rate_limit
+        id=str(user_id),
+        email=user_data.email,
+        created_at=created_at,
+        api_key=api_key,
+        role='user',
+        status='active',
+        rate_limit=default_rate_limit
     )
 
 @api_router.post('/auth/login')
 async def login(credentials: UserLogin):
-    user = await db.users.find_one({'email': credentials.email}, {'_id': 0})
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow('SELECT * FROM users WHERE email = $1', credentials.email)
+    
     if not user or not verify_password(credentials.password, user['password_hash']):
         raise HTTPException(status_code=401, detail='Invalid credentials')
     
-    # Check for deactive or suspended status
-    if user.get('status') in ['suspended', 'deactive']:
+    user_dict = record_to_dict(user)
+    user_dict['id'] = str(user_dict['id'])
+    
+    if user_dict.get('status') in ['suspended', 'deactive']:
         raise HTTPException(status_code=403, detail='Account is deactivated. Please contact administrator.')
     
     # Check maintenance mode (skip for admin users)
-    if user.get('role') != 'admin':
-        settings = await db.settings.find_one({'id': 'global_settings'})
-        if settings and settings.get('maintenance_mode', False):
+    if user_dict.get('role') != 'admin':
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            settings = await conn.fetchrow("SELECT * FROM settings WHERE id = 'global_settings'")
+        if settings and settings['maintenance_mode']:
             raise HTTPException(status_code=503, detail='System is under maintenance. Please try again later.')
     
-    token = create_access_token(user['id'], user['email'], user.get('role', 'user'))
+    token = create_access_token(user_dict['id'], user_dict['email'], user_dict.get('role', 'user'))
     
-    await log_activity(user['id'], user['email'], 'USER_LOGIN', 'User logged in')
+    await log_activity(user_dict['id'], user_dict['email'], 'USER_LOGIN', 'User logged in')
     
     return {
         'access_token': token,
         'token_type': 'bearer',
         'user': {
-            'id': user['id'],
-            'email': user['email'],
-            'api_key': user['api_key'],
-            'role': user.get('role', 'user'),
-            'status': user.get('status', 'active')
+            'id': user_dict['id'],
+            'email': user_dict['email'],
+            'api_key': user_dict['api_key'],
+            'role': user_dict.get('role', 'user'),
+            'status': user_dict.get('status', 'active')
         }
     }
 
@@ -271,7 +342,7 @@ async def get_me(user: dict = Depends(get_current_user)):
     return UserResponse(
         id=user['id'],
         email=user['email'],
-        created_at=datetime.fromisoformat(user['created_at']),
+        created_at=user['created_at'],
         api_key=user['api_key'],
         role=user.get('role', 'user'),
         status=user.get('status', 'active'),
@@ -281,16 +352,37 @@ async def get_me(user: dict = Depends(get_current_user)):
 # Admin - Users Management
 @api_router.get('/admin/users')
 async def get_all_users(admin: dict = Depends(get_admin_user), skip: int = 0, limit: int = 50):
-    users = await db.users.find({}, {'_id': 0}).skip(skip).limit(limit).to_list(limit)
-    total = await db.users.count_documents({})
-    return {'users': users, 'total': total}
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        users = await conn.fetch(
+            'SELECT id, email, api_key, role, status, rate_limit, plain_password, created_at FROM users ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+            limit, skip
+        )
+        total = await conn.fetchval('SELECT COUNT(*) FROM users')
+    
+    users_list = []
+    for u in users:
+        user_dict = record_to_dict(u)
+        user_dict['id'] = str(user_dict['id'])
+        users_list.append(user_dict)
+    
+    return {'users': users_list, 'total': total}
 
 @api_router.get('/admin/users/{user_id}')
 async def get_user_by_id(user_id: str, admin: dict = Depends(get_admin_user)):
-    user = await db.users.find_one({'id': user_id}, {'_id': 0})
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow(
+            'SELECT id, email, api_key, role, status, rate_limit, plain_password, created_at FROM users WHERE id = $1',
+            uuid.UUID(user_id)
+        )
+    
     if not user:
         raise HTTPException(status_code=404, detail='User not found')
-    return user
+    
+    user_dict = record_to_dict(user)
+    user_dict['id'] = str(user_dict['id'])
+    return user_dict
 
 @api_router.put('/admin/users/{user_id}')
 async def update_user(user_id: str, updates: dict, admin: dict = Depends(get_admin_user)):
@@ -300,14 +392,22 @@ async def update_user(user_id: str, updates: dict, admin: dict = Depends(get_adm
     if not update_data:
         raise HTTPException(status_code=400, detail='No valid fields to update')
     
-    # Get target user email for logging
-    target_user = await db.users.find_one({'id': user_id}, {'email': 1})
-    if not target_user:
-        raise HTTPException(status_code=404, detail='User not found')
-    
-    result = await db.users.update_one({'id': user_id}, {'$set': update_data})
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail='User not found')
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        target_user = await conn.fetchrow('SELECT email FROM users WHERE id = $1', uuid.UUID(user_id))
+        if not target_user:
+            raise HTTPException(status_code=404, detail='User not found')
+        
+        # Build dynamic update query
+        set_clauses = []
+        values = []
+        for i, (key, value) in enumerate(update_data.items(), start=1):
+            set_clauses.append(f"{key} = ${i}")
+            values.append(value)
+        
+        values.append(uuid.UUID(user_id))
+        query = f"UPDATE users SET {', '.join(set_clauses)} WHERE id = ${len(values)}"
+        await conn.execute(query, *values)
     
     await log_activity(admin['id'], admin['email'], 'USER_UPDATED', f'Updated user {target_user["email"]}: {update_data}')
     return {'success': True, 'message': 'User updated'}
@@ -317,14 +417,13 @@ async def delete_user(user_id: str, admin: dict = Depends(get_admin_user)):
     if user_id == admin['id']:
         raise HTTPException(status_code=400, detail='Cannot delete own account')
     
-    # Get target user email for logging
-    target_user = await db.users.find_one({'id': user_id}, {'email': 1})
-    if not target_user:
-        raise HTTPException(status_code=404, detail='User not found')
-    
-    result = await db.users.delete_one({'id': user_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail='User not found')
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        target_user = await conn.fetchrow('SELECT email FROM users WHERE id = $1', uuid.UUID(user_id))
+        if not target_user:
+            raise HTTPException(status_code=404, detail='User not found')
+        
+        await conn.execute('DELETE FROM users WHERE id = $1', uuid.UUID(user_id))
     
     await log_activity(admin['id'], admin['email'], 'USER_DELETED', f'Deleted user {target_user["email"]}')
     return {'success': True, 'message': 'User deleted'}
@@ -340,42 +439,42 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
     if not email:
         raise HTTPException(status_code=400, detail='Email required')
     
-    existing = await db.users.find_one({'email': email})
-    if existing:
-        raise HTTPException(status_code=400, detail='Email already exists')
-    
-    user = User(
-        email=email,
-        password_hash=hash_password(password),
-        plain_password=password,  # Store for admin view
-        role=role,
-        rate_limit=rate_limit,
-        status=status
-    )
-    
-    doc = user.model_dump()
-    doc['created_at'] = doc['created_at'].isoformat()
-    await db.users.insert_one(doc)
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        existing = await conn.fetchrow('SELECT id FROM users WHERE email = $1', email)
+        if existing:
+            raise HTTPException(status_code=400, detail='Email already exists')
+        
+        user_id = uuid.uuid4()
+        api_key = secrets.token_urlsafe(32)
+        
+        await conn.execute(
+            '''INSERT INTO users (id, email, password_hash, plain_password, api_key, role, status, rate_limit, created_at)
+               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)''',
+            user_id, email, hash_password(password), password, api_key, role, status, rate_limit, datetime.now(timezone.utc)
+        )
     
     await log_activity(admin['id'], admin['email'], 'USER_CREATED', f'Created user {email}')
-    return {'success': True, 'user_id': user.id, 'email': email}
+    return {'success': True, 'user_id': str(user_id), 'email': email}
 
 # Admin - Analytics
 @api_router.get('/admin/analytics/overview')
 async def get_analytics_overview(admin: dict = Depends(get_admin_user)):
-    total_users = await db.users.count_documents({})
-    active_users = await db.users.count_documents({'status': 'active'})
-    # Count both suspended and deactive as deactive
-    deactive_users = await db.users.count_documents({'status': {'$in': ['suspended', 'deactive']}})
-    
-    total_messages = await db.message_logs.count_documents({})
-    sent_messages = await db.message_logs.count_documents({'status': 'sent'})
-    failed_messages = await db.message_logs.count_documents({'status': 'failed'})
-    
-    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    messages_today = await db.message_logs.count_documents({
-        'created_at': {'$gte': today.isoformat()}
-    })
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        total_users = await conn.fetchval('SELECT COUNT(*) FROM users')
+        active_users = await conn.fetchval("SELECT COUNT(*) FROM users WHERE status = 'active'")
+        deactive_users = await conn.fetchval("SELECT COUNT(*) FROM users WHERE status IN ('suspended', 'deactive')")
+        
+        total_messages = await conn.fetchval('SELECT COUNT(*) FROM message_logs')
+        sent_messages = await conn.fetchval("SELECT COUNT(*) FROM message_logs WHERE status = 'sent'")
+        failed_messages = await conn.fetchval("SELECT COUNT(*) FROM message_logs WHERE status = 'failed'")
+        
+        today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        messages_today = await conn.fetchval(
+            'SELECT COUNT(*) FROM message_logs WHERE created_at >= $1',
+            today
+        )
     
     return {
         'users': {
@@ -396,48 +495,44 @@ async def get_analytics_overview(admin: dict = Depends(get_admin_user)):
 async def get_message_analytics(admin: dict = Depends(get_admin_user), days: int = 7):
     from_date = datetime.now(timezone.utc) - timedelta(days=days)
     
-    pipeline = [
-        {'$match': {'created_at': {'$gte': from_date.isoformat()}}},
-        {'$group': {
-            '_id': {'$substr': ['$created_at', 0, 10]},
-            'total': {'$sum': 1},
-            'sent': {'$sum': {'$cond': [{'$eq': ['$status', 'sent']}, 1, 0]}},
-            'failed': {'$sum': {'$cond': [{'$eq': ['$status', 'failed']}, 1, 0]}}
-        }},
-        {'$sort': {'_id': 1}}
-    ]
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        results = await conn.fetch('''
+            SELECT 
+                DATE(created_at) as date,
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'sent' THEN 1 ELSE 0 END) as sent,
+                SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) as failed
+            FROM message_logs 
+            WHERE created_at >= $1
+            GROUP BY DATE(created_at)
+            ORDER BY date
+        ''', from_date)
     
-    results = await db.message_logs.aggregate(pipeline).to_list(days)
-    return results
+    return [{'_id': str(r['date']), 'total': r['total'], 'sent': r['sent'], 'failed': r['failed']} for r in results]
 
 @api_router.get('/admin/analytics/users-activity')
 async def get_users_activity(admin: dict = Depends(get_admin_user), days: int = 7):
     from_date = datetime.now(timezone.utc) - timedelta(days=days)
     
-    pipeline = [
-        {'$match': {'created_at': {'$gte': from_date.isoformat()}}},
-        {'$group': {
-            '_id': '$user_id',
-            'message_count': {'$sum': 1}
-        }},
-        {'$sort': {'message_count': -1}},
-        {'$limit': 10}
-    ]
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        results = await conn.fetch('''
+            SELECT ml.user_id, COUNT(*) as message_count, u.email
+            FROM message_logs ml
+            LEFT JOIN users u ON ml.user_id = u.id
+            WHERE ml.created_at >= $1
+            GROUP BY ml.user_id, u.email
+            ORDER BY message_count DESC
+            LIMIT 10
+        ''', from_date)
     
-    results = await db.message_logs.aggregate(pipeline).to_list(10)
-    
-    # Get user emails
-    for item in results:
-        user = await db.users.find_one({'id': item['_id']}, {'email': 1})
-        item['email'] = user['email'] if user else 'Unknown'
-    
-    return results
+    return [{'_id': str(r['user_id']), 'message_count': r['message_count'], 'email': r['email'] or 'Unknown'} for r in results]
 
 # Admin - System Status
 @api_router.get('/admin/system/status')
 async def get_system_status(admin: dict = Depends(get_admin_user)):
     try:
-        # WhatsApp service health
         async with aiohttp.ClientSession() as session:
             async with session.get(f'{WHATSAPP_SERVICE_URL}/health', timeout=aiohttp.ClientTimeout(total=5)) as response:
                 whatsapp_health = await response.json()
@@ -446,7 +541,6 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
         whatsapp_status = 'unreachable'
         whatsapp_health = {}
     
-    # Supervisor services status
     try:
         result = subprocess.run(['supervisorctl', 'status'], capture_output=True, text=True, timeout=5)
         services = []
@@ -468,7 +562,7 @@ async def get_system_status(admin: dict = Depends(get_admin_user)):
             'health': whatsapp_health
         },
         'services': services,
-        'database': 'connected',
+        'database': 'postgresql',
         'timestamp': datetime.now(timezone.utc).isoformat()
     }
 
@@ -481,13 +575,14 @@ async def get_whatsapp_sessions(admin: dict = Depends(get_admin_user)):
             async with session.get(f'{WHATSAPP_SERVICE_URL}/admin/sessions') as response:
                 data = await response.json()
                 
-                # Enrich sessions with user email
+                pool = await get_db_pool()
                 enriched_sessions = []
                 for sess in data.get('sessions', []):
                     user_id = sess.get('userId') or sess.get('odlUserId')
                     if user_id:
-                        user = await db.users.find_one({'id': user_id}, {'email': 1})
-                        sess['userEmail'] = user.get('email') if user else 'Unknown'
+                        async with pool.acquire() as conn:
+                            user = await conn.fetchrow('SELECT email FROM users WHERE id = $1', uuid.UUID(user_id))
+                        sess['userEmail'] = user['email'] if user else 'Unknown'
                     enriched_sessions.append(sess)
                 
                 return {
@@ -516,42 +611,72 @@ async def admin_disconnect_user_whatsapp(user_id: str, admin: dict = Depends(get
 
 @api_router.post('/admin/whatsapp/disconnect')
 async def admin_disconnect_whatsapp(admin: dict = Depends(get_admin_user)):
-    # Backward compatibility - disconnect all
     return {'message': 'Use /admin/whatsapp/disconnect/{user_id} for per-user disconnect'}
 
 # Admin - Settings
 @api_router.get('/admin/settings')
 async def get_settings(admin: dict = Depends(get_admin_user)):
-    settings = await db.settings.find_one({'id': 'global_settings'}, {'_id': 0})
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        settings = await conn.fetchrow("SELECT * FROM settings WHERE id = 'global_settings'")
+    
     if not settings:
-        default_settings = Settings()
-        doc = default_settings.model_dump()
-        doc['updated_at'] = doc['updated_at'].isoformat()
-        await db.settings.insert_one(doc)
-        return default_settings.model_dump()
-    return settings
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenance_mode, updated_at)
+                   VALUES ($1, $2, $3, $4, $5, $6)''',
+                'global_settings', 30, 100, True, False, datetime.now(timezone.utc)
+            )
+            settings = await conn.fetchrow("SELECT * FROM settings WHERE id = 'global_settings'")
+    
+    return record_to_dict(settings)
 
 @api_router.put('/admin/settings')
 async def update_settings(updates: dict, admin: dict = Depends(get_admin_user)):
-    updates['updated_at'] = datetime.now(timezone.utc).isoformat()
+    allowed_fields = ['default_rate_limit', 'max_rate_limit', 'enable_registration', 'maintenance_mode']
+    update_data = {k: v for k, v in updates.items() if k in allowed_fields}
     
-    await db.settings.update_one(
-        {'id': 'global_settings'},
-        {'$set': updates},
-        upsert=True
-    )
+    if not update_data:
+        raise HTTPException(status_code=400, detail='No valid fields to update')
     
-    await log_activity(admin['id'], admin['email'], 'SETTINGS_UPDATED', f'Updated settings: {updates}')
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        # Build dynamic update query
+        set_clauses = ['updated_at = $1']
+        values = [datetime.now(timezone.utc)]
+        
+        for i, (key, value) in enumerate(update_data.items(), start=2):
+            set_clauses.append(f"{key} = ${i}")
+            values.append(value)
+        
+        query = f"UPDATE settings SET {', '.join(set_clauses)} WHERE id = 'global_settings'"
+        await conn.execute(query, *values)
+    
+    await log_activity(admin['id'], admin['email'], 'SETTINGS_UPDATED', f'Updated settings: {update_data}')
     return {'success': True, 'message': 'Settings updated'}
 
 # Admin - Activity Logs
 @api_router.get('/admin/logs')
 async def get_activity_logs(admin: dict = Depends(get_admin_user), limit: int = 100, skip: int = 0):
-    logs = await db.activity_logs.find({}, {'_id': 0}).sort('created_at', -1).limit(limit).skip(skip).to_list(limit)
-    total = await db.activity_logs.count_documents({})
-    return {'logs': logs, 'total': total}
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        logs = await conn.fetch(
+            'SELECT * FROM activity_logs ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+            limit, skip
+        )
+        total = await conn.fetchval('SELECT COUNT(*) FROM activity_logs')
+    
+    logs_list = []
+    for log in logs:
+        log_dict = record_to_dict(log)
+        log_dict['id'] = str(log_dict['id'])
+        log_dict['user_id'] = str(log_dict['user_id'])
+        logs_list.append(log_dict)
+    
+    return {'logs': logs_list, 'total': total}
 
-# WhatsApp Endpoints (existing)
+# WhatsApp Endpoints
 @api_router.post('/whatsapp/initialize')
 async def initialize_whatsapp(user: dict = Depends(get_current_user)):
     try:
@@ -617,13 +742,7 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
     if not formatted_number.startswith('+'):
         formatted_number = '+91' + formatted_number
     
-    log = MessageLog(
-        user_id=user['id'],
-        receiver_number=formatted_number,
-        message_body=msg.message,
-        status='sending',
-        source='web'
-    )
+    message_id = uuid.uuid4()
     
     try:
         timeout = aiohttp.ClientTimeout(total=30)
@@ -633,92 +752,111 @@ async def send_message(msg: MessageSend, user: dict = Depends(get_current_user))
                 json={'userId': user['id'], 'number': formatted_number, 'message': msg.message}
             ) as response:
                 result = await response.json()
-                if response.status == 200 and result.get('success'):
-                    log.status = 'sent'
-                    doc = log.model_dump()
-                    doc['created_at'] = doc['created_at'].isoformat()
-                    await db.message_logs.insert_one(doc)
-                    return {'status': 'success', 'to': formatted_number, 'message': 'Message sent successfully'}
-                else:
-                    log.status = 'failed'
-                    doc = log.model_dump()
-                    doc['created_at'] = doc['created_at'].isoformat()
-                    await db.message_logs.insert_one(doc)
-                    error_msg = result.get('error', 'Failed to send message')
-                    raise HTTPException(status_code=400, detail=error_msg)
+                
+                pool = await get_db_pool()
+                async with pool.acquire() as conn:
+                    if response.status == 200 and result.get('success'):
+                        await conn.execute(
+                            '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                               VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                            message_id, uuid.UUID(user['id']), formatted_number, msg.message, 'sent', 'web', datetime.now(timezone.utc)
+                        )
+                        return {'status': 'success', 'to': formatted_number, 'message': 'Message sent successfully'}
+                    else:
+                        await conn.execute(
+                            '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                               VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                            message_id, uuid.UUID(user['id']), formatted_number, msg.message, 'failed', 'web', datetime.now(timezone.utc)
+                        )
+                        error_msg = result.get('error', 'Failed to send message')
+                        raise HTTPException(status_code=400, detail=error_msg)
     except aiohttp.ClientError:
-        log.status = 'failed'
-        doc = log.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.message_logs.insert_one(doc)
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                message_id, uuid.UUID(user['id']), formatted_number, msg.message, 'failed', 'web', datetime.now(timezone.utc)
+            )
         raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
     except HTTPException:
         raise
     except Exception as e:
-        log.status = 'failed'
-        doc = log.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.message_logs.insert_one(doc)
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                message_id, uuid.UUID(user['id']), formatted_number, msg.message, 'failed', 'web', datetime.now(timezone.utc)
+            )
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get('/send', response_model=MessageResponse)
 async def send_message_api(api_key: str = Query(...), number: str = Query(...), msg: str = Query(...)):
-    user = await db.users.find_one({'api_key': api_key}, {'_id': 0, 'password_hash': 0})
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        user = await conn.fetchrow('SELECT id, email, status FROM users WHERE api_key = $1', api_key)
+    
     if not user:
         raise HTTPException(status_code=401, detail='Invalid API key')
-    if user.get('status') in ['suspended', 'deactive']:
+    
+    user_dict = record_to_dict(user)
+    user_dict['id'] = str(user_dict['id'])
+    
+    if user_dict.get('status') in ['suspended', 'deactive']:
         raise HTTPException(status_code=403, detail='Account is deactivated')
     
     formatted_number = number
     if not formatted_number.startswith('+'):
         formatted_number = '+91' + formatted_number
     
-    log = MessageLog(
-        user_id=user['id'],
-        receiver_number=formatted_number,
-        message_body=msg,
-        status='sending',
-        source='api'
-    )
+    message_id = uuid.uuid4()
     
     try:
         timeout = aiohttp.ClientTimeout(total=30)
         async with aiohttp.ClientSession(timeout=timeout) as session:
             async with session.post(
                 f'{WHATSAPP_SERVICE_URL}/send',
-                json={'userId': user['id'], 'number': formatted_number, 'message': msg}
+                json={'userId': user_dict['id'], 'number': formatted_number, 'message': msg}
             ) as response:
                 result = await response.json()
-                if response.status == 200 and result.get('success'):
-                    log.status = 'sent'
-                    doc = log.model_dump()
-                    doc['created_at'] = doc['created_at'].isoformat()
-                    await db.message_logs.insert_one(doc)
-                    return MessageResponse(
-                        status='success',
-                        to=formatted_number,
-                        message='Message sent.'
-                    )
-                else:
-                    log.status = 'failed'
-                    doc = log.model_dump()
-                    doc['created_at'] = doc['created_at'].isoformat()
-                    await db.message_logs.insert_one(doc)
-                    error_msg = result.get('error', 'Failed to send message')
-                    raise HTTPException(status_code=400, detail=error_msg)
+                
+                pool = await get_db_pool()
+                async with pool.acquire() as conn:
+                    if response.status == 200 and result.get('success'):
+                        await conn.execute(
+                            '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                               VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                            message_id, uuid.UUID(user_dict['id']), formatted_number, msg, 'sent', 'api', datetime.now(timezone.utc)
+                        )
+                        return MessageResponse(status='success', to=formatted_number, message='Message sent.')
+                    else:
+                        await conn.execute(
+                            '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                               VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                            message_id, uuid.UUID(user_dict['id']), formatted_number, msg, 'failed', 'api', datetime.now(timezone.utc)
+                        )
+                        error_msg = result.get('error', 'Failed to send message')
+                        raise HTTPException(status_code=400, detail=error_msg)
     except aiohttp.ClientError:
-        log.status = 'failed'
-        doc = log.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.message_logs.insert_one(doc)
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                message_id, uuid.UUID(user_dict['id']), formatted_number, msg, 'failed', 'api', datetime.now(timezone.utc)
+            )
         raise HTTPException(status_code=503, detail='WhatsApp service unavailable')
     except HTTPException:
         raise
     except Exception as e:
-        log.status = 'failed'
-        doc = log.model_dump()
-        doc['created_at'] = doc['created_at'].isoformat()
-        await db.message_logs.insert_one(doc)
+        pool = await get_db_pool()
+        async with pool.acquire() as conn:
+            await conn.execute(
+                '''INSERT INTO message_logs (id, user_id, receiver_number, message_body, status, source, created_at)
+                   VALUES ($1, $2, $3, $4, $5, $6, $7)''',
+                message_id, uuid.UUID(user_dict['id']), formatted_number, msg, 'failed', 'api', datetime.now(timezone.utc)
+            )
         raise HTTPException(status_code=500, detail=str(e))
 
 @api_router.get('/messages/logs')
@@ -727,20 +865,36 @@ async def get_message_logs(
     status: Optional[str] = None,
     limit: int = 50
 ):
-    query = {'user_id': user['id']}
-    if status:
-        query['status'] = status
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        if status:
+            logs = await conn.fetch(
+                'SELECT * FROM message_logs WHERE user_id = $1 AND status = $2 ORDER BY created_at DESC LIMIT $3',
+                uuid.UUID(user['id']), status, limit
+            )
+        else:
+            logs = await conn.fetch(
+                'SELECT * FROM message_logs WHERE user_id = $1 ORDER BY created_at DESC LIMIT $2',
+                uuid.UUID(user['id']), limit
+            )
     
-    logs = await db.message_logs.find(query, {'_id': 0}).sort('created_at', -1).limit(limit).to_list(limit)
-    return logs
+    logs_list = []
+    for log in logs:
+        log_dict = record_to_dict(log)
+        log_dict['id'] = str(log_dict['id'])
+        log_dict['user_id'] = str(log_dict['user_id'])
+        logs_list.append(log_dict)
+    
+    return logs_list
 
 @api_router.post('/keys/regenerate')
 async def regenerate_api_key(user: dict = Depends(get_current_user)):
     new_key = secrets.token_urlsafe(32)
-    await db.users.update_one(
-        {'id': user['id']},
-        {'$set': {'api_key': new_key}}
-    )
+    
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        await conn.execute('UPDATE users SET api_key = $1 WHERE id = $2', new_key, uuid.UUID(user['id']))
+    
     await log_activity(user['id'], user['email'], 'API_KEY_REGENERATED', 'User regenerated API key')
     return {'api_key': new_key, 'message': 'API key regenerated successfully'}
 
@@ -759,7 +913,3 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
-
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
