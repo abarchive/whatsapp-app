@@ -71,8 +71,8 @@ export default function AdminSystem() {
     }
   };
 
-  // Filter out code-server from services (it's not needed for app functionality)
-  const filteredServices = systemStatus?.services?.filter(s => s.name !== 'code-server') || [];
+  // Filter out code-server and mongodb from services (not needed for app functionality)
+  const filteredServices = systemStatus?.services?.filter(s => s.name !== 'code-server' && s.name !== 'mongodb') || [];
 
   if (loading) {
     return (
