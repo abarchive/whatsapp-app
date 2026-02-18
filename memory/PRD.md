@@ -14,14 +14,20 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 ## Tech Stack
 - **Frontend**: React 18, Tailwind CSS
 - **Backend**: FastAPI (Python)
-- **Database**: MongoDB
+- **Database**: ~~MongoDB~~ → **PostgreSQL** (Migrated on Feb 18, 2026)
 - **WhatsApp Service**: Node.js with whatsapp-web.js library
 - **Process Management**: Supervisor
+
+## Database Migration (Feb 18, 2026)
+Successfully migrated from MongoDB Atlas to **PostgreSQL**:
+- **Reason**: Cost efficiency (self-hosted on VPS), better for subscription/payment features
+- **Tables**: users, message_logs, activity_logs, settings
+- **All 15 API tests passed** after migration
 
 ## Architecture
 ```
 /app/
-├── backend/server.py           # FastAPI: Auth, APIs, Admin
+├── backend/server.py           # FastAPI with asyncpg (PostgreSQL)
 ├── frontend/src/               # React frontend
 ├── whatsapp-service/index.js   # Node.js WhatsApp service
 └── backend/tests/              # Pytest test suite
@@ -42,35 +48,57 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - [x] JWT-based session management
 - [x] Per-user WhatsApp QR code generation
 - [x] WhatsApp connection via QR scan
-- [x] **FIXED: Disconnect/Reconnect cycle now works reliably**
+- [x] Disconnect/Reconnect cycle works reliably
 - [x] Message sending (web + API)
 - [x] Message logging
 - [x] Admin panel with user management
 - [x] Admin session monitoring
 - [x] API key management
-- [x] Comprehensive test suite (15 tests passing)
+- [x] **PostgreSQL migration complete**
+- [x] Title: "BotWave – Smart WhatsApp Automation"
+- [x] Removed "Made with Emergent" badge
 
-## Test Results (Feb 14, 2026)
-All 15 tests PASSED including:
-- Authentication tests
-- WhatsApp status/initialize/QR/disconnect tests
-- **CRITICAL: Reconnect cycle QR regeneration - PASSED**
-- **CRITICAL: Multiple disconnect-reconnect cycles - PASSED**
-- Message sending tests
-- API key management tests
+## Database Schema (PostgreSQL)
+```sql
+-- Users
+users (id UUID, email, password_hash, api_key, role, status, rate_limit, created_at)
+
+-- Message Logs
+message_logs (id UUID, user_id, receiver_number, message_body, status, source, created_at)
+
+-- Activity Logs
+activity_logs (id UUID, user_id, user_email, action, details, ip_address, created_at)
+
+-- Settings
+settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenance_mode, updated_at)
+```
+
+## Test Results (Feb 18, 2026)
+All 15 tests PASSED with PostgreSQL:
+- Authentication tests ✅
+- WhatsApp status/initialize/QR/disconnect tests ✅
+- Reconnect cycle QR regeneration ✅
+- Multiple disconnect-reconnect cycles ✅
+- Message sending tests ✅
+- API key management tests ✅
 
 ## Known Issues (Backlog)
-1. **⚠️ Security: Plaintext Passwords** - `plain_password` stored in users collection for admin panel. Should be replaced with password reset functionality.
+1. **⚠️ Security: Plaintext Passwords** - `plain_password` stored for admin panel view
 2. **Rate Limiting** - UI toggle exists but API enforcement needs verification
 
 ## Future Tasks (P2/P3)
 - [ ] Forgot Password (email-based recovery)
 - [ ] Webhooks for message delivery callbacks
+- [ ] Subscription/Payment integration (Stripe/Razorpay)
 - [ ] Rate limiting verification
-- [ ] VPS deployment (paused)
 
 ## Test Credentials
 - **Admin**: admin@admin.com / Admin@7501
+
+## Database Connection
+```
+PostgreSQL: postgresql://botwave_user:BotWave%40SecurePass123@localhost:5432/botwave
+```
 
 ## Preview URL
 https://msg-sender-5.preview.emergentagent.com
