@@ -1,11 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
+import { io } from 'socket.io-client';
 import Layout from '../components/Layout';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+
+// Enable fallback polling (set to false to disable polling completely)
+const ENABLE_FALLBACK_POLLING = true;
+const POLLING_INTERVAL = 5000; // 5 seconds when Socket.IO is connected
 
 export default function Dashboard({ user }) {
   const [status, setStatus] = useState('checking');
@@ -14,24 +19,113 @@ export default function Dashboard({ user }) {
   const [loading, setLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const socketRef = useRef(null);
   const pollingInterval = useRef(null);
 
+  // Initialize Socket.IO connection
+  const initSocket = useCallback(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+
+    // Don't create multiple connections
+    if (socketRef.current?.connected) return;
+
+    console.log('[Socket.IO] Connecting to:', BACKEND_URL);
+    
+    const socket = io(BACKEND_URL, {
+      path: '/socket.io',
+      transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000
+    });
+
+    socket.on('connect', () => {
+      console.log('[Socket.IO] Connected!');
+      setSocketConnected(true);
+      // Authenticate after connection
+      socket.emit('authenticate', { token });
+    });
+
+    socket.on('authenticated', (data) => {
+      console.log('[Socket.IO] Authenticated:', data);
+    });
+
+    socket.on('auth_error', (data) => {
+      console.error('[Socket.IO] Auth error:', data);
+      setSocketConnected(false);
+    });
+
+    // Real-time QR Code event
+    socket.on('qr_code', (data) => {
+      console.log('[Socket.IO] QR Code received - instant update!');
+      setQrCode(data.qr);
+      setStatus('qr_ready');
+      setIsInitializing(false);
+    });
+
+    // Real-time WhatsApp connected event
+    socket.on('whatsapp_connected', (data) => {
+      console.log('[Socket.IO] WhatsApp connected:', data);
+      setStatus('connected');
+      setQrCode(null);
+      setIsInitializing(false);
+      if (data.phoneNumber) {
+        setPhoneNumber(data.phoneNumber);
+      }
+    });
+
+    // Real-time WhatsApp disconnected event
+    socket.on('whatsapp_disconnected', (data) => {
+      console.log('[Socket.IO] WhatsApp disconnected:', data);
+      setStatus('disconnected');
+      setQrCode(null);
+      setPhoneNumber(null);
+      setIsInitializing(false);
+    });
+
+    socket.on('disconnect', (reason) => {
+      console.log('[Socket.IO] Disconnected:', reason);
+      setSocketConnected(false);
+    });
+
+    socket.on('connect_error', (error) => {
+      console.error('[Socket.IO] Connection error:', error.message);
+      setSocketConnected(false);
+    });
+
+    socketRef.current = socket;
+  }, []);
+
   useEffect(() => {
+    // Initialize Socket.IO for real-time updates
+    initSocket();
+    
+    // Initial status check
     checkStatus().then(() => {
       setInitialCheckDone(true);
     });
     
-    // Polling every 2 seconds for status updates
-    pollingInterval.current = setInterval(() => {
-      checkStatus();
-    }, 2000);
+    // Fallback polling (optional, longer interval when socket is connected)
+    if (ENABLE_FALLBACK_POLLING) {
+      pollingInterval.current = setInterval(() => {
+        checkStatus();
+      }, socketConnected ? POLLING_INTERVAL : 2000);
+    }
 
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
       }
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
     };
-  }, []);
+  }, [initSocket, socketConnected]);
 
   const checkStatus = async () => {
     try {
