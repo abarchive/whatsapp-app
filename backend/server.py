@@ -16,6 +16,7 @@ import secrets
 import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
+import socketio
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -23,8 +24,21 @@ load_dotenv(ROOT_DIR / '.env')
 # PostgreSQL connection settings
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
 
+# Socket.IO server
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins='*',
+    logger=True,
+    engineio_logger=False
+)
+
 # Global connection pool
 db_pool = None
+
+# Connected users mapping: {sid: user_id}
+connected_users = {}
+# User to SID mapping: {user_id: [sid1, sid2, ...]}
+user_sids = {}
 
 async def get_db_pool():
     global db_pool
