@@ -1,6 +1,5 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query, Request
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import asyncpg
@@ -8,7 +7,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional, Dict
+from typing import List, Optional
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -17,8 +16,6 @@ import secrets
 import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
-import asyncio
-import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -28,9 +25,6 @@ DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave
 
 # Global connection pool
 db_pool = None
-
-# SSE clients: {user_id: [queue1, queue2, ...]}
-sse_clients: Dict[str, List[asyncio.Queue]] = {}
 
 async def get_db_pool():
     global db_pool
