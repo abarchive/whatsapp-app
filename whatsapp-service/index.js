@@ -233,11 +233,6 @@ async function initializeUserWhatsApp(userId) {
     }
     
     io.emit(`ready_${userId}`, { phoneNumber: session.phoneNumber });
-    // Send to backend for WebSocket broadcast
-    emitToBackend(userId, 'whatsapp_connected', { 
-      status: 'connected', 
-      phoneNumber: session.phoneNumber 
-    });
   });
   
   // Authenticated event
