@@ -7,7 +7,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -16,12 +16,26 @@ import secrets
 import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
+import socketio
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # PostgreSQL connection settings
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
+
+# Socket.IO Server
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins='*',
+    logger=False,
+    engineio_logger=False
+)
+
+# User session tracking: {user_id: set(sid1, sid2, ...)}
+user_sessions: Dict[str, set] = {}
+# SID to user mapping: {sid: user_id}
+sid_to_user: Dict[str, str] = {}
 
 # Global connection pool
 db_pool = None
