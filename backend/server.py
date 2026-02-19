@@ -914,6 +914,89 @@ async def regenerate_api_key(user: dict = Depends(get_current_user)):
 
 app.include_router(api_router)
 
+# Mount Socket.IO app
+socket_app = socketio.ASGIApp(sio, app)
+
+# Socket.IO Event Handlers
+@sio.event
+async def connect(sid, environ):
+    logger.info(f"[Socket.IO] Client connected: {sid}")
+    await sio.emit('connected', {'message': 'Connected to server'}, room=sid)
+
+@sio.event
+async def disconnect(sid):
+    logger.info(f"[Socket.IO] Client disconnected: {sid}")
+    # Remove from mappings
+    if sid in connected_users:
+        user_id = connected_users[sid]
+        del connected_users[sid]
+        if user_id in user_sids:
+            user_sids[user_id] = [s for s in user_sids[user_id] if s != sid]
+            if not user_sids[user_id]:
+                del user_sids[user_id]
+
+@sio.event
+async def authenticate(sid, data):
+    """Authenticate socket connection with JWT token"""
+    try:
+        token = data.get('token')
+        if not token:
+            await sio.emit('auth_error', {'error': 'Token required'}, room=sid)
+            return
+        
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get('sub')
+        
+        # Store user mapping
+        connected_users[sid] = user_id
+        if user_id not in user_sids:
+            user_sids[user_id] = []
+        user_sids[user_id].append(sid)
+        
+        logger.info(f"[Socket.IO] User {user_id} authenticated on {sid}")
+        await sio.emit('authenticated', {'user_id': user_id}, room=sid)
+        
+    except jwt.ExpiredSignatureError:
+        await sio.emit('auth_error', {'error': 'Token expired'}, room=sid)
+    except jwt.InvalidTokenError:
+        await sio.emit('auth_error', {'error': 'Invalid token'}, room=sid)
+
+@sio.event
+async def subscribe_whatsapp(sid, data):
+    """Subscribe to WhatsApp events for a user"""
+    user_id = connected_users.get(sid)
+    if not user_id:
+        await sio.emit('error', {'error': 'Not authenticated'}, room=sid)
+        return
+    
+    # Join user-specific room
+    await sio.enter_room(sid, f'whatsapp_{user_id}')
+    logger.info(f"[Socket.IO] User {user_id} subscribed to WhatsApp events")
+    await sio.emit('subscribed', {'channel': 'whatsapp'}, room=sid)
+
+# Helper function to emit WhatsApp events to user
+async def emit_to_user(user_id: str, event: str, data: dict):
+    """Emit event to all connected sockets of a user"""
+    room = f'whatsapp_{user_id}'
+    await sio.emit(event, data, room=room)
+    logger.info(f"[Socket.IO] Emitted {event} to user {user_id}")
+
+# API endpoint to receive events from WhatsApp service
+@api_router.post('/internal/whatsapp-event')
+async def receive_whatsapp_event(event_data: dict):
+    """Receive events from WhatsApp service and broadcast via Socket.IO"""
+    event_type = event_data.get('event')
+    user_id = event_data.get('userId')
+    data = event_data.get('data', {})
+    
+    if not event_type or not user_id:
+        raise HTTPException(status_code=400, detail='Missing event or userId')
+    
+    # Emit to user's room
+    await emit_to_user(user_id, event_type, data)
+    
+    return {'success': True, 'event': event_type}
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
