@@ -3,8 +3,8 @@ import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Radio, Wifi, WifiOff, RefreshCw, Power, Users } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const BACKEND_URL = '';
+const API = `/api`;
 
 export default function AdminWhatsApp() {
   const [sessions, setSessions] = useState([]);

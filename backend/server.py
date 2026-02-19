@@ -17,11 +17,14 @@ import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
 
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
+from dotenv import load_dotenv
+from pathlib import Path
+import os
 
-# PostgreSQL connection settings
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / ".env")
+
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 # Global connection pool
 db_pool = None
@@ -30,12 +33,20 @@ async def get_db_pool():
     global db_pool
     if db_pool is None:
         db_pool = await asyncpg.create_pool(
-            DATABASE_URL,
-            min_size=2,
-            max_size=10,
-            command_timeout=60
-        )
+    user="botwave_user",
+    password="BotWaveSecure2026PgX9",
+    database="botwave",
+    host="127.0.0.1",
+    port=5432,
+    ssl=False,
+    min_size=2,
+    max_size=10,
+    command_timeout=60
+)
+
+
     return db_pool
+
 
 async def close_db_pool():
     global db_pool
@@ -54,8 +65,12 @@ async def lifespan(app: FastAPI):
     await close_db_pool()
     logger.info("Database pool closed")
 
-app = FastAPI(lifespan=lifespan)
-api_router = APIRouter(prefix="/api")
+app = FastAPI(
+    lifespan=lifespan,
+    root_path="/api"
+)
+
+api_router = APIRouter()
 security = HTTPBearer()
 
 # Health check endpoint
@@ -913,3 +928,12 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "server:app",
+        host="127.0.0.1",
+        port=8000,
+        reload=False
+    )

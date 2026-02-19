@@ -495,6 +495,6 @@ app.get('/admin/sessions', (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 8002;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`[WhatsApp Service] Ready to accept per-user connections`);
 });
