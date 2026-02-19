@@ -914,8 +914,8 @@ async def regenerate_api_key(user: dict = Depends(get_current_user)):
 
 app.include_router(api_router)
 
-# Mount Socket.IO app
-socket_app = socketio.ASGIApp(sio, app)
+# Mount Socket.IO app with /api/socket.io path
+socket_app = socketio.ASGIApp(sio, app, socketio_path='/api/socket.io')
 
 # Socket.IO Event Handlers
 @sio.event
