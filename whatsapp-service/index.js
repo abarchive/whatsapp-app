@@ -6,6 +6,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const axios = require('axios');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,6 +19,25 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+
+// Backend URL for Socket.IO events
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+
+// Helper function to emit events to backend for Socket.IO broadcast
+async function emitToBackend(userId, event, data) {
+  try {
+    const response = await axios.post(`${BACKEND_URL}/api/internal/ws-event`, {
+      event,
+      userId,
+      data
+    }, { timeout: 5000 });
+    console.log(`[User ${userId}] Event '${event}' sent to backend via Socket.IO`);
+    return response.data;
+  } catch (error) {
+    console.error(`[User ${userId}] Failed to emit '${event}' to backend:`, error.message);
+    return null;
+  }
+}
 
 // Store clients per user
 const userClients = new Map(); // userId -> { client, status, qrCode, phoneNumber, browserPid }
