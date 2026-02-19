@@ -904,8 +904,6 @@ async def regenerate_api_key(user: dict = Depends(get_current_user)):
     await log_activity(user['id'], user['email'], 'API_KEY_REGENERATED', 'User regenerated API key')
     return {'api_key': new_key, 'message': 'API key regenerated successfully'}
 
-app.include_router(api_router)
-
 # SSE Helper function to emit events to user
 async def emit_to_user(user_id: str, event: str, data: dict):
     """Emit event to all SSE clients of a user"""
