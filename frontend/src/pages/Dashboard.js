@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
-import { io } from 'socket.io-client';
 import Layout from '../components/Layout';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,114 +14,106 @@ export default function Dashboard({ user }) {
   const [loading, setLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
-  const [socketConnected, setSocketConnected] = useState(false);
-  const socketRef = useRef(null);
+  const [sseConnected, setSseConnected] = useState(false);
+  const eventSourceRef = useRef(null);
   const pollingInterval = useRef(null);
 
-  // Initialize WebSocket connection
-  const initSocket = useCallback(() => {
+  // Initialize SSE (Server-Sent Events) connection
+  const initSSE = useCallback(() => {
     const token = localStorage.getItem('token');
-    if (!token || socketRef.current?.connected) return;
+    if (!token || eventSourceRef.current) return;
 
-    console.log('[WebSocket] Connecting to:', BACKEND_URL);
+    console.log('[SSE] Connecting...');
     
-    // Connect to backend WebSocket 
-    // Use direct backend URL for socket connection
-    const socket = io(BACKEND_URL, {
-      transports: ['polling', 'websocket'],
-      auth: { token },
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      withCredentials: false
-    });
+    // Create EventSource with auth token in URL (SSE doesn't support headers)
+    const eventSource = new EventSource(`${API}/events/stream?token=${encodeURIComponent(token)}`);
 
-    socket.on('connect', () => {
-      console.log('[WebSocket] Connected');
-      setSocketConnected(true);
-      // Authenticate
-      socket.emit('authenticate', { token });
-    });
-
-    socket.on('authenticated', (data) => {
-      console.log('[WebSocket] Authenticated:', data);
-      // Subscribe to WhatsApp events
-      socket.emit('subscribe_whatsapp', {});
-    });
-
-    socket.on('subscribed', (data) => {
-      console.log('[WebSocket] Subscribed to:', data.channel);
-    });
-
-    // QR Code received via WebSocket - instant update!
-    socket.on('qr_code', (data) => {
-      console.log('[WebSocket] QR Code received');
-      setQrCode(data.qr);
-      setStatus('qr_ready');
-      setIsInitializing(false);
-    });
-
-    // WhatsApp connected
-    socket.on('whatsapp_connected', (data) => {
-      console.log('[WebSocket] WhatsApp connected:', data);
-      setStatus('connected');
-      setQrCode(null);
-      setIsInitializing(false);
-      if (data.phoneNumber) {
-        setPhoneNumber(data.phoneNumber);
-      }
-    });
-
-    // WhatsApp disconnected
-    socket.on('whatsapp_disconnected', (data) => {
-      console.log('[WebSocket] WhatsApp disconnected:', data);
-      setStatus('disconnected');
-      setQrCode(null);
-      setPhoneNumber(null);
-      setIsInitializing(false);
-    });
-
-    socket.on('disconnect', () => {
-      console.log('[WebSocket] Disconnected');
-      setSocketConnected(false);
-    });
-
-    socket.on('auth_error', (data) => {
-      console.error('[WebSocket] Auth error:', data);
-    });
-
-    socketRef.current = socket;
-
-    return () => {
-      socket.disconnect();
+    eventSource.onopen = () => {
+      console.log('[SSE] Connected');
+      setSseConnected(true);
     };
+
+    eventSource.onmessage = (event) => {
+      try {
+        const { event: eventType, data } = JSON.parse(event.data);
+        console.log('[SSE] Event received:', eventType, data);
+
+        switch (eventType) {
+          case 'qr_code':
+            console.log('[SSE] QR Code received - instant update!');
+            setQrCode(data.qr);
+            setStatus('qr_ready');
+            setIsInitializing(false);
+            break;
+          case 'whatsapp_connected':
+            console.log('[SSE] WhatsApp connected');
+            setStatus('connected');
+            setQrCode(null);
+            setIsInitializing(false);
+            if (data.phoneNumber) {
+              setPhoneNumber(data.phoneNumber);
+            }
+            break;
+          case 'whatsapp_disconnected':
+            console.log('[SSE] WhatsApp disconnected');
+            setStatus('disconnected');
+            setQrCode(null);
+            setPhoneNumber(null);
+            setIsInitializing(false);
+            break;
+          case 'connected':
+            console.log('[SSE] Stream connected');
+            break;
+          default:
+            console.log('[SSE] Unknown event:', eventType);
+        }
+      } catch (e) {
+        console.error('[SSE] Error parsing event:', e);
+      }
+    };
+
+    eventSource.onerror = (error) => {
+      console.error('[SSE] Error:', error);
+      setSseConnected(false);
+      // Reconnect after 3 seconds
+      setTimeout(() => {
+        if (eventSourceRef.current) {
+          eventSourceRef.current.close();
+          eventSourceRef.current = null;
+        }
+        initSSE();
+      }, 3000);
+    };
+
+    eventSourceRef.current = eventSource;
   }, []);
 
   useEffect(() => {
-    // Initialize WebSocket
-    initSocket();
+    // Initialize SSE for real-time updates
+    initSSE();
     
     // Initial status check
     checkStatus().then(() => {
       setInitialCheckDone(true);
     });
     
-    // Fallback polling (less frequent since we have WebSocket)
+    // Fallback polling (less frequent since we have SSE)
     pollingInterval.current = setInterval(() => {
-      if (!socketConnected) {
+      if (!sseConnected) {
         checkStatus();
       }
-    }, 5000); // Reduced to 5 seconds as WebSocket handles real-time
+    }, 5000); // Reduced to 5 seconds as SSE handles real-time
 
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
       }
-      if (socketRef.current) {
-        socketRef.current.disconnect();
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
       }
     };
-  }, [initSocket, socketConnected]);
+  }, [initSSE, sseConnected]);
 
   const checkStatus = async () => {
     try {
