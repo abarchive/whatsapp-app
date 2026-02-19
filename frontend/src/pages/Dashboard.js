@@ -89,7 +89,7 @@ export default function Dashboard({ user }) {
   }, []);
 
   useEffect(() => {
-    // Initialize SSE for real-time updates
+    // Initialize SSE for real-time updates (backup)
     initSSE();
     
     // Initial status check
@@ -97,12 +97,10 @@ export default function Dashboard({ user }) {
       setInitialCheckDone(true);
     });
     
-    // Fallback polling (less frequent since we have SSE)
+    // Fast polling for reliable updates (1 second when initializing, 3 seconds otherwise)
     pollingInterval.current = setInterval(() => {
-      if (!sseConnected) {
-        checkStatus();
-      }
-    }, 5000); // Reduced to 5 seconds as SSE handles real-time
+      checkStatus();
+    }, isInitializing ? 1000 : 3000);
 
     return () => {
       if (pollingInterval.current) {
@@ -113,7 +111,7 @@ export default function Dashboard({ user }) {
         eventSourceRef.current = null;
       }
     };
-  }, [initSSE, sseConnected]);
+  }, [initSSE, isInitializing]);
 
   const checkStatus = async () => {
     try {
