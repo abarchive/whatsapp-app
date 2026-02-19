@@ -914,8 +914,9 @@ async def regenerate_api_key(user: dict = Depends(get_current_user)):
 
 app.include_router(api_router)
 
-# Mount Socket.IO app with /api/socket.io path
-socket_app = socketio.ASGIApp(sio, app, socketio_path='/api/socket.io')
+# Mount Socket.IO app - path will be /socket.io by default
+# Frontend connects to BACKEND_URL/socket.io
+socket_app = socketio.ASGIApp(sio, app)
 
 # Socket.IO Event Handlers
 @sio.event
