@@ -256,6 +256,12 @@ async function initializeUserWhatsApp(userId) {
     }
     
     io.emit(`ready_${userId}`, { phoneNumber: session.phoneNumber });
+    
+    // Emit to backend for Socket.IO broadcast
+    emitToBackend(userId, 'whatsapp_connected', { 
+      status: 'connected', 
+      phoneNumber: session.phoneNumber 
+    });
   });
   
   // Authenticated event
