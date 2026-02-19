@@ -292,6 +292,12 @@ async function initializeUserWhatsApp(userId) {
     session.client = null;
     initializingUsers.delete(userId);
     io.emit(`disconnected_${userId}`, { reason });
+    
+    // Emit to backend for Socket.IO broadcast
+    emitToBackend(userId, 'whatsapp_disconnected', { 
+      status: 'disconnected', 
+      reason 
+    });
   });
   
   // Initialize
