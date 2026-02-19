@@ -991,6 +991,9 @@ async def receive_whatsapp_event(event_data: dict):
     
     return {'success': True, 'event': event_type}
 
+# Include router AFTER all routes are defined
+app.include_router(api_router)
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
