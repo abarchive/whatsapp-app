@@ -211,8 +211,6 @@ async function initializeUserWhatsApp(userId) {
     session.status = 'qr_ready';
     initializingUsers.delete(userId);
     io.emit(`qr_${userId}`, { qr });
-    // Send to backend for WebSocket broadcast
-    emitToBackend(userId, 'qr_code', { qr, status: 'qr_ready' });
   });
   
   // Ready event
