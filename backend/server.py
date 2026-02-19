@@ -920,9 +920,17 @@ async def emit_to_user(user_id: str, event: str, data: dict):
 
 # SSE endpoint for real-time updates
 @api_router.get('/events/stream')
-async def sse_stream(request: Request, user: dict = Depends(get_current_user)):
+async def sse_stream(request: Request, token: str = Query(...)):
     """Server-Sent Events stream for real-time WhatsApp updates"""
-    user_id = user['id']
+    # Authenticate via token query param (SSE doesn't support headers)
+    try:
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = payload.get('sub')
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status_code=401, detail='Token expired')
+    except jwt.InvalidTokenError:
+        raise HTTPException(status_code=401, detail='Invalid token')
+    
     queue = asyncio.Queue()
     
     # Add client queue
