@@ -73,16 +73,16 @@ export default function Dashboard({ user }) {
     };
 
     eventSource.onerror = (error) => {
-      console.error('[SSE] Error:', error);
+      console.log('[SSE] Connection error, will reconnect...');
       setSseConnected(false);
-      // Reconnect after 3 seconds
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close();
+        eventSourceRef.current = null;
+      }
+      // Reconnect after 1 second
       setTimeout(() => {
-        if (eventSourceRef.current) {
-          eventSourceRef.current.close();
-          eventSourceRef.current = null;
-        }
         initSSE();
-      }, 3000);
+      }, 1000);
     };
 
     eventSourceRef.current = eventSource;
