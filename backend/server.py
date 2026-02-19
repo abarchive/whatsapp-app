@@ -24,7 +24,7 @@ load_dotenv(ROOT_DIR / '.env')
 # PostgreSQL connection settings
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
 
-# Socket.IO server
+# Socket.IO server with /api path for Kubernetes ingress
 sio = socketio.AsyncServer(
     async_mode='asgi',
     cors_allowed_origins='*',
