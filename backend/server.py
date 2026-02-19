@@ -1,5 +1,6 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import StreamingResponse
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 import asyncpg
@@ -7,7 +8,7 @@ import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional
+from typing import List, Optional, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -16,7 +17,8 @@ import secrets
 import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
-import socketio
+import asyncio
+import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -24,21 +26,11 @@ load_dotenv(ROOT_DIR / '.env')
 # PostgreSQL connection settings
 DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
 
-# Socket.IO server with /api path for Kubernetes ingress
-sio = socketio.AsyncServer(
-    async_mode='asgi',
-    cors_allowed_origins='*',
-    logger=True,
-    engineio_logger=False
-)
-
 # Global connection pool
 db_pool = None
 
-# Connected users mapping: {sid: user_id}
-connected_users = {}
-# User to SID mapping: {user_id: [sid1, sid2, ...]}
-user_sids = {}
+# SSE clients: {user_id: [queue1, queue2, ...]}
+sse_clients: Dict[str, List[asyncio.Queue]] = {}
 
 async def get_db_pool():
     global db_pool
