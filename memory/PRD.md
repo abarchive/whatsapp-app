@@ -10,33 +10,41 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 4. **User Authentication**: Email/password login with JWT sessions
 5. **Message Logging**: View all sent messages history
 6. **Admin Panel**: Manage users, view analytics, monitor WhatsApp sessions
+7. **Real-time Updates**: Socket.IO for instant status updates (requires proper WebSocket support)
 
 ## Tech Stack
-- **Frontend**: React 18, Tailwind CSS
-- **Backend**: FastAPI (Python) with asyncpg
+- **Frontend**: React 18, Tailwind CSS, socket.io-client
+- **Backend**: FastAPI (Python) with asyncpg, python-socketio
 - **Database**: PostgreSQL (self-hosted on VPS)
 - **WhatsApp Service**: Node.js with whatsapp-web.js library
-- **Status Updates**: Polling (2 second interval)
+- **Real-time**: Socket.IO with fallback polling
 - **Process Management**: Supervisor
 
 ## Recent Updates (Feb 19, 2026)
 
-### PostgreSQL Migration ✅
-- Migrated from MongoDB Atlas to PostgreSQL
-- All tables: users, message_logs, activity_logs, settings
-- Migration scripts: `/app/scripts/setup_postgresql.sh`, `/app/scripts/schema.sql`
+### Socket.IO Implementation ✅
+- Backend: python-socketio with ASGI
+- Frontend: socket.io-client
+- WhatsApp Service: Events emission to backend
+- Nginx config with WebSocket support
 
-### SSE Removed ✅
-- SSE (Server-Sent Events) implementation was removed
-- Reverted to simple polling method for reliability
-- Polling interval: 2 seconds
+### Architecture Flow
+```
+WhatsApp Service → POST /api/internal/ws-event → Backend Socket.IO → Frontend
+       ↓                                              ↓
+   Events:                                      Real-time UI:
+   - qr_code                                    - QR displayed
+   - whatsapp_connected                         - Status: Connected
+   - whatsapp_disconnected                      - Status: Disconnected
+```
 
-## Architecture
+## File Structure
 ```
 /app/
-├── backend/server.py           # FastAPI with asyncpg
-├── frontend/src/               # React frontend
-├── whatsapp-service/index.js   # Node.js WhatsApp service
+├── backend/server.py           # FastAPI + Socket.IO (socket_app)
+├── frontend/src/               # React + socket.io-client
+├── whatsapp-service/index.js   # Node.js with axios for events
+├── nginx/botwave.conf          # Nginx config with WebSocket support
 ├── scripts/
 │   ├── setup_postgresql.sh     # PostgreSQL VPS setup
 │   └── schema.sql              # Database schema
@@ -52,6 +60,16 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - `POST /api/whatsapp/disconnect` - Disconnect WhatsApp
 - `POST /api/messages/send` - Send message (web)
 - `GET /api/send` - Send message (API with api_key)
+- `POST /api/internal/ws-event` - **Internal** Socket.IO event receiver
+
+## Socket.IO Events
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `authenticate` | Client → Server | Send JWT token for auth |
+| `authenticated` | Server → Client | Confirm authentication |
+| `qr_code` | Server → Client | QR code ready |
+| `whatsapp_connected` | Server → Client | WhatsApp connected |
+| `whatsapp_disconnected` | Server → Client | WhatsApp disconnected |
 
 ## What's Implemented ✅
 - [x] User authentication (login/register)
@@ -65,34 +83,35 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - [x] Admin session monitoring
 - [x] API key management
 - [x] PostgreSQL migration complete
-- [x] Title: "BotWave – Smart WhatsApp Automation"
-- [x] Removed "Made with Emergent" badge
+- [x] **Socket.IO real-time updates**
+- [x] Nginx WebSocket config
 
-## Database Schema (PostgreSQL)
-```sql
--- Users
-users (id UUID, email, password_hash, api_key, role, status, rate_limit, created_at)
+## VPS Deployment Notes
 
--- Message Logs
-message_logs (id UUID, user_id, receiver_number, message_body, status, source, created_at)
+### Nginx WebSocket Configuration
+The `/app/nginx/botwave.conf` file contains WebSocket-enabled Nginx config:
+- `/socket.io` path with upgrade headers
+- 7 day timeout for WebSocket connections
+- Proper proxy headers
 
--- Activity Logs
-activity_logs (id UUID, user_id, user_email, action, details, ip_address, created_at)
-
--- Settings
-settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenance_mode, updated_at)
+### Supervisor Configuration
+```ini
+[program:backend]
+command=/root/.venv/bin/uvicorn server:socket_app --host 0.0.0.0 --port 8001 --workers 1
 ```
+**Note**: Use `socket_app` NOT `app`, and NO `--reload` flag for Socket.IO to work.
 
-## Known Issues (Backlog)
-1. **⚠️ Security: Plaintext Passwords** - `plain_password` stored for admin panel view
-2. **Rate Limiting** - UI toggle exists but API enforcement needs verification
+## Known Limitations
 
-## Future Tasks (P2/P3)
-- [ ] Forgot Password (email-based recovery)
-- [ ] Webhooks for message delivery callbacks
-- [ ] Subscription/Payment integration (Stripe/Razorpay)
-- [ ] Rate limiting enforcement
-- [ ] Socket.IO for real-time updates (when deployed on VPS)
+### Preview Environment (Kubernetes)
+- WebSocket upgrade not fully supported by ingress
+- Socket.IO falls back to polling
+- Connection keeps reconnecting
+
+### VPS (Nginx)
+- Full WebSocket support ✅
+- Stable connections ✅
+- Real-time updates work instantly ✅
 
 ## Test Users
 - **Admin**: admin@admin.com / Admin@7501
@@ -103,15 +122,11 @@ settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenan
 PostgreSQL: postgresql://botwave_user:BotWave%40SecurePass123@localhost:5432/botwave
 ```
 
-## VPS Setup Commands
-```bash
-# 1. Run PostgreSQL setup script
-chmod +x scripts/setup_postgresql.sh
-./scripts/setup_postgresql.sh
-
-# 2. Update backend/.env
-DATABASE_URL=postgresql://botwave_user:YOUR_PASSWORD@localhost:5432/botwave
-```
-
 ## Preview URL
 https://msg-sender-5.preview.emergentagent.com
+
+## Future Tasks
+- [ ] Forgot Password (email-based recovery)
+- [ ] Webhooks for message delivery callbacks
+- [ ] Subscription/Payment integration (Stripe/Razorpay)
+- [ ] Rate limiting enforcement
