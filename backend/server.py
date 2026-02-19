@@ -906,78 +906,73 @@ async def regenerate_api_key(user: dict = Depends(get_current_user)):
 
 app.include_router(api_router)
 
-# Mount Socket.IO app - path will be /socket.io by default
-# Frontend connects to BACKEND_URL/socket.io
-socket_app = socketio.ASGIApp(sio, app)
-
-# Socket.IO Event Handlers
-@sio.event
-async def connect(sid, environ):
-    logger.info(f"[Socket.IO] Client connected: {sid}")
-    await sio.emit('connected', {'message': 'Connected to server'}, room=sid)
-
-@sio.event
-async def disconnect(sid):
-    logger.info(f"[Socket.IO] Client disconnected: {sid}")
-    # Remove from mappings
-    if sid in connected_users:
-        user_id = connected_users[sid]
-        del connected_users[sid]
-        if user_id in user_sids:
-            user_sids[user_id] = [s for s in user_sids[user_id] if s != sid]
-            if not user_sids[user_id]:
-                del user_sids[user_id]
-
-@sio.event
-async def authenticate(sid, data):
-    """Authenticate socket connection with JWT token"""
-    try:
-        token = data.get('token')
-        if not token:
-            await sio.emit('auth_error', {'error': 'Token required'}, room=sid)
-            return
-        
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get('sub')
-        
-        # Store user mapping
-        connected_users[sid] = user_id
-        if user_id not in user_sids:
-            user_sids[user_id] = []
-        user_sids[user_id].append(sid)
-        
-        logger.info(f"[Socket.IO] User {user_id} authenticated on {sid}")
-        await sio.emit('authenticated', {'user_id': user_id}, room=sid)
-        
-    except jwt.ExpiredSignatureError:
-        await sio.emit('auth_error', {'error': 'Token expired'}, room=sid)
-    except jwt.InvalidTokenError:
-        await sio.emit('auth_error', {'error': 'Invalid token'}, room=sid)
-
-@sio.event
-async def subscribe_whatsapp(sid, data):
-    """Subscribe to WhatsApp events for a user"""
-    user_id = connected_users.get(sid)
-    if not user_id:
-        await sio.emit('error', {'error': 'Not authenticated'}, room=sid)
-        return
-    
-    # Join user-specific room
-    await sio.enter_room(sid, f'whatsapp_{user_id}')
-    logger.info(f"[Socket.IO] User {user_id} subscribed to WhatsApp events")
-    await sio.emit('subscribed', {'channel': 'whatsapp'}, room=sid)
-
-# Helper function to emit WhatsApp events to user
+# SSE Helper function to emit events to user
 async def emit_to_user(user_id: str, event: str, data: dict):
-    """Emit event to all connected sockets of a user"""
-    room = f'whatsapp_{user_id}'
-    await sio.emit(event, data, room=room)
-    logger.info(f"[Socket.IO] Emitted {event} to user {user_id}")
+    """Emit event to all SSE clients of a user"""
+    if user_id in sse_clients:
+        message = json.dumps({'event': event, 'data': data})
+        for queue in sse_clients[user_id]:
+            try:
+                await queue.put(message)
+            except:
+                pass
+        logger.info(f"[SSE] Emitted {event} to user {user_id}")
+
+# SSE endpoint for real-time updates
+@api_router.get('/events/stream')
+async def sse_stream(request: Request, user: dict = Depends(get_current_user)):
+    """Server-Sent Events stream for real-time WhatsApp updates"""
+    user_id = user['id']
+    queue = asyncio.Queue()
+    
+    # Add client queue
+    if user_id not in sse_clients:
+        sse_clients[user_id] = []
+    sse_clients[user_id].append(queue)
+    
+    logger.info(f"[SSE] User {user_id} connected")
+    
+    async def event_generator():
+        try:
+            # Send initial connected event
+            yield f"data: {json.dumps({'event': 'connected', 'data': {'userId': user_id}})}\n\n"
+            
+            while True:
+                # Check if client disconnected
+                if await request.is_disconnected():
+                    break
+                
+                try:
+                    # Wait for message with timeout
+                    message = await asyncio.wait_for(queue.get(), timeout=30.0)
+                    yield f"data: {message}\n\n"
+                except asyncio.TimeoutError:
+                    # Send heartbeat to keep connection alive
+                    yield f": heartbeat\n\n"
+        except asyncio.CancelledError:
+            pass
+        finally:
+            # Remove client queue
+            if user_id in sse_clients and queue in sse_clients[user_id]:
+                sse_clients[user_id].remove(queue)
+                if not sse_clients[user_id]:
+                    del sse_clients[user_id]
+            logger.info(f"[SSE] User {user_id} disconnected")
+    
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no"
+        }
+    )
 
 # API endpoint to receive events from WhatsApp service
 @api_router.post('/internal/whatsapp-event')
 async def receive_whatsapp_event(event_data: dict):
-    """Receive events from WhatsApp service and broadcast via Socket.IO"""
+    """Receive events from WhatsApp service and broadcast via SSE"""
     event_type = event_data.get('event')
     user_id = event_data.get('userId')
     data = event_data.get('data', {})
@@ -985,7 +980,7 @@ async def receive_whatsapp_event(event_data: dict):
     if not event_type or not user_id:
         raise HTTPException(status_code=400, detail='Missing event or userId')
     
-    # Emit to user's room
+    # Emit to user's SSE clients
     await emit_to_user(user_id, event_type, data)
     
     return {'success': True, 'event': event_type}
