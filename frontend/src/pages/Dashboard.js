@@ -24,16 +24,17 @@ export default function Dashboard({ user }) {
     const token = localStorage.getItem('token');
     if (!token || socketRef.current?.connected) return;
 
-    console.log('[WebSocket] Connecting...');
+    console.log('[WebSocket] Connecting to:', BACKEND_URL);
     
-    // Connect to backend WebSocket via /api path
+    // Connect to backend WebSocket 
+    // Use direct backend URL for socket connection
     const socket = io(BACKEND_URL, {
-      path: '/api/socket.io',
       transports: ['polling', 'websocket'],
       auth: { token },
       reconnection: true,
       reconnectionAttempts: 5,
-      reconnectionDelay: 1000
+      reconnectionDelay: 1000,
+      withCredentials: false
     });
 
     socket.on('connect', () => {
