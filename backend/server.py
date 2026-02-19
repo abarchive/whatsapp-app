@@ -995,9 +995,7 @@ async def receive_whatsapp_event(event_data: dict):
 # Include router
 app.include_router(api_router)
 
-# Create Socket.IO ASGI app wrapping FastAPI
-socket_app = socketio.ASGIApp(sio, app)
-
+# Add CORS middleware to FastAPI app BEFORE wrapping with Socket.IO
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
@@ -1005,6 +1003,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Create Socket.IO ASGI app wrapping FastAPI (must be after middleware)
+socket_app = socketio.ASGIApp(sio, app)
 
 logging.basicConfig(
     level=logging.INFO,
