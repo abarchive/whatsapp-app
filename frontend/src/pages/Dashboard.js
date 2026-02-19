@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
+import { io } from 'socket.io-client';
 import Layout from '../components/Layout';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
@@ -12,25 +13,111 @@ export default function Dashboard({ user }) {
   const [qrCode, setQrCode] = useState(null);
   const [phoneNumber, setPhoneNumber] = useState(null);
   const [loading, setLoading] = useState(false);
-  const pollingInterval = useRef(null);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
+  const socketRef = useRef(null);
+  const pollingInterval = useRef(null);
+
+  // Initialize WebSocket connection
+  const initSocket = useCallback(() => {
+    const token = localStorage.getItem('token');
+    if (!token || socketRef.current?.connected) return;
+
+    console.log('[WebSocket] Connecting...');
+    
+    // Connect to backend WebSocket
+    const socket = io(BACKEND_URL, {
+      transports: ['websocket', 'polling'],
+      auth: { token }
+    });
+
+    socket.on('connect', () => {
+      console.log('[WebSocket] Connected');
+      setSocketConnected(true);
+      // Authenticate
+      socket.emit('authenticate', { token });
+    });
+
+    socket.on('authenticated', (data) => {
+      console.log('[WebSocket] Authenticated:', data);
+      // Subscribe to WhatsApp events
+      socket.emit('subscribe_whatsapp', {});
+    });
+
+    socket.on('subscribed', (data) => {
+      console.log('[WebSocket] Subscribed to:', data.channel);
+    });
+
+    // QR Code received via WebSocket - instant update!
+    socket.on('qr_code', (data) => {
+      console.log('[WebSocket] QR Code received');
+      setQrCode(data.qr);
+      setStatus('qr_ready');
+      setIsInitializing(false);
+    });
+
+    // WhatsApp connected
+    socket.on('whatsapp_connected', (data) => {
+      console.log('[WebSocket] WhatsApp connected:', data);
+      setStatus('connected');
+      setQrCode(null);
+      setIsInitializing(false);
+      if (data.phoneNumber) {
+        setPhoneNumber(data.phoneNumber);
+      }
+    });
+
+    // WhatsApp disconnected
+    socket.on('whatsapp_disconnected', (data) => {
+      console.log('[WebSocket] WhatsApp disconnected:', data);
+      setStatus('disconnected');
+      setQrCode(null);
+      setPhoneNumber(null);
+      setIsInitializing(false);
+    });
+
+    socket.on('disconnect', () => {
+      console.log('[WebSocket] Disconnected');
+      setSocketConnected(false);
+    });
+
+    socket.on('auth_error', (data) => {
+      console.error('[WebSocket] Auth error:', data);
+    });
+
+    socketRef.current = socket;
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
   useEffect(() => {
+    // Initialize WebSocket
+    initSocket();
+    
+    // Initial status check
     checkStatus().then(() => {
       setInitialCheckDone(true);
     });
     
+    // Fallback polling (less frequent since we have WebSocket)
     pollingInterval.current = setInterval(() => {
-      checkStatus();
-    }, 2000);
+      if (!socketConnected) {
+        checkStatus();
+      }
+    }, 5000); // Reduced to 5 seconds as WebSocket handles real-time
 
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
       }
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
     };
-  }, []);
+  }, [initSocket, socketConnected]);
 
   const checkStatus = async () => {
     try {
