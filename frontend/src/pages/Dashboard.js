@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { QRCodeSVG } from 'qrcode.react';
@@ -14,104 +14,24 @@ export default function Dashboard({ user }) {
   const [loading, setLoading] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initialCheckDone, setInitialCheckDone] = useState(false);
-  const [sseConnected, setSseConnected] = useState(false);
-  const eventSourceRef = useRef(null);
   const pollingInterval = useRef(null);
 
-  // Initialize SSE (Server-Sent Events) connection
-  const initSSE = useCallback(() => {
-    const token = localStorage.getItem('token');
-    if (!token || eventSourceRef.current) return;
-
-    console.log('[SSE] Connecting...');
-    
-    // Create EventSource with auth token in URL (SSE doesn't support headers)
-    const eventSource = new EventSource(`${API}/events/stream?token=${encodeURIComponent(token)}`);
-
-    eventSource.onopen = () => {
-      console.log('[SSE] Connected');
-      setSseConnected(true);
-    };
-
-    eventSource.onmessage = (event) => {
-      try {
-        const { event: eventType, data } = JSON.parse(event.data);
-        console.log('[SSE] Event received:', eventType, data);
-
-        switch (eventType) {
-          case 'qr_code':
-            console.log('[SSE] QR Code received - instant update!');
-            setQrCode(data.qr);
-            setStatus('qr_ready');
-            setIsInitializing(false);
-            break;
-          case 'whatsapp_connected':
-            console.log('[SSE] WhatsApp connected');
-            setStatus('connected');
-            setQrCode(null);
-            setIsInitializing(false);
-            if (data.phoneNumber) {
-              setPhoneNumber(data.phoneNumber);
-            }
-            break;
-          case 'whatsapp_disconnected':
-            console.log('[SSE] WhatsApp disconnected');
-            setStatus('disconnected');
-            setQrCode(null);
-            setPhoneNumber(null);
-            setIsInitializing(false);
-            break;
-          case 'connected':
-            console.log('[SSE] Stream connected');
-            break;
-          default:
-            console.log('[SSE] Unknown event:', eventType);
-        }
-      } catch (e) {
-        console.error('[SSE] Error parsing event:', e);
-      }
-    };
-
-    eventSource.onerror = (error) => {
-      console.log('[SSE] Connection error, will reconnect...');
-      setSseConnected(false);
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
-      // Reconnect after 1 second
-      setTimeout(() => {
-        initSSE();
-      }, 1000);
-    };
-
-    eventSourceRef.current = eventSource;
-  }, []);
-
   useEffect(() => {
-    // Initialize SSE for real-time updates (backup)
-    initSSE();
-    
-    // Initial status check
     checkStatus().then(() => {
       setInitialCheckDone(true);
     });
     
-    // Fast polling for reliable updates (1 second when initializing, 3 seconds otherwise)
+    // Polling every 2 seconds for status updates
     pollingInterval.current = setInterval(() => {
       checkStatus();
-    }, isInitializing ? 1000 : 3000);
+    }, 2000);
 
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current);
       }
-      if (eventSourceRef.current) {
-        eventSourceRef.current.close();
-        eventSourceRef.current = null;
-      }
     };
-  }, [initSSE, isInitializing]);
+  }, []);
 
   const checkStatus = async () => {
     try {
