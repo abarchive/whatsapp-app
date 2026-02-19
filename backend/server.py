@@ -1004,8 +1004,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Create Socket.IO ASGI app wrapping FastAPI (must be after middleware)
-socket_app = socketio.ASGIApp(sio, app)
+# Create Socket.IO ASGI app wrapping FastAPI
+# Use /api/socket.io path for Kubernetes ingress compatibility
+socket_app = socketio.ASGIApp(sio, app, socketio_path='/api/socket.io')
 
 logging.basicConfig(
     level=logging.INFO,
