@@ -34,7 +34,7 @@ export default function Dashboard({ user }) {
     console.log('[Socket.IO] Connecting to:', BACKEND_URL);
     
     const socket = io(BACKEND_URL, {
-      path: '/socket.io',
+      path: '/api/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
       reconnectionAttempts: 10,
