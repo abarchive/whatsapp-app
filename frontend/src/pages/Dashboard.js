@@ -26,10 +26,14 @@ export default function Dashboard({ user }) {
 
     console.log('[WebSocket] Connecting...');
     
-    // Connect to backend WebSocket
+    // Connect to backend WebSocket via /api path
     const socket = io(BACKEND_URL, {
-      transports: ['websocket', 'polling'],
-      auth: { token }
+      path: '/api/socket.io',
+      transports: ['polling', 'websocket'],
+      auth: { token },
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000
     });
 
     socket.on('connect', () => {
