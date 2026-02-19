@@ -10,14 +10,13 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 4. **User Authentication**: Email/password login with JWT sessions
 5. **Message Logging**: View all sent messages history
 6. **Admin Panel**: Manage users, view analytics, monitor WhatsApp sessions
-7. **Real-time Updates**: SSE (Server-Sent Events) for instant QR code and status updates
 
 ## Tech Stack
 - **Frontend**: React 18, Tailwind CSS
 - **Backend**: FastAPI (Python) with asyncpg
 - **Database**: PostgreSQL (self-hosted on VPS)
 - **WhatsApp Service**: Node.js with whatsapp-web.js library
-- **Real-time**: SSE (Server-Sent Events) - replaces polling for instant updates
+- **Status Updates**: Polling (2 second interval)
 - **Process Management**: Supervisor
 
 ## Recent Updates (Feb 19, 2026)
@@ -27,18 +26,16 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - All tables: users, message_logs, activity_logs, settings
 - Migration scripts: `/app/scripts/setup_postgresql.sh`, `/app/scripts/schema.sql`
 
-### Real-time SSE Implementation ✅
-- Replaced polling with Server-Sent Events (SSE)
-- Frontend connects to `/api/events/stream` for real-time updates
-- WhatsApp service sends events to backend via `/api/internal/whatsapp-event`
-- Events: `qr_code`, `whatsapp_connected`, `whatsapp_disconnected`
-- Fallback polling still available (5 second interval)
+### SSE Removed ✅
+- SSE (Server-Sent Events) implementation was removed
+- Reverted to simple polling method for reliability
+- Polling interval: 2 seconds
 
 ## Architecture
 ```
 /app/
-├── backend/server.py           # FastAPI with asyncpg + SSE
-├── frontend/src/               # React with SSE EventSource
+├── backend/server.py           # FastAPI with asyncpg
+├── frontend/src/               # React frontend
 ├── whatsapp-service/index.js   # Node.js WhatsApp service
 ├── scripts/
 │   ├── setup_postgresql.sh     # PostgreSQL VPS setup
@@ -55,8 +52,6 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - `POST /api/whatsapp/disconnect` - Disconnect WhatsApp
 - `POST /api/messages/send` - Send message (web)
 - `GET /api/send` - Send message (API with api_key)
-- `GET /api/events/stream` - **NEW** SSE real-time event stream
-- `POST /api/internal/whatsapp-event` - **NEW** Internal event receiver
 
 ## What's Implemented ✅
 - [x] User authentication (login/register)
@@ -69,8 +64,7 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 - [x] Admin panel with user management
 - [x] Admin session monitoring
 - [x] API key management
-- [x] **PostgreSQL migration complete**
-- [x] **SSE real-time updates implemented**
+- [x] PostgreSQL migration complete
 - [x] Title: "BotWave – Smart WhatsApp Automation"
 - [x] Removed "Made with Emergent" badge
 
@@ -89,16 +83,6 @@ activity_logs (id UUID, user_id, user_email, action, details, ip_address, create
 settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenance_mode, updated_at)
 ```
 
-## Real-time Events Flow
-```
-WhatsApp Service → POST /api/internal/whatsapp-event → Backend SSE → Frontend EventSource
-       ↓                                                    ↓
-   Events:                                            Instant UI Update:
-   - qr_code                                          - QR displayed
-   - whatsapp_connected                               - Status: Connected
-   - whatsapp_disconnected                            - Status: Disconnected
-```
-
 ## Known Issues (Backlog)
 1. **⚠️ Security: Plaintext Passwords** - `plain_password` stored for admin panel view
 2. **Rate Limiting** - UI toggle exists but API enforcement needs verification
@@ -108,9 +92,11 @@ WhatsApp Service → POST /api/internal/whatsapp-event → Backend SSE → Front
 - [ ] Webhooks for message delivery callbacks
 - [ ] Subscription/Payment integration (Stripe/Razorpay)
 - [ ] Rate limiting enforcement
+- [ ] Socket.IO for real-time updates (when deployed on VPS)
 
-## Test Credentials
+## Test Users
 - **Admin**: admin@admin.com / Admin@7501
+- **Test User**: testuser@botwave.pro / Test@123456
 
 ## Database Connection (VPS)
 ```
