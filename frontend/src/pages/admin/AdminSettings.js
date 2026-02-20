@@ -4,7 +4,7 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import { Settings, Save, RefreshCw, Shield, Users, MessageSquare, AlertTriangle, CheckCircle } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = `/api`;
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({

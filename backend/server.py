@@ -22,7 +22,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # PostgreSQL connection settings
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 # Socket.IO Server
 sio = socketio.AsyncServer(
