@@ -74,28 +74,9 @@ chainlit.md
 # WhatsApp session data (contains auth tokens - sensitive)
 whatsapp-service/.wwebjs_auth/
 whatsapp-service/.wwebjs_cache/
-frontend/node_modules/.cache/default-development/0.pack
--e 
+
 # Environment files
 *.env
 *.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
--e 
-# Environment files
-*.env
-*.env.*
+backend/.env
+whatsapp-service/.env

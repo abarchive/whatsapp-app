@@ -10,26 +10,44 @@ Build a full-stack, production-level web application that functions as a WhatsAp
 4. **User Authentication**: Email/password login with JWT sessions
 5. **Message Logging**: View all sent messages history
 6. **Admin Panel**: Manage users, view analytics, monitor WhatsApp sessions
+7. **Real-time Updates**: Socket.IO for instant status updates (requires proper WebSocket support)
 
 ## Tech Stack
-- **Frontend**: React 18, Tailwind CSS
-- **Backend**: FastAPI (Python)
-- **Database**: ~~MongoDB~~ → **PostgreSQL** (Migrated on Feb 18, 2026)
+- **Frontend**: React 18, Tailwind CSS, socket.io-client
+- **Backend**: FastAPI (Python) with asyncpg, python-socketio
+- **Database**: PostgreSQL (self-hosted on VPS)
 - **WhatsApp Service**: Node.js with whatsapp-web.js library
+- **Real-time**: Socket.IO with fallback polling
 - **Process Management**: Supervisor
 
-## Database Migration (Feb 18, 2026)
-Successfully migrated from MongoDB Atlas to **PostgreSQL**:
-- **Reason**: Cost efficiency (self-hosted on VPS), better for subscription/payment features
-- **Tables**: users, message_logs, activity_logs, settings
-- **All 15 API tests passed** after migration
+## Recent Updates (Feb 19, 2026)
 
-## Architecture
+### Socket.IO Implementation ✅
+- Backend: python-socketio with ASGI
+- Frontend: socket.io-client
+- WhatsApp Service: Events emission to backend
+- Nginx config with WebSocket support
+
+### Architecture Flow
+```
+WhatsApp Service → POST /api/internal/ws-event → Backend Socket.IO → Frontend
+       ↓                                              ↓
+   Events:                                      Real-time UI:
+   - qr_code                                    - QR displayed
+   - whatsapp_connected                         - Status: Connected
+   - whatsapp_disconnected                      - Status: Disconnected
+```
+
+## File Structure
 ```
 /app/
-├── backend/server.py           # FastAPI with asyncpg (PostgreSQL)
-├── frontend/src/               # React frontend
-├── whatsapp-service/index.js   # Node.js WhatsApp service
+├── backend/server.py           # FastAPI + Socket.IO (socket_app)
+├── frontend/src/               # React + socket.io-client
+├── whatsapp-service/index.js   # Node.js with axios for events
+├── nginx/botwave.conf          # Nginx config with WebSocket support
+├── scripts/
+│   ├── setup_postgresql.sh     # PostgreSQL VPS setup
+│   └── schema.sql              # Database schema
 └── backend/tests/              # Pytest test suite
 ```
 
@@ -42,6 +60,16 @@ Successfully migrated from MongoDB Atlas to **PostgreSQL**:
 - `POST /api/whatsapp/disconnect` - Disconnect WhatsApp
 - `POST /api/messages/send` - Send message (web)
 - `GET /api/send` - Send message (API with api_key)
+- `POST /api/internal/ws-event` - **Internal** Socket.IO event receiver
+
+## Socket.IO Events
+| Event | Direction | Description |
+|-------|-----------|-------------|
+| `authenticate` | Client → Server | Send JWT token for auth |
+| `authenticated` | Server → Client | Confirm authentication |
+| `qr_code` | Server → Client | QR code ready |
+| `whatsapp_connected` | Server → Client | WhatsApp connected |
+| `whatsapp_disconnected` | Server → Client | WhatsApp disconnected |
 
 ## What's Implemented ✅
 - [x] User authentication (login/register)
@@ -54,51 +82,51 @@ Successfully migrated from MongoDB Atlas to **PostgreSQL**:
 - [x] Admin panel with user management
 - [x] Admin session monitoring
 - [x] API key management
-- [x] **PostgreSQL migration complete**
-- [x] Title: "BotWave – Smart WhatsApp Automation"
-- [x] Removed "Made with Emergent" badge
+- [x] PostgreSQL migration complete
+- [x] **Socket.IO real-time updates**
+- [x] Nginx WebSocket config
 
-## Database Schema (PostgreSQL)
-```sql
--- Users
-users (id UUID, email, password_hash, api_key, role, status, rate_limit, created_at)
+## VPS Deployment Notes
 
--- Message Logs
-message_logs (id UUID, user_id, receiver_number, message_body, status, source, created_at)
+### Nginx WebSocket Configuration
+The `/app/nginx/botwave.conf` file contains WebSocket-enabled Nginx config:
+- `/socket.io` path with upgrade headers
+- 7 day timeout for WebSocket connections
+- Proper proxy headers
 
--- Activity Logs
-activity_logs (id UUID, user_id, user_email, action, details, ip_address, created_at)
-
--- Settings
-settings (id, default_rate_limit, max_rate_limit, enable_registration, maintenance_mode, updated_at)
+### Supervisor Configuration
+```ini
+[program:backend]
+command=/root/.venv/bin/uvicorn server:socket_app --host 0.0.0.0 --port 8001 --workers 1
 ```
+**Note**: Use `socket_app` NOT `app`, and NO `--reload` flag for Socket.IO to work.
 
-## Test Results (Feb 18, 2026)
-All 15 tests PASSED with PostgreSQL:
-- Authentication tests ✅
-- WhatsApp status/initialize/QR/disconnect tests ✅
-- Reconnect cycle QR regeneration ✅
-- Multiple disconnect-reconnect cycles ✅
-- Message sending tests ✅
-- API key management tests ✅
+## Known Limitations
 
-## Known Issues (Backlog)
-1. **⚠️ Security: Plaintext Passwords** - `plain_password` stored for admin panel view
-2. **Rate Limiting** - UI toggle exists but API enforcement needs verification
+### Preview Environment (Kubernetes)
+- WebSocket upgrade not fully supported by ingress
+- Socket.IO falls back to polling
+- Connection keeps reconnecting
 
-## Future Tasks (P2/P3)
-- [ ] Forgot Password (email-based recovery)
-- [ ] Webhooks for message delivery callbacks
-- [ ] Subscription/Payment integration (Stripe/Razorpay)
-- [ ] Rate limiting verification
+### VPS (Nginx)
+- Full WebSocket support ✅
+- Stable connections ✅
+- Real-time updates work instantly ✅
 
-## Test Credentials
+## Test Users
 - **Admin**: admin@admin.com / Admin@7501
+- **Test User**: testuser@botwave.pro / Test@123456
 
-## Database Connection
+## Database Connection (VPS)
 ```
 PostgreSQL: postgresql://botwave_user:BotWave%40SecurePass123@localhost:5432/botwave
 ```
 
 ## Preview URL
 https://msg-sender-5.preview.emergentagent.com
+
+## Future Tasks
+- [ ] Forgot Password (email-based recovery)
+- [ ] Webhooks for message delivery callbacks
+- [ ] Subscription/Payment integration (Stripe/Razorpay)
+- [ ] Rate limiting enforcement
