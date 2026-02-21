@@ -5,8 +5,8 @@ import { QRCodeSVG } from 'qrcode.react';
 import { io } from 'socket.io-client';
 import Layout from '../components/Layout';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const BACKEND_URL = '';
+const API = `/api`;
 
 // Enable fallback polling (set to false to disable polling completely)
 const ENABLE_FALLBACK_POLLING = true;
@@ -33,7 +33,7 @@ export default function Dashboard({ user }) {
 
     console.log('[Socket.IO] Connecting to:', BACKEND_URL);
     
-    const socket = io(BACKEND_URL, {
+    const socket = io('', {
       path: '/api/socket.io',
       transports: ['websocket', 'polling'],
       reconnection: true,
@@ -113,7 +113,7 @@ export default function Dashboard({ user }) {
     if (ENABLE_FALLBACK_POLLING) {
       pollingInterval.current = setInterval(() => {
         checkStatus();
-      }, socketConnected ? POLLING_INTERVAL : 2000);
+      }, POLLING_INTERVAL);
     }
 
     return () => {
@@ -125,7 +125,7 @@ export default function Dashboard({ user }) {
         socketRef.current = null;
       }
     };
-  }, [initSocket, socketConnected]);
+  }, [initSocket]);
 
   const checkStatus = async () => {
     try {
@@ -243,7 +243,7 @@ export default function Dashboard({ user }) {
       setTimeout(() => {
         checkStatus();
         setLoading(false);
-      }, 2000);
+      }, );
       
     } catch (error) {
       if (error.response?.status === 401) {

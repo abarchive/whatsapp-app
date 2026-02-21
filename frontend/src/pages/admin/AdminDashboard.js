@@ -5,7 +5,7 @@ import { Users, MessageSquare, CheckCircle, XCircle, TrendingUp, Activity } from
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = `/api`;
 
 const COLORS = ['#667eea', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#3b82f6'];
 

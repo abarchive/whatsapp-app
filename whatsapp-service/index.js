@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 // Backend URL for Socket.IO events
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = 'http://127.0.0.1:8001';
 
 // Helper function to emit events to backend for Socket.IO broadcast
 async function emitToBackend(userId, event, data) {
@@ -161,7 +161,7 @@ async function initializeUserWhatsApp(userId) {
   await cleanupUser(userId);
   
   // Wait for cleanup
-  await delay(2000);
+  await delay(300);
   
   console.log(`[User ${userId}] Initializing WhatsApp client...`);
   
@@ -210,9 +210,9 @@ async function initializeUserWhatsApp(userId) {
         '--disable-client-side-phishing-detection',
         '--disable-component-update',
         '--disable-domain-reliability',
-        '--single-process'
+
       ],
-      headless: true,
+      headless: "new",
       timeout: 60000,
       protocolTimeout: 60000
     },
@@ -265,9 +265,11 @@ async function initializeUserWhatsApp(userId) {
   });
   
   // Authenticated event
-  client.on('authenticated', () => {
-    console.log(`[User ${userId}] WhatsApp authenticated`);
-  });
+  // Authenticated event
+client.on('authenticated', () => {
+  console.log(`[User ${userId}] WhatsApp authenticated`);
+});
+
   
   // Auth failure event
   client.on('auth_failure', (msg) => {
@@ -530,6 +532,6 @@ app.get('/admin/sessions', (req, res) => {
 
 // Start server
 const PORT = process.env.PORT || 8002;
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`[WhatsApp Service] Ready to accept per-user connections`);
 });

@@ -5,7 +5,7 @@ import PasswordResetModal from '../../components/PasswordResetModal';
 import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check, KeyRound } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = `/api`;
 
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);

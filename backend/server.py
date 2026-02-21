@@ -22,7 +22,7 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # PostgreSQL connection settings
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 # Socket.IO Server
 sio = socketio.AsyncServer(
@@ -1070,7 +1070,7 @@ async def authenticate(sid, data):
         user_sessions[user_id].add(sid)
         
         # Join user-specific room
-        sio.enter_room(sid, f'user_{user_id}')
+        await sio.enter_room(sid, f'user_{user_id}')
         
         logger.info(f"[Socket.IO] User {user_id} authenticated (sid: {sid})")
         await sio.emit('authenticated', {'userId': user_id, 'message': 'Authenticated successfully'}, room=sid)

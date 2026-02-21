@@ -3,7 +3,7 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const API = `/api`;
 
 export default function SendMessage({ user }) {
   const [number, setNumber] = useState('');
@@ -127,7 +127,7 @@ export default function SendMessage({ user }) {
         <div className="alert alert-info">
           <p style={{ marginBottom: '12px', fontWeight: '600' }}>You can also send messages via API:</p>
           <pre style={{ background: 'white', padding: '16px', borderRadius: '8px', overflow: 'auto', fontSize: '13px' }}>
-{`GET ${BACKEND_URL}/api/send?api_key=YOUR_API_KEY&number=9876543210&msg=Hello+World`}
+{`GET /api/send?api_key=YOUR_API_KEY&number=9876543210&msg=Hello+World`}
           </pre>
           <p style={{ marginTop: '12px', fontSize: '14px' }}>
             💡 Copy the URL directly from the <strong>API Keys</strong> page - you can test it in your browser!

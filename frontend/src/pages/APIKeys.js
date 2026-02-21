@@ -3,8 +3,8 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { Copy, RefreshCw } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+const BASE_URL = window.location.origin;
+const API = `/api`;
 
 export default function APIKeys({ user }) {
   const [apiKey, setApiKey] = useState('');
@@ -129,14 +129,14 @@ export default function APIKeys({ user }) {
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
             <p style={{ fontSize: '14px', marginBottom: '8px', color: '#64748b' }}>Endpoint:</p>
             <code style={{ display: 'block', padding: '12px', background: 'white', borderRadius: '6px', fontSize: '13px', fontFamily: 'Monaco, monospace', wordBreak: 'break-all' }}>
-              GET {BACKEND_URL}/api/send?api_key=YOUR_API_KEY&number=PHONE_NUMBER&msg=MESSAGE_TEXT
+              GET {BASE_URL}/api/send?api_key=YOUR_API_KEY&number=PHONE_NUMBER&msg=MESSAGE_TEXT
             </code>
           </div>
 
           <h4 style={{ fontSize: '16px', marginBottom: '12px', color: '#1e293b' }}>Example URL (Ready to Use)</h4>
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', marginBottom: '24px' }}>
             <code style={{ display: 'block', padding: '12px', background: 'white', borderRadius: '6px', fontSize: '13px', fontFamily: 'Monaco, monospace', overflow: 'auto', wordBreak: 'break-all' }}>
-              {BACKEND_URL}/api/send?api_key={apiKey}&number=9876543210&msg=Hello+World
+              {BASE_URL}/api/send?api_key={apiKey}&number=9876543210&msg=Hello+World
             </code>
             <p style={{ marginTop: '12px', fontSize: '13px', color: '#64748b' }}>
               💡 You can copy this URL and paste it directly in your browser to send a message!
@@ -146,7 +146,7 @@ export default function APIKeys({ user }) {
           <h4 style={{ fontSize: '16px', marginBottom: '12px', color: '#1e293b' }}>Example cURL Request</h4>
           <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px' }}>
             <pre style={{ padding: '12px', background: 'white', borderRadius: '6px', fontSize: '13px', fontFamily: 'Monaco, monospace', overflow: 'auto' }}>
-{`curl -X GET "${BACKEND_URL}/api/send?api_key=${apiKey}&number=9876543210&msg=Hello+from+API"`}
+{`curl -X GET "${BASE_URL}/api/send?api_key=${apiKey}&number=9876543210&msg=Hello+from+API"`}
             </pre>
           </div>
 
