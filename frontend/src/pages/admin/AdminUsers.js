@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import PasswordResetModal from '../../components/PasswordResetModal';
+import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check, KeyRound } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -15,6 +16,12 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({ email: '', password: '', role: 'user', rate_limit: 30, status: 'active' });
   const [showPasswords, setShowPasswords] = useState({});
   const [copiedId, setCopiedId] = useState(null);
+  
+  // Password Reset Modal State
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
+  const [resetPasswordUserEmail, setResetPasswordUserEmail] = useState('');
+  const [temporaryPassword, setTemporaryPassword] = useState('');
+  const [resettingPasswordForUser, setResettingPasswordForUser] = useState(null);
 
   useEffect(() => {
     fetchUsers();
