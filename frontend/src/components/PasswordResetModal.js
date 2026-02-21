@@ -96,6 +96,7 @@ export default function PasswordResetModal({ isOpen, onClose, userEmail, tempora
         <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
           <button
             onClick={onClose}
+            data-testid="close-reset-modal-btn"
             className="w-full py-2.5 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium rounded-lg transition-colors"
           >
             Close
