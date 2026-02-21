@@ -483,6 +483,111 @@ async def create_user_by_admin(user_data: dict, admin: dict = Depends(get_admin_
     await log_activity(admin['id'], admin['email'], 'USER_CREATED', f'Created user {email}')
     return {'success': True, 'user_id': str(user_id), 'email': email}
 
+# Generate strong random password
+def generate_strong_password(length: int = 14) -> str:
+    """Generate a strong random password with uppercase, lowercase, numbers, and special chars"""
+    import string
+    # Ensure at least one of each type
+    password = [
+        secrets.choice(string.ascii_uppercase),
+        secrets.choice(string.ascii_lowercase),
+        secrets.choice(string.digits),
+        secrets.choice('!@#$%^&*')
+    ]
+    # Fill rest with random chars
+    all_chars = string.ascii_letters + string.digits + '!@#$%^&*'
+    password.extend(secrets.choice(all_chars) for _ in range(length - 4))
+    # Shuffle to avoid predictable pattern
+    secrets.SystemRandom().shuffle(password)
+    return ''.join(password)
+
+# Admin - Reset User Password
+@api_router.post('/admin/reset-password/{user_id}', response_model=PasswordResetResponse)
+async def admin_reset_password(user_id: str, admin: dict = Depends(get_admin_user)):
+    """
+    Admin-only endpoint to reset a user's password.
+    Generates a strong random password and sets force_password_change = TRUE.
+    Returns the temporary password ONLY in the response (not stored as plain text).
+    """
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        # Check if user exists
+        target_user = await conn.fetchrow('SELECT id, email FROM users WHERE id = $1', uuid.UUID(user_id))
+        if not target_user:
+            raise HTTPException(status_code=404, detail='User not found')
+        
+        # Generate new strong password
+        new_password = generate_strong_password(14)
+        password_hash = hash_password(new_password)
+        
+        # Update user: set new password hash and force_password_change = TRUE
+        # NOTE: We do NOT store the plain password for security
+        await conn.execute(
+            '''UPDATE users 
+               SET password_hash = $1, plain_password = NULL, force_password_change = TRUE 
+               WHERE id = $2''',
+            password_hash, uuid.UUID(user_id)
+        )
+    
+    await log_activity(
+        admin['id'], 
+        admin['email'], 
+        'PASSWORD_RESET', 
+        f'Admin reset password for user {target_user["email"]}'
+    )
+    
+    return PasswordResetResponse(
+        success=True,
+        message=f'Password reset successful for {target_user["email"]}. User will be required to change password on next login.',
+        temporary_password=new_password
+    )
+
+# User - Change Password (for force_password_change flow)
+@api_router.post('/auth/change-password')
+async def change_password(password_data: PasswordChangeRequest, user: dict = Depends(get_current_user)):
+    """
+    User endpoint to change their own password.
+    If force_password_change is TRUE, this will also set it to FALSE after successful change.
+    """
+    pool = await get_db_pool()
+    async with pool.acquire() as conn:
+        # Get current password hash
+        current_user = await conn.fetchrow(
+            'SELECT password_hash FROM users WHERE id = $1',
+            uuid.UUID(user['id'])
+        )
+        
+        if not current_user:
+            raise HTTPException(status_code=404, detail='User not found')
+        
+        # Verify current password
+        if not verify_password(password_data.current_password, current_user['password_hash']):
+            raise HTTPException(status_code=400, detail='Current password is incorrect')
+        
+        # Validate new password strength
+        new_pass = password_data.new_password
+        if len(new_pass) < 8:
+            raise HTTPException(status_code=400, detail='New password must be at least 8 characters')
+        if not any(c.isupper() for c in new_pass):
+            raise HTTPException(status_code=400, detail='New password must contain at least one uppercase letter')
+        if not any(c.islower() for c in new_pass):
+            raise HTTPException(status_code=400, detail='New password must contain at least one lowercase letter')
+        if not any(c.isdigit() for c in new_pass):
+            raise HTTPException(status_code=400, detail='New password must contain at least one number')
+        
+        # Update password and clear force_password_change flag
+        new_hash = hash_password(new_pass)
+        await conn.execute(
+            '''UPDATE users 
+               SET password_hash = $1, plain_password = NULL, force_password_change = FALSE 
+               WHERE id = $2''',
+            new_hash, uuid.UUID(user['id'])
+        )
+    
+    await log_activity(user['id'], user['email'], 'PASSWORD_CHANGED', 'User changed their password')
+    
+    return {'success': True, 'message': 'Password changed successfully'}
+
 # Admin - Analytics
 @api_router.get('/admin/analytics/overview')
 async def get_analytics_overview(admin: dict = Depends(get_admin_user)):
