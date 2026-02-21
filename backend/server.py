@@ -206,7 +206,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
         pool = await get_db_pool()
         async with pool.acquire() as conn:
             user = await conn.fetchrow(
-                'SELECT id, email, api_key, role, status, rate_limit, created_at FROM users WHERE id = $1',
+                'SELECT id, email, api_key, role, status, rate_limit, force_password_change, created_at FROM users WHERE id = $1',
                 uuid.UUID(user_id)
             )
         
