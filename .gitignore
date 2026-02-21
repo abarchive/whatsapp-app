@@ -78,5 +78,9 @@ whatsapp-service/.wwebjs_cache/
 # Environment files
 *.env
 *.env.*
+
+# Environment files
+*.env
+*.env.*
 backend/.env
 whatsapp-service/.env

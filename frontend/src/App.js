@@ -7,6 +7,7 @@ import SendMessage from './pages/SendMessage';
 import MessageLogs from './pages/MessageLogs';
 import APIKeys from './pages/APIKeys';
 import Profile from './pages/Profile';
+import ChangePassword from './pages/ChangePassword';
 // Admin Pages
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -24,15 +25,31 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
     if (token) {
-      setUser({ token });
+      // Parse stored user to get force_password_change flag
+      let userData = { token };
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          userData.force_password_change = parsed.force_password_change || false;
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      setUser(userData);
     }
     setLoading(false);
   }, []);
 
   const PrivateRoute = ({ children }) => {
     if (loading) return <div>Loading...</div>;
-    return user ? children : <Navigate to="/login" />;
+    if (!user) return <Navigate to="/login" />;
+    // Check if force_password_change is required
+    if (user.force_password_change) {
+      return <Navigate to="/change-password" />;
+    }
+    return children;
   };
 
   const PublicRoute = ({ children }) => {
@@ -67,6 +84,9 @@ function App() {
         <Route path="/message-logs" element={<PrivateRoute><MessageLogs user={user} /></PrivateRoute>} />
         <Route path="/api-keys" element={<PrivateRoute><APIKeys user={user} /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile user={user} setUser={setUser} /></PrivateRoute>} />
+        <Route path="/change-password" element={
+          user ? <ChangePassword user={user} setUser={setUser} /> : <Navigate to="/login" />
+        } />
         <Route path="/" element={<Navigate to="/dashboard" />} />
         
         {/* Admin Routes */}

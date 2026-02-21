@@ -22,8 +22,19 @@ export default function LoginPage({ setUser }) {
       const { access_token, user } = response.data;
       localStorage.setItem('token', access_token);
       localStorage.setItem('user', JSON.stringify(user));
-      setUser({ token: access_token });
-      navigate('/dashboard');
+      
+      // Set user with force_password_change flag
+      setUser({ 
+        token: access_token,
+        force_password_change: user.force_password_change || false
+      });
+      
+      // Redirect based on force_password_change flag
+      if (user.force_password_change) {
+        navigate('/change-password');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Login failed');
     } finally {

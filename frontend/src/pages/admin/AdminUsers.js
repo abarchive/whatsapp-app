@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
-import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check } from 'lucide-react';
+import PasswordResetModal from '../../components/PasswordResetModal';
+import { Users, Plus, Edit2, Trash2, X, Eye, EyeOff, Copy, Check, KeyRound } from 'lucide-react';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `/api`;
@@ -15,6 +16,12 @@ export default function AdminUsers() {
   const [formData, setFormData] = useState({ email: '', password: '', role: 'user', rate_limit: 30, status: 'active' });
   const [showPasswords, setShowPasswords] = useState({});
   const [copiedId, setCopiedId] = useState(null);
+  
+  // Password Reset Modal State
+  const [showPasswordResetModal, setShowPasswordResetModal] = useState(false);
+  const [resetPasswordUserEmail, setResetPasswordUserEmail] = useState('');
+  const [temporaryPassword, setTemporaryPassword] = useState('');
+  const [resettingPasswordForUser, setResettingPasswordForUser] = useState(null);
 
   useEffect(() => {
     fetchUsers();
@@ -112,6 +119,29 @@ export default function AdminUsers() {
       navigator.clipboard.writeText(password);
       setCopiedId(userId);
       setTimeout(() => setCopiedId(null), 2000);
+    }
+  };
+
+  // Handle Password Reset
+  const handleResetPassword = async (user) => {
+    if (!window.confirm(`Are you sure you want to reset password for "${user.email}"?`)) return;
+    
+    setResettingPasswordForUser(user.id);
+    
+    try {
+      const token = localStorage.getItem('admin_token');
+      const response = await axios.post(`${API}/admin/reset-password/${user.id}`, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      setTemporaryPassword(response.data.temporary_password);
+      setResetPasswordUserEmail(user.email);
+      setShowPasswordResetModal(true);
+      fetchUsers(); // Refresh to show updated status
+    } catch (error) {
+      alert(error.response?.data?.detail || 'Password reset failed');
+    } finally {
+      setResettingPasswordForUser(null);
     }
   };
 
@@ -236,6 +266,23 @@ export default function AdminUsers() {
                   <td style={{ padding: '16px', textAlign: 'right' }}>
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                       <button
+                        onClick={() => handleResetPassword(user)}
+                        disabled={resettingPasswordForUser === user.id}
+                        data-testid={`reset-password-btn-${user.id}`}
+                        style={{ 
+                          padding: '8px', 
+                          background: resettingPasswordForUser === user.id ? '#e0e7ff' : '#dbeafe', 
+                          border: 'none', 
+                          borderRadius: '6px', 
+                          cursor: resettingPasswordForUser === user.id ? 'wait' : 'pointer', 
+                          color: '#3b82f6',
+                          opacity: resettingPasswordForUser === user.id ? 0.7 : 1
+                        }}
+                        title="Reset Password"
+                      >
+                        <KeyRound size={16} />
+                      </button>
+                      <button
                         onClick={() => handleEdit(user)}
                         style={{ padding: '8px', background: '#f1f5f9', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#64748b' }}
                         title="Edit"
@@ -356,6 +403,17 @@ export default function AdminUsers() {
           </div>
         </div>
       )}
+      {/* Password Reset Modal */}
+      <PasswordResetModal
+        isOpen={showPasswordResetModal}
+        onClose={() => {
+          setShowPasswordResetModal(false);
+          setTemporaryPassword('');
+          setResetPasswordUserEmail('');
+        }}
+        userEmail={resetPasswordUserEmail}
+        temporaryPassword={temporaryPassword}
+      />
     </AdminLayout>
   );
 }
