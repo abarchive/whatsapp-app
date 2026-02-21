@@ -185,11 +185,13 @@ export default function ChangePassword({ user, setUser }) {
                 placeholder="Confirm new password"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent pr-12"
                 required
+                data-testid="confirm-password-input"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                data-testid="toggle-confirm-password"
               >
                 {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
@@ -197,7 +199,7 @@ export default function ChangePassword({ user, setUser }) {
           </div>
 
           {/* Password Requirements */}
-          <div className="bg-gray-50 rounded-lg p-4 space-y-2">
+          <div className="bg-gray-50 rounded-lg p-4 space-y-2" data-testid="password-requirements">
             <p className="text-sm font-medium text-gray-700 mb-2">Password Requirements:</p>
             <PasswordRequirement met={hasMinLength} text="At least 8 characters" />
             <PasswordRequirement met={hasUppercase} text="One uppercase letter" />
@@ -210,6 +212,7 @@ export default function ChangePassword({ user, setUser }) {
           <button
             type="submit"
             disabled={loading || !isValidPassword}
+            data-testid="change-password-submit"
             className={`w-full py-3 px-4 rounded-lg font-semibold text-white transition-all duration-200 ${
               isValidPassword && !loading
                 ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700'
