@@ -371,7 +371,8 @@ async def get_me(user: dict = Depends(get_current_user)):
         api_key=user['api_key'],
         role=user.get('role', 'user'),
         status=user.get('status', 'active'),
-        rate_limit=user.get('rate_limit', 30)
+        rate_limit=user.get('rate_limit', 30),
+        force_password_change=user.get('force_password_change', False)
     )
 
 # Admin - Users Management
