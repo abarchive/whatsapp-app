@@ -25,8 +25,19 @@ function App() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    const storedUser = localStorage.getItem('user');
     if (token) {
-      setUser({ token });
+      // Parse stored user to get force_password_change flag
+      let userData = { token };
+      if (storedUser) {
+        try {
+          const parsed = JSON.parse(storedUser);
+          userData.force_password_change = parsed.force_password_change || false;
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+      setUser(userData);
     }
     setLoading(false);
   }, []);
