@@ -953,7 +953,7 @@ async def authenticate(sid, data):
         user_sessions[user_id].add(sid)
         
         # Join user-specific room
-        sio.enter_room(sid, f'user_{user_id}')
+        await sio.enter_room(sid, f'user_{user_id}')
         
         logger.info(f"[Socket.IO] User {user_id} authenticated (sid: {sid})")
         await sio.emit('authenticated', {'userId': user_id, 'message': 'Authenticated successfully'}, room=sid)

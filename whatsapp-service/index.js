@@ -21,7 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 // Backend URL for Socket.IO events
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = 'http://127.0.0.1:8001';
 
 // Helper function to emit events to backend for Socket.IO broadcast
 async function emitToBackend(userId, event, data) {
@@ -266,26 +266,8 @@ async function initializeUserWhatsApp(userId) {
   
   // Authenticated event
   // Authenticated event
-client.on('authenticated', async () => {
+client.on('authenticated', () => {
   console.log(`[User ${userId}] WhatsApp authenticated`);
-
-  session.isConnected = true;
-  session.status = 'connected';
-  session.qrCode = null;
-  initializingUsers.delete(userId);
-
-  try {
-    const info = client.info;
-    if (info && info.wid) {
-      session.phoneNumber = info.wid.user;
-    }
-  } catch (e) {}
-
-  // Immediately notify backend
-  await emitToBackend(userId, 'whatsapp_connected', {
-    status: 'connected',
-    phoneNumber: session.phoneNumber || null
-  });
 });
 
   
