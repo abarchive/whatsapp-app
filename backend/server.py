@@ -357,7 +357,8 @@ async def login(credentials: UserLogin):
             'email': user_dict['email'],
             'api_key': user_dict['api_key'],
             'role': user_dict.get('role', 'user'),
-            'status': user_dict.get('status', 'active')
+            'status': user_dict.get('status', 'active'),
+            'force_password_change': user_dict.get('force_password_change', False)
         }
     }
 
