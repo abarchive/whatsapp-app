@@ -224,7 +224,7 @@ async def health_check():
         "status": "ok",
         "service": "whatsapp-automation-api",
         "database": db_status,
-        "database_type": "postgresql",
+        "database_type": "sqlite" if USE_SQLITE else "postgresql",
         "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
