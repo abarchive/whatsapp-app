@@ -48,18 +48,143 @@ user_sessions: Dict[str, set] = {}
 # SID to user mapping: {sid: user_id}
 sid_to_user: Dict[str, str] = {}
 
-# Global connection pool
+# Global connection pool (for PostgreSQL) or SQLite connection
 db_pool = None
+sqlite_conn = None
+
+# SQLite wrapper class to mimic asyncpg interface
+class SQLiteRecord(dict):
+    """Dict subclass that supports both dict and attribute access"""
+    def __getattr__(self, key):
+        try:
+            return self[key]
+        except KeyError:
+            raise AttributeError(key)
+
+class SQLiteConnection:
+    """Wrapper to make SQLite work like asyncpg connection"""
+    def __init__(self, conn: aiosqlite.Connection):
+        self._conn = conn
+        self._conn.row_factory = aiosqlite.Row
+    
+    def _convert_params(self, query: str, args: tuple) -> tuple:
+        """Convert $1, $2 style params to ? style and adjust args"""
+        import re
+        # Replace $N with ?
+        new_query = re.sub(r'\$(\d+)', '?', query)
+        return new_query, args
+    
+    async def fetch(self, query: str, *args) -> List[SQLiteRecord]:
+        query, args = self._convert_params(query, args)
+        async with self._conn.execute(query, args) as cursor:
+            rows = await cursor.fetchall()
+            return [SQLiteRecord(dict(row)) for row in rows]
+    
+    async def fetchrow(self, query: str, *args) -> Optional[SQLiteRecord]:
+        query, args = self._convert_params(query, args)
+        async with self._conn.execute(query, args) as cursor:
+            row = await cursor.fetchone()
+            return SQLiteRecord(dict(row)) if row else None
+    
+    async def fetchval(self, query: str, *args) -> Any:
+        query, args = self._convert_params(query, args)
+        async with self._conn.execute(query, args) as cursor:
+            row = await cursor.fetchone()
+            return row[0] if row else None
+    
+    async def execute(self, query: str, *args) -> str:
+        query, args = self._convert_params(query, args)
+        await self._conn.execute(query, args)
+        await self._conn.commit()
+        return "OK"
+
+class SQLitePool:
+    """Simple pool-like wrapper for SQLite"""
+    def __init__(self, db_path: Path):
+        self._db_path = db_path
+        self._conn: Optional[aiosqlite.Connection] = None
+    
+    async def _get_conn(self) -> aiosqlite.Connection:
+        if self._conn is None:
+            self._conn = await aiosqlite.connect(str(self._db_path))
+            self._conn.row_factory = aiosqlite.Row
+        return self._conn
+    
+    @asynccontextmanager
+    async def acquire(self):
+        conn = await self._get_conn()
+        yield SQLiteConnection(conn)
+    
+    async def close(self):
+        if self._conn:
+            await self._conn.close()
+            self._conn = None
+
+async def init_sqlite_schema():
+    """Initialize SQLite database schema"""
+    global sqlite_conn
+    conn = await aiosqlite.connect(str(SQLITE_PATH))
+    await conn.executescript('''
+        CREATE TABLE IF NOT EXISTS users (
+            id TEXT PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            plain_password TEXT,
+            api_key TEXT UNIQUE NOT NULL,
+            role TEXT DEFAULT 'user',
+            status TEXT DEFAULT 'active',
+            rate_limit INTEGER DEFAULT 30,
+            force_password_change INTEGER DEFAULT 0,
+            created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS message_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            receiver_number TEXT NOT NULL,
+            message_body TEXT NOT NULL,
+            status TEXT NOT NULL,
+            source TEXT NOT NULL,
+            created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS activity_logs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT NOT NULL,
+            user_email TEXT NOT NULL,
+            action TEXT NOT NULL,
+            details TEXT,
+            ip_address TEXT,
+            created_at TEXT NOT NULL
+        );
+        
+        CREATE TABLE IF NOT EXISTS settings (
+            id TEXT PRIMARY KEY,
+            default_rate_limit INTEGER DEFAULT 30,
+            max_rate_limit INTEGER DEFAULT 100,
+            enable_registration INTEGER DEFAULT 1,
+            maintenance_mode INTEGER DEFAULT 0,
+            updated_at TEXT
+        );
+    ''')
+    await conn.commit()
+    await conn.close()
 
 async def get_db_pool():
     global db_pool
     if db_pool is None:
-        db_pool = await asyncpg.create_pool(
-            DATABASE_URL,
-            min_size=2,
-            max_size=10,
-            command_timeout=60
-        )
+        if USE_SQLITE:
+            await init_sqlite_schema()
+            db_pool = SQLitePool(SQLITE_PATH)
+            logger.info(f"Using SQLite database at {SQLITE_PATH}")
+        else:
+            db_pool = await asyncpg.create_pool(
+                DATABASE_URL,
+                min_size=2,
+                max_size=10,
+                command_timeout=60
+            )
+            logger.info("Using PostgreSQL database")
     return db_pool
 
 async def close_db_pool():
@@ -73,7 +198,7 @@ async def lifespan(app: FastAPI):
     # Startup
     await get_db_pool()
     await create_default_admin()
-    logger.info("Database pool initialized")
+    logger.info(f"Database initialized (SQLite: {USE_SQLITE})")
     yield
     # Shutdown
     await close_db_pool()
