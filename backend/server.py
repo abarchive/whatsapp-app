@@ -2,12 +2,11 @@ from fastapi import FastAPI, APIRouter, HTTPException, Depends, Header, Query
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
-import asyncpg
 import os
 import logging
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime, timezone, timedelta
 import bcrypt
@@ -17,12 +16,24 @@ import aiohttp
 import subprocess
 from contextlib import asynccontextmanager
 import socketio
+import aiosqlite
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# PostgreSQL connection settings
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql://botwave_user:BotWave@SecurePass123@localhost:5432/botwave')
+# Database settings - SQLite for preview, PostgreSQL for production
+DATABASE_URL = os.environ.get('DATABASE_URL', '')
+USE_SQLITE = not DATABASE_URL or 'localhost' in DATABASE_URL
+SQLITE_PATH = ROOT_DIR / 'botwave.db'
+
+# Try to import asyncpg only if needed
+asyncpg = None
+if not USE_SQLITE:
+    try:
+        import asyncpg as _asyncpg
+        asyncpg = _asyncpg
+    except ImportError:
+        USE_SQLITE = True
 
 # Socket.IO Server
 sio = socketio.AsyncServer(
