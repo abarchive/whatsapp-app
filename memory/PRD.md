@@ -123,7 +123,7 @@ PostgreSQL: postgresql://botwave_user:BotWave%40SecurePass123@localhost:5432/bot
 ```
 
 ## Preview URL
-https://msg-sender-5.preview.emergentagent.com
+https://realtime-messaging-15.preview.emergentagent.com
 
 ## Future Tasks
 - [ ] Forgot Password (email-based recovery)
