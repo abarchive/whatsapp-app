@@ -124,7 +124,7 @@ export default function AdminUsers() {
 
   // Handle Password Reset
   const handleResetPassword = async (user) => {
-    if (!window.confirm(`क्या आप वाकई "${user.email}" का password reset करना चाहते हैं?`)) return;
+    if (!window.confirm(`Are you sure you want to reset password for "${user.email}"?`)) return;
     
     setResettingPasswordForUser(user.id);
     
