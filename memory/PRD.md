@@ -85,6 +85,29 @@ WhatsApp Service → POST /api/internal/ws-event → Backend Socket.IO → Front
 - [x] PostgreSQL migration complete
 - [x] **Socket.IO real-time updates**
 - [x] Nginx WebSocket config
+- [x] **Admin Password Reset Feature** (Feb 21, 2026)
+  - Admin can reset any user's password
+  - Generates secure temporary password
+  - Forces user to change password on next login
+  - Activity logging for PASSWORD_RESET and PASSWORD_CHANGED
+
+## Recent Updates (Feb 21, 2026)
+
+### Admin Password Reset Feature ✅
+- **Backend Endpoints**:
+  - `POST /api/admin/reset-password/{user_id}` - Generate temporary password
+  - `POST /api/auth/change-password` - User changes own password
+- **Frontend Components**:
+  - `PasswordResetModal.js` - Shows temporary password with copy button
+  - `ChangePassword.js` - Force password change page with validation
+- **Database**:
+  - `force_password_change` column in users table
+- **Flow**:
+  1. Admin clicks Reset Password button in Users table
+  2. System generates secure temporary password
+  3. Modal shows password with copy button
+  4. User logs in → redirected to /change-password
+  5. User sets new password → redirected to dashboard
 
 ## VPS Deployment Notes
 
