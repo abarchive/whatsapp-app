@@ -124,6 +124,16 @@ class UserResponse(BaseModel):
     role: str = "user"
     status: str = "active"
     rate_limit: int = 30
+    force_password_change: bool = False
+
+class PasswordChangeRequest(BaseModel):
+    current_password: str
+    new_password: str
+
+class PasswordResetResponse(BaseModel):
+    success: bool
+    message: str
+    temporary_password: str
 
 class MessageLog(BaseModel):
     model_config = ConfigDict(extra="ignore")
