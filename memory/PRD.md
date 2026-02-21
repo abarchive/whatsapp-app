@@ -149,7 +149,8 @@ PostgreSQL: postgresql://botwave_user:BotWave%40SecurePass123@localhost:5432/bot
 https://realtime-messaging-15.preview.emergentagent.com
 
 ## Future Tasks
-- [ ] Forgot Password (email-based recovery)
-- [ ] Webhooks for message delivery callbacks
-- [ ] Subscription/Payment integration (Stripe/Razorpay)
-- [ ] Rate limiting enforcement
+- [ ] Forgot Password (email-based recovery) - P2
+- [ ] Webhooks for message delivery callbacks - P3
+- [ ] Subscription/Payment integration (Stripe/Razorpay) - P2
+- [ ] Rate limiting enforcement verification - P1
+- [ ] Final VPS Deployment - P3
