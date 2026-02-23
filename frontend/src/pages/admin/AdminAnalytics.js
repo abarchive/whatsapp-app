@@ -4,7 +4,6 @@ import AdminLayout from '../../components/admin/AdminLayout';
 import { BarChart3, TrendingUp, TrendingDown, Calendar, RefreshCw } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `/api`;
 
 export default function AdminAnalytics() {

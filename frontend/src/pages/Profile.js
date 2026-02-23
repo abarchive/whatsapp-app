@@ -4,7 +4,6 @@ import axios from 'axios';
 import Layout from '../components/Layout';
 import { LogOut } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `/api`;
 
 export default function Profile({ user, setUser }) {

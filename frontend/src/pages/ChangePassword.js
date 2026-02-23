@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Eye, EyeOff, Lock, AlertTriangle, Check } from 'lucide-react';
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `/api`;
 
 export default function ChangePassword({ user, setUser }) {
   const navigate = useNavigate();

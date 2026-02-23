@@ -3,7 +3,6 @@ import axios from 'axios';
 import AdminLayout from '../../components/admin/AdminLayout';
 import { Settings, Save, RefreshCw, Shield, Users, MessageSquare, AlertTriangle, CheckCircle } from 'lucide-react';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `/api`;
 
 export default function AdminSettings() {
